@@ -1,0 +1,980 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>DRAVON ✦</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700;800&family=Barlow:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+
+    <style>
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+
+        :root {
+          --bg:        #080810;
+          --surface:   #0f0f1a;
+          --card:      #121220;
+          --border:    #1e1e35;
+          --border2:   #2a2a48;
+          --accent1:   #7c3aed;
+          --accent2:   #06b6d4;
+          --accent3:   #f43f5e;
+          --neon:      #a78bfa;
+          --neon2:     #67e8f9;
+          --text:      #e2e8f0;
+          --muted:     #64748b;
+          --muted2:    #475569;
+          --gold:      #fbbf24;
+          --gold2:     #f59e0b;
+          --green:     #10b981;
+          --pink:      #ec4899;
+        }
+
+        body {
+          font-family:'Barlow',sans-serif;
+          background:var(--bg);
+          display:flex;justify-content:center;align-items:center;
+          min-height:100vh;overflow:hidden;
+          cursor:default;
+        }
+
+        /* GRID BG */
+        body::before {
+          content:'';position:fixed;inset:0;
+          background-image:
+            linear-gradient(rgba(124,58,237,.06) 1px,transparent 1px),
+            linear-gradient(90deg,rgba(124,58,237,.06) 1px,transparent 1px);
+          background-size:40px 40px;
+          pointer-events:none;z-index:0;
+        }
+
+        /* GRADIENT ORBS */
+        .orbs{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
+        .orb{position:absolute;border-radius:50%;filter:blur(120px);animation:float var(--d,15s) ease-in-out infinite alternate;}
+        .o1{width:600px;height:600px;background:rgba(124,58,237,.18);top:-200px;left:-150px;--d:18s;}
+        .o2{width:500px;height:500px;background:rgba(6,182,212,.12);bottom:-200px;right:-100px;--d:14s;}
+        .o3{width:350px;height:350px;background:rgba(244,63,94,.10);top:50%;left:50%;transform:translate(-50%,-50%);--d:20s;}
+        @keyframes float{from{transform:translate(0,0) scale(1);}to{transform:translate(40px,30px) scale(1.05);}}
+
+        /* NOISE OVERLAY */
+        body::after {
+          content:'';position:fixed;inset:0;
+          background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+          pointer-events:none;z-index:0;opacity:.4;
+        }
+
+        /* ── TOAST ── */
+        .toast{
+          position:fixed;bottom:24px;left:50%;
+          transform:translateX(-50%) translateY(80px);
+          border-radius:12px;padding:10px 20px;
+          font-size:13px;font-weight:600;font-family:'Barlow Condensed',sans-serif;
+          box-shadow:0 8px 32px rgba(0,0,0,.6);
+          transition:transform .35s cubic-bezier(.175,.885,.32,1.275);
+          z-index:9999;white-space:nowrap;
+          background:var(--card);border:1px solid var(--border2);color:var(--text);
+          letter-spacing:.3px;
+        }
+        .toast.show{transform:translateX(-50%) translateY(0);}
+        .toast.error{border-color:var(--accent3);color:#fda4af;background:#1a0a10;}
+        .toast.success{border-color:var(--green);color:#6ee7b7;background:#0a1a12;}
+        .toast.info{border-color:var(--accent1);color:var(--neon);}
+
+        @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+
+        /* ══════════════════════════════
+           LOGIN PAGE
+        ══════════════════════════════ */
+        #loginPage{
+          position:relative;z-index:10;
+          display:flex;flex-direction:column;align-items:center;
+          width:100%;padding:20px;
+          animation:pageIn .5s ease forwards;
+        }
+        #loginPage.hidden{display:none;}
+        @keyframes pageIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+        /* LOGO ROW */
+        .logo-row{display:flex;align-items:center;gap:10px;margin-bottom:20px;}
+        .logo-mark{
+          width:36px;height:36px;border-radius:10px;
+          background:linear-gradient(135deg,var(--accent1),var(--accent2));
+          display:flex;align-items:center;justify-content:center;
+          font-size:18px;box-shadow:0 0 20px rgba(124,58,237,.5);
+          animation:pulse 3s ease-in-out infinite;
+        }
+        @keyframes pulse{0%,100%{box-shadow:0 0 20px rgba(124,58,237,.5)}50%{box-shadow:0 0 35px rgba(124,58,237,.8),0 0 60px rgba(6,182,212,.3)}}
+        .logo-name{font-family:'Bebas Neue',cursive;font-size:26px;color:var(--text);letter-spacing:2px;}
+        .logo-name span{
+          background:linear-gradient(90deg,var(--neon),var(--neon2));
+          -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        }
+
+        /* CARD */
+        .card{
+          width:420px;
+          background:var(--card);
+          border-radius:20px;
+          border:1px solid var(--border2);
+          overflow:hidden;
+          box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 40px 80px rgba(0,0,0,.7),0 0 60px rgba(124,58,237,.15);
+          position:relative;
+        }
+        .card::before{
+          content:'';position:absolute;top:0;left:0;right:0;height:1px;
+          background:linear-gradient(90deg,transparent,var(--accent1),var(--accent2),var(--accent1),transparent);
+        }
+
+        .card-body{padding:32px 30px 28px;}
+
+        .brand{text-align:center;margin-bottom:26px;}
+        .brand-badge{
+          display:inline-flex;align-items:center;gap:6px;
+          background:rgba(124,58,237,.15);border:1px solid rgba(124,58,237,.3);
+          border-radius:99px;padding:4px 14px;
+          font-size:11px;font-weight:600;color:var(--neon);
+          font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;text-transform:uppercase;
+          margin-bottom:14px;
+        }
+        .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s ease-in-out infinite;}
+        @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+        .brand-title{font-family:'Bebas Neue',cursive;font-size:36px;color:var(--text);letter-spacing:2px;margin-bottom:6px;}
+        .brand-title span{
+          background:linear-gradient(135deg,var(--neon) 0%,var(--neon2) 100%);
+          -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        }
+        .brand-sub{font-size:13px;font-weight:400;color:var(--muted);font-family:'Barlow',sans-serif;}
+
+        /* TABS */
+        .tab-row{
+          display:flex;background:var(--surface);
+          border-radius:12px;padding:3px;margin-bottom:24px;
+          border:1px solid var(--border);
+        }
+        .tab{
+          flex:1;padding:9px;border-radius:10px;border:none;
+          background:transparent;font-family:'Barlow Condensed',sans-serif;
+          font-size:13px;font-weight:600;color:var(--muted);
+          cursor:pointer;transition:all .25s;letter-spacing:.3px;
+        }
+        .tab.active{
+          background:var(--card);color:var(--text);
+          border:1px solid var(--border2);
+          box-shadow:0 2px 8px rgba(0,0,0,.3);
+        }
+
+        /* FORM */
+        .form-panel{display:none;flex-direction:column;gap:16px;}
+        .form-panel.show{display:flex;animation:fadeUp .3s ease forwards;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+        .field{display:flex;flex-direction:column;gap:7px;}
+        .field label{
+          font-size:11px;font-weight:600;color:var(--muted);
+          letter-spacing:.8px;text-transform:uppercase;
+          font-family:'Barlow Condensed',sans-serif;
+        }
+        .input-wrap{position:relative;}
+        .input-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;opacity:.7;}
+        .input-wrap input{
+          width:100%;
+          background:var(--surface);
+          border:1px solid var(--border2);
+          border-radius:12px;
+          color:var(--text);
+          font-family:'Barlow',sans-serif;
+          font-size:14px;font-weight:400;
+          outline:none;padding:12px 42px 12px 40px;
+          transition:all .25s;
+        }
+        .input-wrap input::placeholder{color:var(--muted2);font-weight:400;}
+        .input-wrap input:focus{
+          border-color:rgba(124,58,237,.6);
+          background:#1a1a2e;
+          box-shadow:0 0 0 3px rgba(124,58,237,.12);
+        }
+        .eye-btn{
+          position:absolute;right:12px;top:50%;transform:translateY(-50%);
+          background:none;border:none;color:var(--muted);cursor:pointer;
+          font-size:14px;padding:2px;transition:color .2s;line-height:1;
+        }
+        .eye-btn:hover{color:var(--neon);}
+
+        .row-between{display:flex;align-items:center;justify-content:space-between;margin-top:-4px;}
+        .remember{display:flex;align-items:center;gap:8px;cursor:pointer;}
+        .remember input[type="checkbox"]{width:15px;height:15px;accent-color:var(--accent1);cursor:pointer;}
+        .remember span{font-size:12px;font-weight:500;color:var(--muted);font-family:'Barlow Condensed',sans-serif;}
+        .forgot{
+          font-size:12px;font-weight:600;color:var(--muted);
+          background:none;border:none;cursor:pointer;
+          font-family:'Barlow Condensed',sans-serif;transition:color .2s;
+        }
+        .forgot:hover{color:var(--neon);}
+
+        /* SUBMIT BTN */
+        .submit-btn{
+          width:100%;padding:13px;border-radius:12px;border:none;
+          background:linear-gradient(135deg,var(--accent1),#5b21b6);
+          color:#fff;font-family:'Bebas Neue',cursive;
+          font-size:19px;font-weight:400;cursor:pointer;
+          transition:all .25s;letter-spacing:2px;
+          box-shadow:0 4px 20px rgba(124,58,237,.4);
+          margin-top:4px;position:relative;overflow:hidden;
+        }
+        .submit-btn::after{
+          content:'';position:absolute;inset:0;
+          background:linear-gradient(135deg,rgba(255,255,255,.1),transparent);
+          opacity:0;transition:opacity .2s;
+        }
+        .submit-btn:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(124,58,237,.55);}
+        .submit-btn:hover::after{opacity:1;}
+        .submit-btn:active{transform:scale(.98);}
+        .submit-btn.loading{color:transparent!important;pointer-events:none;}
+        .submit-btn.loading::before{
+          content:'';position:absolute;
+          width:18px;height:18px;top:50%;left:50%;
+          transform:translate(-50%,-50%);
+          border:2px solid rgba(255,255,255,.3);border-top-color:#fff;
+          border-radius:50%;animation:spin .7s linear infinite;
+        }
+        @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+        /* DIVIDER */
+        .divider{display:flex;align-items:center;gap:12px;margin:4px 0;}
+        .divider-line{flex:1;height:1px;background:var(--border2);}
+        .divider-text{font-size:11px;font-weight:600;color:var(--muted2);letter-spacing:.8px;font-family:'Barlow Condensed',sans-serif;}
+
+        /* SOCIAL */
+        .social-row{display:flex;gap:8px;}
+        .social-btn{
+          flex:1;padding:10px;border-radius:10px;
+          border:1px solid var(--border2);background:var(--surface);
+          color:var(--muted);font-family:'Barlow Condensed',sans-serif;
+          font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;
+          display:flex;align-items:center;justify-content:center;gap:6px;
+          letter-spacing:.2px;
+        }
+        .social-btn:hover{border-color:var(--border2);background:var(--card);color:var(--text);transform:translateY(-1px);}
+        .social-icon{font-size:14px;}
+
+        /* STRENGTH */
+        .strength-bar{display:flex;gap:4px;margin-top:6px;}
+        .strength-seg{flex:1;height:2px;border-radius:99px;background:var(--border2);transition:background .3s;}
+        .strength-seg.weak{background:var(--accent3);}
+        .strength-seg.fair{background:var(--gold2);}
+        .strength-seg.strong{background:var(--green);}
+        .strength-label{font-size:11px;font-weight:600;color:var(--muted);margin-top:4px;min-height:14px;font-family:'Barlow Condensed',sans-serif;}
+
+        .bottom-note{text-align:center;margin-top:18px;font-size:13px;font-weight:400;color:var(--muted);font-family:'Barlow',sans-serif;}
+        .bottom-note a{color:var(--neon);text-decoration:none;font-weight:600;cursor:pointer;transition:color .2s;}
+        .bottom-note a:hover{color:var(--neon2);}
+
+        /* ══════════════════════════════
+           CHAT PAGE
+        ══════════════════════════════ */
+        #chatPage{
+          position:relative;z-index:10;
+          display:none;flex-direction:column;align-items:center;
+          animation:pageIn .4s ease forwards;
+        }
+        #chatPage.visible{display:flex;}
+
+        .chat{
+          width:460px;height:700px;
+          display:flex;flex-direction:column;
+          background:var(--card);
+          border-radius:20px;overflow:hidden;
+          border:1px solid var(--border2);
+          box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,
+                     0 40px 80px rgba(0,0,0,.7),
+                     0 0 60px rgba(124,58,237,.15);
+          position:relative;
+        }
+        .chat::before{
+          content:'';position:absolute;top:0;left:0;right:0;height:1px;
+          background:linear-gradient(90deg,transparent,var(--accent1),var(--accent2),var(--accent1),transparent);
+          z-index:1;
+        }
+
+        /* HEADER */
+        .header{
+          background:var(--surface);border-bottom:1px solid var(--border);
+          padding:14px 18px 13px;
+          display:flex;align-items:center;justify-content:space-between;flex-shrink:0;
+        }
+        .h-left{display:flex;align-items:center;gap:12px;}
+        .h-avatar{
+          width:40px;height:40px;border-radius:12px;
+          background:linear-gradient(135deg,var(--accent1),var(--accent2));
+          display:flex;align-items:center;justify-content:center;
+          font-size:18px;flex-shrink:0;
+          box-shadow:0 4px 14px rgba(124,58,237,.4);
+        }
+        .h-title{font-family:'Bebas Neue',cursive;font-size:22px;color:var(--text);letter-spacing:2px;}
+        .h-sub{font-size:11px;font-weight:500;color:var(--muted);display:flex;align-items:center;gap:5px;margin-top:2px;font-family:'Barlow Condensed',sans-serif;}
+        .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:blink 2s ease-in-out infinite;}
+
+        .h-actions{display:flex;align-items:center;gap:8px;}
+
+        /* REFRESH BTN */
+        .refresh-btn{
+          display:flex;align-items:center;gap:6px;
+          background:rgba(6,182,212,.1);
+          border:1px solid rgba(6,182,212,.25);
+          border-radius:10px;padding:7px 12px;
+          color:var(--neon2);font-size:12px;font-weight:600;
+          font-family:'Barlow Condensed',sans-serif;cursor:pointer;
+          transition:all .2s;letter-spacing:.3px;
+        }
+        .refresh-btn:hover{background:rgba(6,182,212,.18);border-color:rgba(6,182,212,.5);transform:translateY(-1px);}
+        .refresh-btn:active{transform:scale(.96);}
+        .refresh-btn.spinning .ref-icon{animation:spin .6s linear infinite;}
+        .ref-icon{display:inline-block;transition:transform .3s;font-size:13px;}
+
+        /* LOGOUT BTN */
+        .logout-btn{
+          background:rgba(244,63,94,.08);border:1px solid rgba(244,63,94,.2);
+          border-radius:10px;color:#fb7185;font-size:12px;font-weight:600;
+          font-family:'Barlow Condensed',sans-serif;padding:7px 12px;
+          cursor:pointer;transition:all .2s;letter-spacing:.3px;
+        }
+        .logout-btn:hover{background:rgba(244,63,94,.15);border-color:rgba(244,63,94,.4);}
+
+        /* MESSAGES */
+        .messages{
+          flex:1;overflow-y:auto;padding:16px 14px;
+          display:flex;flex-direction:column;gap:3px;
+          background:var(--bg);
+          scrollbar-width:thin;scrollbar-color:var(--border2) transparent;
+        }
+        .messages::-webkit-scrollbar{width:3px;}
+        .messages::-webkit-scrollbar-thumb{background:var(--border2);border-radius:99px;}
+
+        .empty-state{
+          flex:1;display:flex;flex-direction:column;
+          align-items:center;justify-content:center;gap:8px;
+        }
+        .empty-icon{font-size:44px;animation:float 3.5s ease-in-out infinite alternate;filter:drop-shadow(0 0 16px rgba(124,58,237,.5));}
+        .empty-state h3{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1.5px;color:var(--text);}
+        .empty-state p{font-size:13px;font-weight:400;color:var(--muted);font-family:'Barlow',sans-serif;}
+
+        /* MESSAGES */
+        .msg-group{display:flex;flex-direction:column;margin-bottom:10px;animation:popIn .25s cubic-bezier(.175,.885,.32,1.275) forwards;}
+        @keyframes popIn{from{opacity:0;transform:scale(.9) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+        .msg-group.right{align-items:flex-end;}
+        .msg-group.left{align-items:flex-start;}
+
+        .s-name{
+          font-size:10px;font-weight:600;letter-spacing:.8px;text-transform:uppercase;
+          margin-bottom:4px;padding:0 10px;
+          color:var(--muted);font-family:'Barlow Condensed',sans-serif;
+        }
+        .msg-group.right .s-name{color:rgba(167,139,250,.7);}
+
+        .msg-row{display:flex;align-items:flex-end;gap:8px;max-width:80%;}
+        .msg-group.right .msg-row{flex-direction:row-reverse;}
+
+        .av{
+          width:28px;height:28px;border-radius:8px;
+          display:flex;align-items:center;justify-content:center;
+          font-size:11px;font-weight:700;flex-shrink:0;
+          background:var(--surface);border:1px solid var(--border2);
+          color:var(--muted);font-family:'Bebas Neue',cursive;
+        }
+        .msg-group.right .av{
+          background:linear-gradient(135deg,rgba(124,58,237,.3),rgba(6,182,212,.2));
+          border-color:rgba(124,58,237,.4);color:var(--neon);
+        }
+
+        .bubble{
+          padding:10px 14px;border-radius:14px;
+          font-size:15px;font-weight:400;line-height:1.5;
+          word-break:break-word;transition:transform .15s ease;
+          font-family:'Barlow',sans-serif;
+        }
+        .bubble:hover{transform:scale(1.015);}
+        .bubble.left{
+          background:var(--surface);color:var(--text);
+          border:1px solid var(--border2);border-bottom-left-radius:4px;
+        }
+        .bubble.right{
+          background:linear-gradient(135deg,rgba(124,58,237,.25),rgba(6,182,212,.15));
+          color:#e2e8f0;border:1px solid rgba(124,58,237,.35);
+          border-bottom-right-radius:4px;
+          box-shadow:0 4px 16px rgba(124,58,237,.15);
+        }
+
+        .msg-meta{display:flex;align-items:center;gap:8px;margin-top:4px;padding:0 6px;}
+        .msg-group.right .msg-meta{justify-content:flex-end;}
+        .ts{font-size:10px;font-weight:500;color:var(--muted2);font-family:'Barlow Condensed',sans-serif;}
+        .del-btn{
+          background:transparent;border:none;color:var(--muted2);
+          font-size:10px;font-weight:600;font-family:'Barlow Condensed',sans-serif;
+          cursor:pointer;padding:2px 6px;border-radius:6px;transition:all .2s;
+        }
+        .del-btn:hover{background:rgba(244,63,94,.1);color:#fb7185;}
+
+        /* INPUT AREA */
+        .input-area{
+          background:var(--surface);border-top:1px solid var(--border);
+          padding:12px 14px 16px;flex-shrink:0;position:relative;
+        }
+
+        /* QUICK EMOJIS */
+        .quick-emojis{display:flex;gap:4px;margin-bottom:10px;flex-wrap:wrap;}
+        .qe{
+          background:var(--bg);border:1px solid var(--border);
+          border-radius:8px;padding:4px 7px;font-size:15px;
+          cursor:pointer;transition:all .2s;line-height:1;
+        }
+        .qe:hover{background:var(--card);border-color:var(--border2);transform:scale(1.2) translateY(-2px);}
+
+        .input-row{display:flex;gap:8px;align-items:center;}
+
+        .name-wrap{position:relative;flex-shrink:0;}
+        .name-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;pointer-events:none;opacity:.5;}
+
+        input:not([type="checkbox"]){
+          background:var(--bg);border:1px solid var(--border2);
+          border-radius:10px;color:var(--text);
+          font-family:'Barlow',sans-serif;font-size:13px;font-weight:400;
+          outline:none;padding:10px 14px;transition:all .25s;
+        }
+        input:not([type="checkbox"])::placeholder{color:var(--muted2);font-weight:400;}
+        input:not([type="checkbox"]):focus{
+          border-color:rgba(124,58,237,.5);background:#1a1a2e;
+          box-shadow:0 0 0 3px rgba(124,58,237,.1);
+        }
+
+        #name{width:110px;padding-left:28px;}
+        #message{flex:1;}
+
+        .emoji-btn{
+          width:40px;height:40px;border-radius:10px;
+          border:1px solid var(--border2);background:var(--bg);
+          color:var(--muted);font-size:16px;cursor:pointer;transition:all .2s;
+        }
+        .emoji-btn:hover{border-color:var(--border2);transform:scale(1.08);}
+
+        .send-btn{
+          height:40px;padding:0 18px;
+          border-radius:10px;border:none;
+          background:linear-gradient(135deg,var(--accent1),#5b21b6);
+          color:#fff;font-size:13px;cursor:pointer;
+          display:flex;align-items:center;justify-content:center;
+          gap:5px;flex-shrink:0;transition:all .2s;
+          box-shadow:0 4px 14px rgba(124,58,237,.4);
+          font-family:'Bebas Neue',cursive;font-weight:400;letter-spacing:1.5px;font-size:15px;
+        }
+        .send-btn:hover{box-shadow:0 6px 20px rgba(124,58,237,.55);transform:translateY(-1px);}
+        .send-btn:active{transform:scale(.96);}
+
+        .emoji-picker-wrapper{position:absolute;bottom:90px;right:20px;z-index:999;display:none;}
+        emoji-picker{--background:var(--card);--border-color:var(--border2);width:320px;height:400px;border-radius:16px;overflow:hidden;}
+
+        /* CHIP TAGS */
+        .chip{
+          display:inline-flex;align-items:center;gap:4px;
+          background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.2);
+          border-radius:99px;padding:2px 10px;
+          font-size:10px;font-weight:600;color:var(--neon);
+          font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;
+          text-transform:uppercase;
+        }
+
+        /* SYSTEM MESSAGE */
+        .sys-msg{
+          text-align:center;
+          font-size:11px;font-weight:500;color:var(--muted2);
+          font-family:'Barlow Condensed',sans-serif;
+          margin:6px 0;letter-spacing:.5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="orbs">
+    <div class="orb o1"></div>
+    <div class="orb o2"></div>
+    <div class="orb o3"></div>
+</div>
+
+<!-- ══════════════════════════════
+     LOGIN PAGE
+══════════════════════════════ -->
+<div id="loginPage">
+
+    <div class="logo-row">
+        <div class="logo-mark">💬</div>
+        <div class="logo-name"><span>DRA</span>VON</div>
+    </div>
+
+    <div class="card" id="loginCard">
+        <div class="card-body">
+
+            <div class="brand">
+                <div class="brand-badge">
+                    <span class="badge-dot"></span>
+                    live &amp; vibing
+                </div>
+                <div class="brand-title">welcome <span>back</span></div>
+                <div class="brand-sub">ur fav chat app, no cap 💀</div>
+            </div>
+
+            <div class="tab-row">
+                <button class="tab active" id="tab-login" type="button" onclick="switchTab('login')">sign in</button>
+                <button class="tab" id="tab-signup" type="button" onclick="switchTab('signup')">sign up</button>
+            </div>
+
+            <!-- LOGIN PANEL -->
+            <div class="form-panel show" id="panel-login">
+                <div class="field">
+                    <label>email or username</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">✉️</span>
+                        <input type="text" id="login-user" placeholder="ur email or username"
+                               onkeydown="if(event.key==='Enter') handleLogin()"/>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>password</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="login-pass" placeholder="super secret..."
+                               onkeydown="if(event.key==='Enter') handleLogin()"/>
+                        <button type="button" class="eye-btn" onclick="togglePass('login-pass',this)">👁️</button>
+                    </div>
+                </div>
+                <div class="row-between">
+                    <label class="remember">
+                        <input type="checkbox" id="rememberMe"/>
+                        <span>remember me</span>
+                    </label>
+                    <button type="button" class="forgot" onclick="showToast('reset link sent ✦','info')">forgot?</button>
+                </div>
+                <button type="button" class="submit-btn" id="loginBtn" onclick="handleLogin()">let me in →</button>
+                <div class="divider"><div class="divider-line"></div><span class="divider-text">or continue with</span><div class="divider-line"></div></div>
+                <div class="social-row">
+                    <button type="button" class="social-btn" onclick="showToast('google coming soon 👀','info')"><span class="social-icon">🌐</span>Google</button>
+                    <button type="button" class="social-btn" onclick="showToast('github coming soon 👀','info')"><span class="social-icon">🐙</span>GitHub</button>
+                    <button type="button" class="social-btn" onclick="showToast('discord soon 👀','info')"><span class="social-icon">💬</span>Discord</button>
+                </div>
+            </div>
+
+            <!-- SIGNUP PANEL -->
+            <div class="form-panel" id="panel-signup">
+                <div class="field">
+                    <label>username</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="signup-name" placeholder="pick a username"/>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>email</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">✉️</span>
+                        <input type="email" id="signup-email" placeholder="ur email address"/>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>password</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="signup-pass" placeholder="make it strong" oninput="checkStrength(this.value)"/>
+                        <button type="button" class="eye-btn" onclick="togglePass('signup-pass',this)">👁️</button>
+                    </div>
+                    <div class="strength-bar">
+                        <div class="strength-seg" id="seg1"></div>
+                        <div class="strength-seg" id="seg2"></div>
+                        <div class="strength-seg" id="seg3"></div>
+                        <div class="strength-seg" id="seg4"></div>
+                    </div>
+                    <div class="strength-label" id="strength-label"></div>
+                </div>
+                <div class="field">
+                    <label>confirm password</label>
+                    <div class="input-wrap">
+                        <span class="input-icon">🔐</span>
+                        <input type="password" id="signup-confirm" placeholder="same again..."
+                               onkeydown="if(event.key==='Enter') handleSignup()"/>
+                        <button type="button" class="eye-btn" onclick="togglePass('signup-confirm',this)">👁️</button>
+                    </div>
+                </div>
+                <button type="button" class="submit-btn" onclick="handleSignup()">create account →</button>
+                <div class="divider"><div class="divider-line"></div><span class="divider-text">or continue with</span><div class="divider-line"></div></div>
+                <div class="social-row">
+                    <button type="button" class="social-btn" onclick="showToast('google coming soon 👀','info')"><span class="social-icon">🌐</span>Google</button>
+                    <button type="button" class="social-btn" onclick="showToast('github coming soon 👀','info')"><span class="social-icon">🐙</span>GitHub</button>
+                    <button type="button" class="social-btn" onclick="showToast('discord soon 👀','info')"><span class="social-icon">💬</span>Discord</button>
+                </div>
+            </div>
+
+            <div class="bottom-note" id="bottom-note">
+                new here? <a onclick="switchTab('signup')">create an account</a>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- ══════════════════════════════
+     CHAT PAGE
+══════════════════════════════ -->
+<div id="chatPage">
+
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <div class="logo-mark" style="width:30px;height:30px;font-size:14px;">💬</div>
+        <div class="logo-name" style="font-size:18px;"><span>DRA</span>VON</div>
+        <div class="chip">general</div>
+    </div>
+
+    <div class="chat">
+
+        <div class="header">
+            <div class="h-left">
+                <div class="h-avatar">💬</div>
+                <div>
+                    <div class="h-title">DRAVON</div>
+                    <div class="h-sub">
+                        <span class="live-dot"></span>
+                        live now · general
+                    </div>
+                </div>
+            </div>
+            <div class="h-actions">
+                <button class="refresh-btn" id="refreshBtn" onclick="handleRefresh()">
+                    <span class="ref-icon">↻</span> refresh
+                </button>
+                <button class="logout-btn" onclick="handleLogout()">logout</button>
+            </div>
+        </div>
+
+        <div id="messages" class="messages">
+            <div class="empty-state" id="emptyState">
+                <div class="empty-icon">💬</div>
+                <h3>no messages yet</h3>
+                <p>drop something iconic rn ✦</p>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="quick-emojis">
+                <button class="qe" onclick="addEmoji('💀')">💀</button>
+                <button class="qe" onclick="addEmoji('🔥')">🔥</button>
+                <button class="qe" onclick="addEmoji('✨')">✨</button>
+                <button class="qe" onclick="addEmoji('💅')">💅</button>
+                <button class="qe" onclick="addEmoji('🫶')">🫶</button>
+                <button class="qe" onclick="addEmoji('😭')">😭</button>
+                <button class="qe" onclick="addEmoji('💜')">💜</button>
+                <button class="qe" onclick="addEmoji('🫡')">🫡</button>
+            </div>
+            <div class="input-row">
+                <div class="name-wrap">
+                    <span class="name-icon">👤</span>
+                    <input id="name" placeholder="ur name" readonly/>
+                </div>
+                <input id="message" placeholder="say something..."
+                       onkeydown="if(event.key==='Enter') sendMessage()"/>
+                <button class="emoji-btn" onclick="toggleEmojiPicker()">😊</button>
+                <button class="send-btn" onclick="sendMessage()">send ↑</button>
+            </div>
+            <div class="emoji-picker-wrapper" id="emojiPickerWrapper">
+                <emoji-picker id="emojiPicker"></emoji-picker>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+<script>
+    let stompClient = null;
+    let autoRefreshInterval = null;
+
+    /* ── TOAST ── */
+    let toastTimer;
+    function showToast(msg,type='info'){
+      const t=document.getElementById('toast');
+      t.textContent=msg;
+      t.className='toast show'+(type==='error'?' error':type==='success'?' success':type==='info'?' info':'');
+      clearTimeout(toastTimer);
+      toastTimer=setTimeout(()=>t.classList.remove('show'),500);
+    }
+
+    /* ── SHAKE ── */
+    function shakeCard(){
+      const c=document.getElementById('loginCard');
+      c.style.animation='shake .4s ease';
+      setTimeout(()=>c.style.animation='',420);
+    }
+
+    /* ── PAGE SWITCH ── */
+    function showChat(username){
+      document.getElementById('loginPage').classList.add('hidden');
+      const cp=document.getElementById('chatPage');
+      cp.classList.add('visible');
+      document.getElementById('name').value=username;
+      loadAllMessages();
+      connect();
+      clearInterval(autoRefreshInterval);
+    }
+
+    /* ── LOGOUT ── */
+    function handleLogout(){
+      if(stompClient&&stompClient.connected) stompClient.disconnect();
+      stompClient=null;
+      clearInterval(autoRefreshInterval);
+      localStorage.removeItem('token');
+      localStorage.removeItem('chatUser');
+      sessionStorage.removeItem('chatUser');
+      document.getElementById('chatPage').classList.remove('visible');
+      document.getElementById('loginPage').classList.remove('hidden');
+      document.getElementById('login-user').value='';
+      document.getElementById('login-pass').value='';
+      document.getElementById('messages').innerHTML=`
+        <div class="empty-state" id="emptyState">
+          <div class="empty-icon">💬</div>
+          <h3>no messages yet</h3>
+          <p>drop something iconic rn ✦</p>
+        </div>`;
+      showToast('logged out ✦','info');
+    }
+
+    /* ── REFRESH BUTTON ── */
+    async function handleRefresh(){
+      const btn=document.getElementById('refreshBtn');
+      btn.classList.add('spinning');
+      btn.disabled=true;
+      await loadAllMessages(false);
+      setTimeout(()=>{
+        btn.classList.remove('spinning');
+        btn.disabled=false;
+      },100);
+      showToast('chats refreshed ✦','success');
+    }
+
+    /* ── TABS ── */
+    function switchTab(tab){
+      const isLogin=tab==='login';
+      document.getElementById('tab-login').className='tab'+(isLogin?' active':'');
+      document.getElementById('tab-signup').className='tab'+(!isLogin?' active':'');
+      document.getElementById('panel-login').className='form-panel'+(isLogin?' show':'');
+      document.getElementById('panel-signup').className='form-panel'+(!isLogin?' show':'');
+      document.getElementById('bottom-note').innerHTML=isLogin
+        ?`new here? <a onclick="switchTab('signup')">create an account</a>`
+        :`already legendary? <a onclick="switchTab('login')">sign in</a>`;
+    }
+
+    /* ── PASSWORD TOGGLE ── */
+    function togglePass(id,btn){
+      const inp=document.getElementById(id);
+      inp.type=inp.type==='password'?'text':'password';
+      btn.textContent=inp.type==='password'?'👁️':'🙈';
+    }
+
+    /* ── PASSWORD STRENGTH ── */
+    function checkStrength(val){
+      const segs=['seg1','seg2','seg3','seg4'].map(id=>document.getElementById(id));
+      const label=document.getElementById('strength-label');
+      segs.forEach(s=>s.className='strength-seg');
+      let score=0;
+      if(val.length>=6) score++;
+      if(val.length>=10) score++;
+      if(/[A-Z]/.test(val)&&/[0-9]/.test(val)) score++;
+      if(/[^A-Za-z0-9]/.test(val)) score++;
+      const cls=score<=1?'weak':score<=2?'fair':'strong';
+      const txt=!score?'':score<=1?'weak 😬':score<=2?'fair 👀':score===3?'strong 💪':'unbreakable 🔥';
+      for(let i=0;i<score;i++) segs[i].classList.add(cls);
+      label.textContent=txt;
+      label.style.color=score<=1?'#f43f5e':score<=2?'#f59e0b':'#10b981';
+    }
+
+    /* ── LOGIN API ── */
+    async function handleLogin(){
+      const user=document.getElementById('login-user').value.trim();
+      const pass=document.getElementById('login-pass').value.trim();
+      if(!user||!pass){showToast('fill everything first 💀','error');shakeCard();return;}
+      const btn=document.getElementById('loginBtn');
+      btn.classList.remove('loading');
+      btn.disabled=false;
+      try{
+        const response=await fetch('http://localhost:8080/api/chat/login',{
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body:JSON.stringify({username:user,password:pass})
+        });
+        const text=await response.text();
+        let data={};
+        try{data=JSON.parse(text);}catch(e){data.message=text;}
+        if(response.ok){
+          if(data.token) localStorage.setItem('token',data.token);
+          const remember=document.getElementById('rememberMe').checked;
+          if(remember) localStorage.setItem('chatUser',user);
+          else{sessionStorage.setItem('chatUser',user);localStorage.removeItem('chatUser');}
+          showToast('welcome back 🔥','success');
+          setTimeout(()=>{
+            document.getElementById('toast').classList.remove('show');
+            showChat(user);
+          },800);
+        }else{
+          btn.classList.remove('loading');
+          showToast(data.message||'wrong credentials 💀','error');
+          shakeCard();
+        }
+      }catch(err){
+        btn.classList.remove('loading');
+        showToast('server not responding 😭','error');
+        shakeCard();
+      }
+    }
+
+    /* ── SIGNUP ── */
+    function handleSignup(){
+      const name=document.getElementById('signup-name').value.trim();
+      const email=document.getElementById('signup-email').value.trim();
+      const pass=document.getElementById('signup-pass').value.trim();
+      const conf=document.getElementById('signup-confirm').value.trim();
+      if(!name||!email||!pass||!conf){showToast('fill everything first 💀','error');shakeCard();return;}
+      if(pass!==conf){showToast("passwords don't match 💀",'error');shakeCard();return;}
+      showToast('signup api coming soon ✦','info');
+    }
+
+    /* ── EMOJI ── */
+    function addEmoji(e){
+      const m=document.getElementById('message');
+      m.value+=e;m.focus();
+    }
+    function toggleEmojiPicker(){
+      const w=document.getElementById('emojiPickerWrapper');
+      w.style.display=w.style.display==='block'?'none':'block';
+    }
+    function initials(name){return name?name.trim()[0].toUpperCase():'?';}
+
+    /* ── WEBSOCKET ── */
+    function connect(){
+      if(stompClient&&stompClient.connected) return;
+      const socket=new SockJS('/chat');
+      stompClient=Stomp.over(socket);
+      stompClient.debug=null;
+      stompClient.connect({},function(){
+        stompClient.subscribe('/topic/messages',function(msg){
+          showMessage(JSON.parse(msg.body));
+        });
+      });
+    }
+
+    /* ── SHOW MESSAGE ── */
+    function showMessage(data){
+      const messages=document.getElementById('messages');
+      if(!messages) return;
+      const empty=document.getElementById('emptyState');
+      if(empty) empty.remove();
+      const me=document.getElementById('name').value||localStorage.getItem('chatUser')||sessionStorage.getItem('chatUser')||'';
+      const isMe=data.sender===me;
+      const group=document.createElement('div');
+      group.className=`msg-group ${isMe?'right':'left'}`;
+      const sn=document.createElement('div');
+      sn.className='s-name';
+      sn.textContent=isMe?'you':data.sender;
+      group.appendChild(sn);
+      const row=document.createElement('div');
+      row.className='msg-row';
+      const av=document.createElement('div');
+      av.className='av';
+      av.textContent=initials(data.sender);
+      const bubble=document.createElement('div');
+      bubble.className=`bubble ${isMe?'right':'left'}`;
+      bubble.textContent=data.content;
+      if(isMe){row.appendChild(bubble);row.appendChild(av);}
+      else{row.appendChild(av);row.appendChild(bubble);}
+      group.appendChild(row);
+      const meta=document.createElement('div');
+      meta.className='msg-meta';
+      if(data.timestamp){
+        const ts=document.createElement('span');
+        ts.className='ts';
+        ts.textContent=new Date(data.timestamp).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+        meta.appendChild(ts);
+      }
+      const del=document.createElement('button');
+      del.className='del-btn';
+      del.textContent='delete';
+      del.onclick=()=>{
+        deleteMessage(data.id);
+        group.style.transition='all .3s ease';
+        group.style.opacity='0';
+        group.style.transform='scale(.85)';
+        setTimeout(()=>group.remove(),300);
+      };
+      meta.appendChild(del);
+      group.appendChild(meta);
+      messages.appendChild(group);
+      messages.scrollTop=messages.scrollHeight;
+    }
+
+    /* ── SEND ── */
+    function sendMessage(){
+      const sender=document.getElementById('name').value.trim();
+      const content=document.getElementById('message').value.trim();
+      if(!sender||!content) return;
+      if(!stompClient||!stompClient.connected){showToast('not connected 😭','error');return;}
+      stompClient.send('/app/sendMessage',{},JSON.stringify({sender,content,room:'general',type:'CHAT'}));
+      document.getElementById('message').value='';
+      document.getElementById('emojiPickerWrapper').style.display='none';
+    }
+
+    /* ── DELETE ── */
+    function deleteMessage(id){
+      fetch(`http://localhost:8080/api/chat/delete/${id}`,{method:'DELETE'}).catch(err=>console.log(err));
+    }
+
+    /* ── LOAD ALL (silent=true skips scroll-to-bottom jolt) ── */
+    async function loadAllMessages(silent=false){
+      try{
+        const res=await fetch('http://localhost:8080/api/chat/all');
+        const data=await res.json();
+        const messages=document.getElementById('messages');
+        const atBottom=messages.scrollHeight-messages.scrollTop-messages.clientHeight<80;
+        messages.innerHTML='';
+        if(!data.length){
+          messages.innerHTML=`<div class="empty-state" id="emptyState"><div class="empty-icon">💬</div><h3>no messages yet</h3><p>drop something iconic rn ✦</p></div>`;
+        }else{
+          data.forEach(showMessage);
+          if(!silent||atBottom) messages.scrollTop=messages.scrollHeight;
+        }
+      }catch(e){console.log(e);}
+    }
+
+    /* ── EMOJI PICKER INIT ── */
+    document.addEventListener('DOMContentLoaded',()=>{
+      const picker=document.getElementById('emojiPicker');
+      if(picker){
+        picker.addEventListener('emoji-click',e=>{
+          document.getElementById('message').value+=e.detail.unicode;
+          document.getElementById('emojiPickerWrapper').style.display='none';
+        });
+      }
+      document.addEventListener('click',e=>{
+        const wrapper=document.getElementById('emojiPickerWrapper');
+        const emojiBtn=document.querySelector('.emoji-btn');
+        if(wrapper&&!wrapper.contains(e.target)&&e.target!==emojiBtn){
+          wrapper.style.display='none';
+        }
+      });
+      // Auto-login if session exists
+      const savedUser=localStorage.getItem('chatUser')||sessionStorage.getItem('chatUser');
+      const savedToken=localStorage.getItem('token');
+      if(savedUser&&savedToken){showChat(savedUser);}
+    });
+</script>
+</body>
+</html>
