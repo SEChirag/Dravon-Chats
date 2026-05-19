@@ -66,4 +66,8 @@ public String login(LoginRequest request){
 
         return "User Registered";
     }
+
+    public List<User> getUsers(){
+        return loginRepository.findAll();
+    }
 }
