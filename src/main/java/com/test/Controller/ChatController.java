@@ -59,4 +59,8 @@ public class ChatController {
 
         return chatService.register(user);
     }
+    @GetMapping("/users")
+    public List<User> getUsers() {
+        return chatService.getUsers();
+    }
 }
