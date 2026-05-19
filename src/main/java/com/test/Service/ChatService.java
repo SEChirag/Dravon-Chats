@@ -54,7 +54,7 @@ public String login(LoginRequest request){
     }
     public List<ChatMessage> getRecentMessages() {
 
-        Pageable pageable = PageRequest.of(0, 0);
+        Pageable pageable = PageRequest.of(0, 30);
 
         return chatRepository
                 .findAllByOrderByTimestampDesc(pageable)
