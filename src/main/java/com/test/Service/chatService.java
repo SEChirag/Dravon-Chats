@@ -70,4 +70,15 @@ public String login(LoginRequest request){
     public List<User> getUsers(){
         return loginRepository.findAll();
     }
+
+    public void sendMessageToRoom(String room , chatMessage message) {
+        messagingTemplate.convertAndSend("/topic/chat"+room , message);
+
+    }
+    public List<String> getAllUsernames() {
+        return loginRepository.findAll()
+                .stream()
+                .map(User::getEmail)
+                .collect(Collectors.toList());
+    }
 }
