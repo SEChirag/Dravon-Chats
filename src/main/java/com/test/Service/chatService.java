@@ -8,6 +8,7 @@ import com.test.Repository.chatRepository;
 import com.test.model.LoginRequest;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
