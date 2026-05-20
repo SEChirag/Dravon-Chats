@@ -22,6 +22,7 @@ public class ChatService {
     public ChatService(chatRepository chatRepository , LoginRepository loginRepository) {
         this.chatRepository = chatRepository;
         this.loginRepository = loginRepository;
+        this.messagingTemplate = messagingTemplate;
     }
 
 
