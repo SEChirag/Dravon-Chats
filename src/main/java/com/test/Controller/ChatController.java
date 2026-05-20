@@ -34,6 +34,15 @@ public class ChatController {
         chatService.saveMessage(message);
         return message;
     }
+    @GetMapping("/getMessages")
+    public List<chatMessage> getMessages(@RequestParam("sender") String sender, @RequestParam("receiver") String receiver) {
+        String room = getRoom(sender, receiver);
+        return chatService.getMessagesByRoom(room);
+    }
+    @GetMapping("/messages/{roomId}")
+    public List<chatMessage> getMessagesByRoom(@PathVariable String roomId) {
+        return chatService.getMessagesByRoom(roomId);
+    }
     @GetMapping("/all")
     public List<ChatMessage> getAll() {
         return chatService.getAllMessages();
