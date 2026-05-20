@@ -21,8 +21,8 @@ public class ChatService {
 
     private final chatRepository chatRepository;
     private final LoginRepository loginRepository;
-
-    public ChatService(chatRepository chatRepository , LoginRepository loginRepository) {
+    private final SimpMessagingTemplate messagingTemplate;
+    public chatService(chatRepository chatRepository , LoginRepository loginRepository , SimpMessagingTemplate messagingTemplate) {
         this.chatRepository = chatRepository;
         this.loginRepository = loginRepository;
         this.messagingTemplate = messagingTemplate;
