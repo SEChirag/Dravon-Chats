@@ -87,4 +87,8 @@ public class ChatController {
                 .filter(u -> !u.equals(currentUser))  // exclude self
                 .collect(java.util.stream.Collectors.toList());
     }
+    @DeleteMapping("/delete")
+    public void  deleteUser(@RequestParam("userId") long userId) {
+        chatService.deleteUser(userId);
+    }
 }
