@@ -91,4 +91,9 @@ public class ChatController {
     public void  deleteUser(@RequestParam("userId") long userId) {
         chatService.deleteUser(userId);
     }
+    /// ////////////////
+    @DeleteMapping("/deleteChats/{id}")
+    public void deleteChats(@PathVariable chatMessage id){
+        chatService.deleteChats(id);
+    }
 }
