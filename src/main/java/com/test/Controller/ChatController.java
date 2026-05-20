@@ -29,6 +29,10 @@ public class ChatController {
     public ChatMessage sendMessage(ChatMessage message) {
 
 
+    public void sendMessage(chatMessage message) {
+
+        String room = getRoom(message.getSender(), message.getReceiver());
+        message.setRoom(room);
         message.setTimestamp(System.currentTimeMillis());
 
         chatService.saveMessage(message);
