@@ -80,7 +80,11 @@ public class ChatController {
         return chatService.register(user);
     }
     @GetMapping("/users")
-    public List<User> getUsers() {
-        return chatService.getUsers();
+    public List<String> getAllUsers(HttpSession session) {
+        String currentUser = (String) session.getAttribute("user");
+        return chatService.getAllUsernames()
+                .stream()
+                .filter(u -> !u.equals(currentUser))  // exclude self
+                .collect(java.util.stream.Collectors.toList());
     }
 }
