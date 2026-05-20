@@ -32,7 +32,8 @@ public class ChatController {
         message.setTimestamp(System.currentTimeMillis());
 
         chatService.saveMessage(message);
-        return message;
+
+       chatService.sendMessageToRoom(room ,message);
     }
     @GetMapping("/getMessages")
     public List<chatMessage> getMessages(@RequestParam("sender") String sender, @RequestParam("receiver") String receiver) {
