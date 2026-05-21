@@ -96,4 +96,42 @@ public class ChatController {
     public void deleteChats(@PathVariable chatMessage id){
         chatService.deleteChats(id);
     }
+    /// ///////////////////////////////////////
+    @GetMapping("/search")
+    public Optional<User> search(@RequestParam String Email){
+        return chatService.search(Email);
+    }
+/////////////////////////////////////////////////////////
+    @PostMapping("/FriendRequest")
+    public String sendRequest(@RequestBody FriendRequestDTO dto ,HttpSession session) {
+        User sender = (User) session.getAttribute("user");
+
+        return chatService.request(dto.getReceiverId(), sender);
+
+    }
+    /////////////////////////////////////
+
+    @GetMapping("/Friend-Request/Pending")
+
+    public List<FriendRequest> getFriendRequest(HttpSession session){
+         User currentUser = (User) session.getAttribute("user");
+
+       return chatService.getFriendRequest(currentUser);
+    }
+    /////////////////////////////////////////
+    @PostMapping("/friend-request/accept/{id}")
+    public String acceptRequest(@PathVariable Long id , HttpSession session) {
+
+        User currentuser = (User) session.getAttribute("user");
+        return chatService.Accept(id);
+
+    }
+    /// //////////////////////////////////
+    @PostMapping("/friend-request/reject/{id}")
+    public String rejectRequest(@PathVariable Long id ,HttpSession session) {
+
+        User currentuser = (User) session.getAttribute("user");
+        return chatService.reject(id);
+    }
+
 }
