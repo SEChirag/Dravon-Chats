@@ -85,4 +85,61 @@ public String login(LoginRequest request){
                 .map(User::getEmail)
                 .collect(Collectors.toList());
     }
+
+    public void deleteUser(long userId) {
+        loginRepository.deleteById(userId);
+    }
+
+    public void deleteChats(chatMessage id) {
+       chatRepository.delete(id);
+    }
+
+    public Optional<User> search(String email) {
+        return loginRepository.findByEmail(email);
+    }
+
+    public String reject(long id) {
+        FriendRequest request = friendRequestRepository.findById(id).orElseThrow();
+
+        request.setStatus("REJECTED");
+
+        friendRequestRepository.save(request);
+
+        return "Request Rejected";
+    }
+
+public String Accept(long id){
+    FriendRequest request = friendRequestRepository.findById(id).orElseThrow();
+
+        request.setStatus("ACCEPTED");
+
+        friendRequestRepository.save(request);
+
+        return "request accepted";
+}
+
+    public List<FriendRequest> getFriendRequest(User currentUser) {
+
+        return friendRequestRepository.findByReceiverAndStatus(currentUser,"PENDING");
+    }
+
+
+    public String request( Long receiverId ,User sender ){
+    User receiver = loginRepository.findById(receiverId).orElseThrow();
+
+    boolean alreadySent = friendRequestRepository.existsBySenderAndReceiverAndStatus(sender ,receiver,"PENDING");
+
+        if(alreadySent){
+        return "Request already sent";
+    }
+    FriendRequest request = new FriendRequest();
+
+        request.setSender(sender);
+        request.setReceiver(receiver);
+        request.setStatus("PENDING");
+
+        friendRequestRepository.save(request);
+
+        return "Friend Request Sent";
+}
 }
