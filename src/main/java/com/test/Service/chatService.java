@@ -141,5 +141,39 @@ public String Accept(long id){
         friendRequestRepository.save(request);
 
         return "Friend Request Sent";
-}
+    }
+
+
+    public List<String> getFriends(String email) {
+        User currentUser = loginRepository.findByEmail(email).orElseThrow();
+        List<String> friends = new ArrayList<>();
+
+
+        List<FriendRequest> sent = friendRequestRepository.findBySenderAndStatus(currentUser, "ACCEPTED");
+
+        for (FriendRequest r : sent) {
+            friends.add(r.getReceiver().getEmail());
+            }
+
+        List<FriendRequest> accepted = friendRequestRepository.findByReceiverAndStatus(currentUser, "ACCEPTED");
+
+        for (FriendRequest r : accepted) {
+            friends.add(r.getSender().getEmail());
+
+        }
+
+
+        return friends;
+
+    }
+@Transactional
+    public String unfriend(String currentEmail, String friendEmail) {
+        User current = loginRepository.findByEmail(currentEmail).orElseThrow();
+        User friend = loginRepository.findByEmail(friendEmail).orElseThrow();
+
+        friendRequestRepository.deleteBySenderAndReceiver(current, friend);
+        friendRequestRepository.deleteBySenderAndReceiver(friend, current);
+
+    return "unFriend";
+    }
 }
