@@ -1,27 +1,43 @@
 package com.test.Controller;
 
 
-
-import com.test.model.ChatMessage;
-import com.test.Service.ChatService;
+import com.test.Repository.LoginRepository;
+import com.test.Service.PasswordResetService;
+import com.test.Service.chatService;
+import com.test.Util.JwtUtil;
+import com.test.dto.FriendRequestDTO;
+import com.test.model.FriendRequest;
 import com.test.model.LoginRequest;
 import com.test.model.User;
+import com.test.model.chatMessage;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/chat")
-@CrossOrigin("*")
+@CrossOrigin(value = "*" , allowedHeaders = "*")
 public class ChatController {
 
-    private final ChatService chatService;
+    private final chatService chatService;
+    @Autowired
+    private LoginRepository loginRepository;
 
-    public ChatController(ChatService chatService) {
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    public ChatController(chatService chatService , LoginRepository loginRepository) {
         this.chatService = chatService;
+        this.loginRepository = loginRepository;
+
     }
     private String getRoom(String user1, String user2) {
 
@@ -29,12 +45,9 @@ public class ChatController {
                 ? user1 + "_" + user2
                 : user2 + "_" + user1;
     }
+/// ///////////////////////////////////////////////
 
     @MessageMapping("/sendMessage")//It is PostMapping but in WebSOcket
-    @SendTo("/topic/messages")
-    public ChatMessage sendMessage(ChatMessage message) {
-
-
     public void sendMessage(chatMessage message) {
 
         String room = getRoom(message.getSender(), message.getReceiver());
@@ -43,50 +56,67 @@ public class ChatController {
 
         chatService.saveMessage(message);
 
-       chatService.sendMessageToRoom(room ,message);
+       chatService.sendMessageToRoom(room, message);
     }
+    /// /////////////////////////////////////
     @GetMapping("/getMessages")
     public List<chatMessage> getMessages(@RequestParam("sender") String sender, @RequestParam("receiver") String receiver) {
         String room = getRoom(sender, receiver);
         return chatService.getMessagesByRoom(room);
     }
+    ///  //////////////////////////////////////
     @GetMapping("/messages/{roomId}")
     public List<chatMessage> getMessagesByRoom(@PathVariable String roomId) {
         return chatService.getMessagesByRoom(roomId);
     }
+    /// ////////////////////////////////////
     @GetMapping("/all")
-    public List<ChatMessage> getAll() {
+    public List<chatMessage> getAll() {
         return chatService.getAllMessages();
     }
+   /////////////////////////////////
     @GetMapping("/allChats")
-    public List<ChatMessage> all() {
+    public List<chatMessage> all() {
         return chatService.getRecentMessages();
     }
+    /// ////////////////////////////
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest request,
-                        HttpSession session){
+    public ResponseEntity<?> login(@RequestBody LoginRequest req) {
+        // find user in DB
+        User user = loginRepository.findByEmail(req.getEmail())
+                .orElse(null);
 
-        String response = chatService.login(request);
-
-        if(response.equals("Login Successful")){
-            session.setAttribute("user", request.getEmail());
+        if (user == null || !user.getPassword().equals(req.getPassword())) {
+            return ResponseEntity.status(401).body("Invalid credentials");
         }
 
-        return response;
+        // generate token
+        String token = jwtUtil.generateToken(user.getEmail());
+
+        // return token + user info
+        Map<String, Object> response = new HashMap<>();
+        response.put("token", token);
+        response.put("id", user.getId());
+        response.put("email", user.getEmail());
+
+        return ResponseEntity.ok(response);
     }
+    /// ///////////////////////////////////
     @PostMapping("/register")
     public String register(@RequestBody User user){
 
         return chatService.register(user);
     }
+/// ////////////////////////////////////////
     @GetMapping("/users")
     public List<String> getAllUsers(HttpSession session) {
-        String currentUser = (String) session.getAttribute("user");
+        var currentUser = session.getAttribute("user");
         return chatService.getAllUsernames()
                 .stream()
                 .filter(u -> !u.equals(currentUser))  // exclude self
                 .collect(java.util.stream.Collectors.toList());
     }
+    /// ///////////////
     @DeleteMapping("/delete")
     public void  deleteUser(@RequestParam("userId") long userId) {
         chatService.deleteUser(userId);
@@ -102,35 +132,44 @@ public class ChatController {
         return chatService.search(Email);
     }
 /////////////////////////////////////////////////////////
-    @PostMapping("/FriendRequest")
-    public String sendRequest(@RequestBody FriendRequestDTO dto ,HttpSession session) {
-        User sender = (User) session.getAttribute("user");
+@PostMapping("/FriendRequest")
+public ResponseEntity<String> sendRequest(
+        @RequestBody FriendRequestDTO dto,
+        @RequestHeader(value = "Authorization", required = false) String authHeader) {
 
-        return chatService.request(dto.getReceiverId(), sender);
+    System.out.println("=== HEADER VALUE: [" + authHeader + "]");
+    System.out.println("=== DTO: [" + dto.getReceiverId() + "]");
 
+    if (authHeader == null) {
+        return ResponseEntity.status(401).body("header is NULL");
     }
+
+    if (!authHeader.startsWith("Bearer ")) {
+        return ResponseEntity.status(401).body("header does not start with Bearer, actual value: [" + authHeader + "]");
+    }
+
+    String token = authHeader.substring(7);
+    String senderEmail = jwtUtil.extractEmail(token);
+    User sender = loginRepository.findByEmail(senderEmail).orElseThrow();
+    return ResponseEntity.ok(chatService.request(dto.getReceiverId(), sender));
+}
     /////////////////////////////////////
 
     @GetMapping("/Friend-Request/Pending")
-
-    public List<FriendRequest> getFriendRequest(HttpSession session){
-         User currentUser = (User) session.getAttribute("user");
+    public List<FriendRequest> getFriendRequest(@RequestParam String email){
+         User currentUser = loginRepository.findByEmail(email).orElseThrow();
 
        return chatService.getFriendRequest(currentUser);
     }
     /////////////////////////////////////////
     @PostMapping("/friend-request/accept/{id}")
-    public String acceptRequest(@PathVariable Long id , HttpSession session) {
-
-        User currentuser = (User) session.getAttribute("user");
+    public String acceptRequest(@PathVariable Long id) {
         return chatService.Accept(id);
 
     }
     /// //////////////////////////////////
     @PostMapping("/friend-request/reject/{id}")
-    public String rejectRequest(@PathVariable Long id ,HttpSession session) {
-
-        User currentuser = (User) session.getAttribute("user");
+    public String rejectRequest(@PathVariable Long id) {
         return chatService.reject(id);
     }
 
@@ -165,6 +204,22 @@ public class ChatController {
         res.put("id", user.getId());
         res.put("avatarUrl", user.getAvatarUrl());
         return ResponseEntity.ok(res);
+    }
+
+    //reset password email
+    @Autowired
+    private PasswordResetService passwordResetService;
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(passwordResetService.sendResetLink(body.get("email")));
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<String> resetPassword(@RequestBody Map<String, String> body) {
+        return ResponseEntity.ok(
+                passwordResetService.resetPassword(body.get("token"), body.get("password"))
+        );
     }
 
 }

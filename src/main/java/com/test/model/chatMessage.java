@@ -8,13 +8,15 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name ="chat_message")
-public class ChatMessage {
+public class chatMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String sender;
+
+    private String receiver;
 
     private String content;
 

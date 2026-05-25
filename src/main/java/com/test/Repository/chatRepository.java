@@ -2,7 +2,7 @@ package com.test.Repository;
 
 
 
-import com.test.model.ChatMessage;
+import com.test.model.chatMessage;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,10 +12,10 @@ import java.util.List;
 
 
 @Repository
-public interface chatRepository extends JpaRepository<ChatMessage, Long> {
+public interface chatRepository extends JpaRepository<chatMessage, Long> {
 
-    List<ChatMessage> findByRoom(String room);
-    Page<ChatMessage> findAllByOrderByTimestampDesc(Pageable pageable);
+    List<chatMessage> findByRoom(String room);
+    Page<chatMessage> findAllByOrderByTimestampDesc(Pageable pageable);
 
 
 

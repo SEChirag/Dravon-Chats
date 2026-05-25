@@ -1,9 +1,10 @@
 package com.test.Service;
 
 
+import com.test.Repository.friendRequestRepository;
+import com.test.model.FriendRequest;
 import com.test.model.User;
 import com.test.Repository.LoginRepository;
-import com.test.model.ChatMessage;
 import com.test.Repository.chatRepository;
 import com.test.model.LoginRequest;
 import com.test.model.chatMessage;
@@ -11,52 +12,59 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class ChatService {
+public class chatService {
 
     private final chatRepository chatRepository;
     private final LoginRepository loginRepository;
     private final SimpMessagingTemplate messagingTemplate;
-    public chatService(chatRepository chatRepository , LoginRepository loginRepository , SimpMessagingTemplate messagingTemplate) {
+    private friendRequestRepository friendRequestRepository;
+
+    public chatService(chatRepository chatRepository, LoginRepository loginRepository, SimpMessagingTemplate messagingTemplate, friendRequestRepository friendRequestRepository) {
         this.chatRepository = chatRepository;
         this.loginRepository = loginRepository;
         this.messagingTemplate = messagingTemplate;
+        this.friendRequestRepository = friendRequestRepository;
     }
 
 
+    public User login(LoginRequest request) {
+        Optional<User> user = loginRepository.findByEmail((request.getEmail()));
+        if (user.isPresent()) {
+            User dbUser = user.get();
 
-public String login(LoginRequest request){
-    Optional<User> user = loginRepository.findByEmail((request.getEmail()));
-    if(user.isPresent()){
-        User dbUser = user.get();
-
-        if(dbUser.getPassword().equals(request.getPassword())){
-            return "Login Success";
+            if (dbUser.getPassword().equals(request.getPassword())) {
+                return dbUser;
+            }
         }
+        return null;
     }
-    return "Invalid email or Password ";
-}
 
 
-    public ChatMessage saveMessage(ChatMessage message) {
+    public chatMessage saveMessage(chatMessage message) {
         return chatRepository.save(message);
     }
-    public List<ChatMessage> getAllMessages() {
+
+    public List<chatMessage> getAllMessages() {
         return chatRepository.findAll();
     }
-    public List<ChatMessage> getMessagesByRoom(String room) {
+
+    public List<chatMessage> getMessagesByRoom(String room) {
         return chatRepository.findByRoom(room);
     }
 
     public void deleteMessage(Long id) {
         chatRepository.deleteById(id);
     }
-    public List<ChatMessage> getRecentMessages() {
+
+    public List<chatMessage> getRecentMessages() {
 
         Pageable pageable = PageRequest.of(0, 30);
 
@@ -64,21 +72,23 @@ public String login(LoginRequest request){
                 .findAllByOrderByTimestampDesc(pageable)
                 .getContent();
     }
-    public String register(User user){
+
+    public String register(User user) {
 
         loginRepository.save(user);
 
         return "User Registered";
     }
 
-    public List<User> getUsers(){
+    public List<User> getUsers() {
         return loginRepository.findAll();
     }
 
-    public void sendMessageToRoom(String room , chatMessage message) {
-        messagingTemplate.convertAndSend("/topic/chat"+room , message);
+    public void sendMessageToRoom(String room, chatMessage message) {
+        messagingTemplate.convertAndSend("/topic/chat" + room, message);
 
     }
+
     public List<String> getAllUsernames() {
         return loginRepository.findAll()
                 .stream()
@@ -91,7 +101,7 @@ public String login(LoginRequest request){
     }
 
     public void deleteChats(chatMessage id) {
-       chatRepository.delete(id);
+        chatRepository.delete(id);
     }
 
     public Optional<User> search(String email) {
@@ -108,37 +118,44 @@ public String login(LoginRequest request){
         return "Request Rejected";
     }
 
-public String Accept(long id){
-    FriendRequest request = friendRequestRepository.findById(id).orElseThrow();
+    public String Accept(long id) {
+        FriendRequest request = friendRequestRepository.findById(id).orElseThrow();
 
         request.setStatus("ACCEPTED");
 
         friendRequestRepository.save(request);
 
         return "request accepted";
-}
+    }
 
     public List<FriendRequest> getFriendRequest(User currentUser) {
 
-        return friendRequestRepository.findByReceiverAndStatus(currentUser,"PENDING");
+
+        return friendRequestRepository.findByReceiverAndStatus(currentUser, "PENDING");
     }
 
 
-    public String request( Long receiverId ,User sender ){
-    User receiver = loginRepository.findById(receiverId).orElseThrow();
+    public String request(Long receiverId, User sender) {
+        Optional<User> optionalreceiver = loginRepository.findById(receiverId);
 
-    boolean alreadySent = friendRequestRepository.existsBySenderAndReceiverAndStatus(sender ,receiver,"PENDING");
+        if (optionalreceiver.isEmpty()) {
+            return "Recever not found";
+        }
 
-        if(alreadySent){
-        return "Request already sent";
-    }
-    FriendRequest request = new FriendRequest();
+        User receiver = optionalreceiver.get();
+        boolean alreadySent = friendRequestRepository.existsBySenderAndReceiverAndStatus(sender, receiver, "PENDING");
+
+        if (alreadySent) {
+            return "Request already sent";
+        }
+        FriendRequest request = new FriendRequest();
 
         request.setSender(sender);
         request.setReceiver(receiver);
         request.setStatus("PENDING");
 
         friendRequestRepository.save(request);
+        System.out.println(request);
 
         return "Friend Request Sent";
     }
