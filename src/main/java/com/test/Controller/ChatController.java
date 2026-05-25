@@ -134,4 +134,39 @@ public class ChatController {
         return chatService.reject(id);
     }
 
+    @GetMapping("/friends/{email}")
+    public List<String> getFriends(@PathVariable String email) {
+        return chatService.getFriends(email);
+    }
+    @DeleteMapping("/unfriend")
+    public ResponseEntity<String> unfriend(@RequestParam String friendEmail, @RequestHeader("Authorization") String authHeader) {
+        String token = authHeader.substring(7);
+        String currentEmail = jwtUtil.extractEmail(token);
+        return ResponseEntity.ok(chatService.unfriend(currentEmail, friendEmail));
+    }
+    @PostMapping("/update-avatar")
+    public ResponseEntity<String> updateAvatar(
+            @RequestBody Map<String, String> body,
+            @RequestHeader("Authorization") String authHeader) {
+        String email = jwtUtil.extractEmail(authHeader.substring(7));
+        User user = loginRepository.findByEmail(email).orElseThrow();
+        user.setAvatarUrl(body.get("avatarUrl"));
+        loginRepository.save(user);
+        return ResponseEntity.ok("Avatar updated");
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, Object>> getMe(
+            @RequestHeader("Authorization") String authHeader) {
+        String email = jwtUtil.extractEmail(authHeader.substring(7));
+        User user = loginRepository.findByEmail(email).orElseThrow();
+        Map<String, Object> res = new HashMap<>();
+        res.put("email", user.getEmail());
+        res.put("id", user.getId());
+        res.put("avatarUrl", user.getAvatarUrl());
+        return ResponseEntity.ok(res);
+    }
+
 }
+
+
