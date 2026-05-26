@@ -4,18 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/test/config/SecurityBeans.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/test/config/SecurityConfig/SecurityConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/test/config/SecurityConfig/UserConfig.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/test/java/com/test/test/Service/ChatService/test.java" afterDir="false" />
+    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Updates">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Repository/LoginRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Repository/LoginRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Repository/chatRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Repository/chatRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/ChatMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/chatMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Service/PasswordResetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Service/PasswordResetService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/config/SecurityConfig/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/config/SecurityConfig/SecurityConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/dto/FriendRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/dto/FriendRequestDTO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/User.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/Application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/Application.properties" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/index.html" afterDir="false" />
@@ -26,7 +20,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="43" />
+    <option name="cachedIndexableFilesCount" value="44" />
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -406,7 +400,23 @@
       <option name="project" value="LOCAL" />
       <updated>1779698217294</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="Updates">
+      <option name="closed" value="true" />
+      <created>1779705451322</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1779705451322</updated>
+    </task>
+    <task id="LOCAL-00026" summary="SMPT setup">
+      <option name="closed" value="true" />
+      <created>1779778244257</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1779778244259</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -436,7 +446,9 @@
     <MESSAGE value="Friend Requesta and Search users feature APi" />
     <MESSAGE value="profile and unfriend feature" />
     <MESSAGE value="Unfriend and profile feature" />
-    <option name="LAST_COMMIT_MESSAGE" value="Unfriend and profile feature" />
+    <MESSAGE value="Updates" />
+    <MESSAGE value="SMPT setup" />
+    <option name="LAST_COMMIT_MESSAGE" value="SMPT setup" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

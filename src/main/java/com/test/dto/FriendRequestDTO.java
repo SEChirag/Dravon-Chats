@@ -1,6 +1,6 @@
 package com.test.dto;
 
-import jakarta.persistence.Table;
+
 import lombok.Getter;
 import lombok.Setter;
 

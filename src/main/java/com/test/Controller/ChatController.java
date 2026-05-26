@@ -212,7 +212,8 @@ public ResponseEntity<String> sendRequest(
 
     @PostMapping("/forgot-password")
     public ResponseEntity<String> forgotPassword(@RequestBody Map<String, String> body) {
-        return ResponseEntity.ok(passwordResetService.sendResetLink(body.get("email")));
+        String email = body.get("email");
+        return ResponseEntity.ok(passwordResetService.sendResetLink(email));
     }
 
     @PostMapping("/reset-password")

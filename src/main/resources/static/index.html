@@ -27,6 +27,22 @@
         .toast.info{border-color:var(--accent1);color:var(--neon);}
         @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
 
+        /* ─── MODAL OVERLAY ─── */
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(8px);z-index:500;display:none;align-items:center;justify-content:center;animation:fadeOverlay .2s ease;}
+        .modal-overlay.show{display:flex;}
+        @keyframes fadeOverlay{from{opacity:0}to{opacity:1}}
+        .modal-card{width:380px;background:var(--card);border-radius:20px;border:1px solid var(--border2);overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 40px 80px rgba(0,0,0,.8),0 0 60px rgba(124,58,237,.2);position:relative;animation:modalIn .3s cubic-bezier(.175,.885,.32,1.275) forwards;}
+        .modal-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent1),var(--accent2),var(--accent1),transparent);}
+        @keyframes modalIn{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+        .modal-body{padding:28px 26px 24px;}
+        .modal-title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+        .modal-title{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:2px;color:var(--text);}
+        .modal-close{background:transparent;border:none;color:var(--muted);font-size:18px;cursor:pointer;line-height:1;padding:2px;transition:color .2s;border-radius:6px;}
+        .modal-close:hover{color:var(--accent3);}
+        .modal-sub{font-size:12px;color:var(--muted);font-family:'Barlow',sans-serif;margin-bottom:20px;line-height:1.6;}
+        .modal-sub span{color:var(--neon);font-weight:600;}
+        .modal-fields{display:flex;flex-direction:column;gap:14px;}
+
         /* LOGIN PAGE */
         #loginPage{position:relative;z-index:10;display:flex;flex-direction:column;align-items:center;width:100%;padding:20px;animation:pageIn .5s ease forwards;}
         #loginPage.hidden{display:none;}
@@ -53,6 +69,8 @@
         .input-wrap input{width:100%;background:var(--surface);border:1px solid var(--border2);border-radius:12px;color:var(--text);font-family:'Barlow',sans-serif;font-size:14px;font-weight:400;outline:none;padding:12px 42px 12px 16px;transition:all .25s;}
         .input-wrap input::placeholder{color:var(--muted2);font-weight:400;}
         .input-wrap input:focus{border-color:rgba(124,58,237,.6);background:#1a1a2e;box-shadow:0 0 0 3px rgba(124,58,237,.12);}
+        .input-wrap .field-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;}
+        .input-wrap.has-icon input{padding-left:38px;}
         .eye-btn{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px;padding:2px;transition:color .2s;line-height:1;}
         .eye-btn:hover{color:var(--neon);}
         .row-between{display:flex;align-items:center;justify-content:space-between;margin-top:-4px;}
@@ -79,6 +97,38 @@
         .bottom-note a{color:var(--neon);text-decoration:none;font-weight:600;cursor:pointer;transition:color .2s;}
         .bottom-note a:hover{color:var(--neon2);}
 
+        /* ─── SUCCESS STATE (forgot modal) ─── */
+        .sent-state{display:none;flex-direction:column;align-items:center;gap:10px;padding:10px 0 6px;}
+        .sent-state.show{display:flex;animation:fadeUp .3s ease forwards;}
+        .sent-icon{font-size:42px;filter:drop-shadow(0 0 16px rgba(16,185,129,.5));}
+        .sent-title{font-family:'Bebas Neue',cursive;font-size:22px;letter-spacing:1.5px;color:var(--green);}
+        .sent-desc{font-size:12px;color:var(--muted);font-family:'Barlow',sans-serif;text-align:center;line-height:1.7;max-width:280px;}
+        .sent-back{margin-top:6px;background:transparent;border:1px solid var(--border2);border-radius:10px;color:var(--muted);font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;padding:8px 20px;cursor:pointer;transition:all .2s;letter-spacing:.3px;}
+        .sent-back:hover{border-color:var(--neon);color:var(--neon);}
+
+        /* ─── RESET PASSWORD PAGE ─── */
+        #resetPage{position:relative;z-index:10;display:none;flex-direction:column;align-items:center;width:100%;padding:20px;animation:pageIn .5s ease forwards;}
+        #resetPage.show{display:flex;}
+        .reset-card{width:420px;background:var(--card);border-radius:20px;border:1px solid var(--border2);overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 40px 80px rgba(0,0,0,.7),0 0 60px rgba(124,58,237,.15);position:relative;}
+        .reset-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent3),var(--accent1),var(--accent3),transparent);}
+        .reset-body{padding:32px 30px 28px;}
+        .reset-brand{text-align:center;margin-bottom:24px;}
+        .reset-logo{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:2px;color:var(--text);margin-bottom:8px;}
+        .reset-logo span{background:linear-gradient(135deg,var(--neon),var(--neon2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+        .reset-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(244,63,94,.1);border:1px solid rgba(244,63,94,.25);border-radius:99px;padding:4px 14px;font-size:11px;font-weight:600;color:#fda4af;font-family:'Barlow Condensed',sans-serif;letter-spacing:.5px;text-transform:uppercase;}
+        .reset-title{font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:1.5px;color:var(--text);margin:14px 0 4px;}
+        .reset-sub{font-size:12px;color:var(--muted);font-family:'Barlow',sans-serif;line-height:1.6;margin-bottom:22px;}
+        .reset-fields{display:flex;flex-direction:column;gap:14px;}
+
+        /* reset success */
+        .reset-success{display:none;flex-direction:column;align-items:center;gap:12px;padding:16px 0 8px;}
+        .reset-success.show{display:flex;animation:fadeUp .3s ease forwards;}
+        .rs-icon{font-size:46px;filter:drop-shadow(0 0 20px rgba(16,185,129,.5));}
+        .rs-title{font-family:'Bebas Neue',cursive;font-size:26px;letter-spacing:2px;color:var(--green);}
+        .rs-desc{font-size:13px;color:var(--muted);font-family:'Barlow',sans-serif;text-align:center;line-height:1.7;}
+        .rs-go{margin-top:6px;width:100%;padding:12px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent1),#5b21b6);color:#fff;font-family:'Bebas Neue',cursive;font-size:17px;letter-spacing:2px;cursor:pointer;box-shadow:0 4px 20px rgba(124,58,237,.4);transition:all .25s;}
+        .rs-go:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(124,58,237,.55);}
+
         /* CHAT PAGE */
         #chatPage{position:relative;z-index:10;display:none;width:100%;max-width:1060px;padding:16px;gap:14px;animation:pageIn .4s ease forwards;}
         #chatPage.visible{display:flex;align-items:flex-start;position:fixed;inset:0;z-index:10;padding:16px;gap:14px;overflow:hidden;}
@@ -90,13 +140,10 @@
         .sidebar-title-row{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;}
         .sidebar-title{font-family:'Bebas Neue',cursive;font-size:16px;letter-spacing:2px;color:var(--text);}
         .sidebar-sub{font-size:10px;font-weight:500;color:var(--muted);font-family:'Barlow Condensed',sans-serif;margin-top:2px;}
-
-        /* ── BACK TO DASHBOARD BUTTON ── */
         .back-dash-btn{display:flex;align-items:center;gap:6px;width:100%;background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:9px;padding:7px 10px;color:var(--neon);font-size:11px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.4px;cursor:pointer;transition:all .2s;margin-bottom:10px;}
         .back-dash-btn:hover{background:rgba(124,58,237,.18);border-color:rgba(124,58,237,.45);transform:translateX(-2px);}
         .back-dash-arrow{font-size:13px;transition:transform .2s;display:inline-block;}
         .back-dash-btn:hover .back-dash-arrow{transform:translateX(-3px);}
-
         .notif-btn{position:relative;background:rgba(124,58,237,.1);border:1px solid rgba(124,58,237,.25);border-radius:8px;width:28px;height:28px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;transition:all .2s;color:var(--neon);}
         .notif-btn:hover{background:rgba(124,58,237,.2);border-color:rgba(124,58,237,.5);}
         .notif-badge{position:absolute;top:-4px;right:-4px;background:var(--accent3);border-radius:99px;min-width:16px;height:16px;font-size:9px;font-weight:700;font-family:'Barlow Condensed',sans-serif;color:#fff;display:none;align-items:center;justify-content:center;padding:0 3px;}
@@ -289,7 +336,51 @@
 <body>
 <div class="orbs"><div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div></div>
 
-<!-- LOGIN PAGE -->
+<!-- ═══════════════════════════════════════════
+     FORGOT PASSWORD MODAL
+═══════════════════════════════════════════ -->
+<div class="modal-overlay" id="forgotModal">
+    <div class="modal-card">
+        <div class="modal-body">
+            <div class="modal-title-row">
+                <div class="modal-title">FORGOT? 🔑</div>
+                <button class="modal-close" onclick="closeForgotModal()">✕</button>
+            </div>
+            <div class="modal-sub">enter your email and we'll send a reset link straight to your inbox. no cap.</div>
+
+            <!-- input state -->
+            <div id="forgotForm" class="modal-fields">
+                <div class="field">
+                    <label>email address</label>
+                    <div class="input-wrap">
+                        <input type="email" id="forgotEmail" placeholder="the one you signed up with"
+                               onkeydown="if(event.key==='Enter') handleForgotPassword()"/>
+                    </div>
+                </div>
+                <button type="button" class="submit-btn" id="forgotBtn" onclick="handleForgotPassword()">send reset link →</button>
+                <div style="text-align:center;margin-top:-4px;">
+                    <button type="button" class="forgot" onclick="closeForgotModal()">← back to sign in</button>
+                </div>
+            </div>
+
+            <!-- success state -->
+            <div class="sent-state" id="forgotSuccess">
+                <div class="sent-icon">📬</div>
+                <div class="sent-title">CHECK YOUR INBOX</div>
+                <div class="sent-desc">
+                    if that email is registered, a reset link is on its way.<br/>
+                    <span>check spam too — just in case 👀</span><br/>
+                    link expires in <span>30 minutes</span>.
+                </div>
+                <button class="sent-back" onclick="closeForgotModal()">back to sign in →</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     LOGIN PAGE
+═══════════════════════════════════════════ -->
 <div id="loginPage">
     <div class="card" id="loginCard">
         <div class="card-body">
@@ -314,7 +405,8 @@
                 </div>
                 <div class="row-between">
                     <label class="remember"><input type="checkbox" id="rememberMe"/><span>remember me</span></label>
-                    <button type="button" class="forgot" onclick="showToast('reset coming soon ✦','info')">forgot?</button>
+                    <!-- ✦ now opens the real forgot-password modal ✦ -->
+                    <button type="button" class="forgot" onclick="openForgotModal()">forgot?</button>
                 </div>
                 <button type="button" class="submit-btn" id="loginBtn" onclick="handleLogin()">let me in →</button>
             </div>
@@ -342,6 +434,60 @@
                 <button type="button" class="submit-btn" id="signupBtn" onclick="handleSignup()">create account →</button>
             </div>
             <div class="bottom-note" id="bottom-note">new here? <a onclick="switchTab('signup')">create an account</a></div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     RESET PASSWORD PAGE
+     Shown automatically when URL contains ?token=
+═══════════════════════════════════════════ -->
+<div id="resetPage">
+    <div class="reset-card">
+        <div class="reset-body">
+            <div class="reset-brand">
+                <div class="reset-logo">DRA<span>VON</span></div>
+                <div class="reset-badge">🔐 password reset</div>
+            </div>
+
+            <!-- form state -->
+            <div id="resetForm">
+                <div class="reset-title">NEW PASSWORD</div>
+                <div class="reset-sub">choose something strong. you won't need to remember what it used to be 💀</div>
+                <div class="reset-fields">
+                    <div class="field">
+                        <label>new password</label>
+                        <div class="input-wrap">
+                            <input type="password" id="resetPass" placeholder="make it strong"
+                                   oninput="checkResetStrength(this.value)"
+                                   onkeydown="if(event.key==='Enter') handleResetPassword()"/>
+                            <button type="button" class="eye-btn" onclick="togglePass('resetPass',this)">👁️</button>
+                        </div>
+                        <div class="strength-bar">
+                            <div class="strength-seg" id="rseg1"></div><div class="strength-seg" id="rseg2"></div>
+                            <div class="strength-seg" id="rseg3"></div><div class="strength-seg" id="rseg4"></div>
+                        </div>
+                        <div class="strength-label" id="rlabel"></div>
+                    </div>
+                    <div class="field">
+                        <label>confirm new password</label>
+                        <div class="input-wrap">
+                            <input type="password" id="resetConfirm" placeholder="same again..."
+                                   onkeydown="if(event.key==='Enter') handleResetPassword()"/>
+                            <button type="button" class="eye-btn" onclick="togglePass('resetConfirm',this)">👁️</button>
+                        </div>
+                    </div>
+                    <button type="button" class="submit-btn" id="resetBtn" onclick="handleResetPassword()">reset password →</button>
+                </div>
+            </div>
+
+            <!-- success state -->
+            <div class="reset-success" id="resetSuccess">
+                <div class="rs-icon">🎉</div>
+                <div class="rs-title">ALL DONE!</div>
+                <div class="rs-desc">your password has been reset successfully.<br/>go ahead and sign in. welcome back 🫡</div>
+                <button class="rs-go" onclick="goBackToLogin()">sign in →</button>
+            </div>
         </div>
     </div>
 </div>
@@ -403,12 +549,9 @@
                     🔔<span class="notif-badge" id="notifBadge">0</span>
                 </button>
             </div>
-
-            <!-- ✦ BACK TO DASHBOARD BUTTON ✦ -->
             <button class="back-dash-btn" onclick="backToDashboard()">
                 <span class="back-dash-arrow">←</span> back to dashboard
             </button>
-
             <div class="sidebar-tabs">
                 <button class="stab active" id="stab-chats" onclick="switchSidebarTab('chats')">Chats</button>
                 <button class="stab" id="stab-search" onclick="switchSidebarTab('search')">Search</button>
@@ -494,9 +637,13 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.6.1/sockjs.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 <script>
+    // ─────────────────────────────────────────────
+    // STATE
+    // ─────────────────────────────────────────────
     let stompClient = null;
     let currentUser = '';
     let currentUserId = null;
@@ -504,13 +651,18 @@
     let currentSub = null;
     let toastTimer;
     let activeSidebarTab = 'chats';
+    let currentAvatarUrl = '';
+    const PRESET_AVATARS = ['🐱','🐶','🦊','🐼','🐨','🦁','🐯','🐸','🦋','🐙','👾','🤖','👻','💀','🔥','⚡','🌙','✨'];
 
+    // ─────────────────────────────────────────────
+    // UTILS
+    // ─────────────────────────────────────────────
     function getRoomId(a, b) { return [a, b].sort().join('_'); }
 
-    function showToast(msg, type='info') {
+    function showToast(msg, type = 'info') {
         const t = document.getElementById('toast');
         t.textContent = msg;
-        t.className = 'toast show' + (type==='error'?' error':type==='success'?' success':' info');
+        t.className = 'toast show' + (type === 'error' ? ' error' : type === 'success' ? ' success' : ' info');
         clearTimeout(toastTimer);
         toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
     }
@@ -530,14 +682,6 @@
         document.getElementById('bottom-note').innerHTML = isLogin
             ? `new here? <a onclick="switchTab('signup')">create an account</a>`
             : `already legendary? <a onclick="switchTab('login')">sign in</a>`;
-    }
-
-    // ── BACK TO DASHBOARD ──
-    function backToDashboard() {
-        document.getElementById('chatPage').classList.remove('visible');
-        document.getElementById('dashboardPage').style.display = 'flex';
-        // refresh the dashboard stats so counts are up to date
-        showDashboard(currentUser, currentUserId);
     }
 
     function togglePass(id, btn) {
@@ -562,33 +706,239 @@
         label.style.color = score <= 1 ? '#f43f5e' : score <= 2 ? '#f59e0b' : '#10b981';
     }
 
-    async function refreshBadge() {
-        if (!currentUser) return;
-        try {
-            const res = await fetch(`http://localhost:8080/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
-                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
-            });
-            const requests = await res.json();
-            updateNotifBadge(requests.length);
-        } catch(e) {}
+    function checkResetStrength(val) {
+        const segs = ['rseg1','rseg2','rseg3','rseg4'].map(id => document.getElementById(id));
+        const label = document.getElementById('rlabel');
+        segs.forEach(s => s.className = 'strength-seg');
+        let score = 0;
+        if (val.length >= 6) score++;
+        if (val.length >= 10) score++;
+        if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        const cls = score <= 1 ? 'weak' : score <= 2 ? 'fair' : 'strong';
+        const txt = !score ? '' : score <= 1 ? 'weak 😬' : score <= 2 ? 'fair 👀' : score === 3 ? 'strong 💪' : 'unbreakable 🔥';
+        for (let i = 0; i < score; i++) segs[i].classList.add(cls);
+        label.textContent = txt;
+        label.style.color = score <= 1 ? '#f43f5e' : score <= 2 ? '#f59e0b' : '#10b981';
     }
 
-    async function loadPendingRequests() {
-        if (!currentUser) return;
-        const ul = document.getElementById('userList');
-        ul.innerHTML = '<div class="no-users">loading requests... 👀</div>';
+    // ─────────────────────────────────────────────
+    // FORGOT PASSWORD MODAL
+    // ─────────────────────────────────────────────
+    function openForgotModal() {
+        const modal = document.getElementById('forgotModal');
+        document.getElementById('forgotEmail').value = document.getElementById('login-user').value || '';
+        document.getElementById('forgotForm').style.display = 'flex';
+        document.getElementById('forgotSuccess').classList.remove('show');
+        modal.classList.add('show');
+        setTimeout(() => document.getElementById('forgotEmail').focus(), 200);
+    }
+
+    function closeForgotModal() {
+        document.getElementById('forgotModal').classList.remove('show');
+        const btn = document.getElementById('forgotBtn');
+        btn.classList.remove('loading');
+        btn.disabled = false;
+    }
+
+    async function handleForgotPassword() {
+        const email = document.getElementById('forgotEmail').value.trim();
+        if (!email) {
+            showToast('enter your email first 💀', 'error');
+            document.getElementById('forgotEmail').focus();
+            return;
+        }
+
+        const btn = document.getElementById('forgotBtn');
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        // Build the reset URL that the backend will send in the email.
+        // The backend service currently does: msg.setText(link + "\n\n...")
+        // so 'link' should be the full clickable URL.
+        //
+        // ⚠️  BACKEND NOTE: In PasswordResetService.sendResetLink(), change:
+        //       msg.setText(link + "\n\n...")
+        //     to:
+        //       msg.setText(link + token + "\n\n...")
+        // so the token is appended to the URL automatically.
+        //
+        // The frontend passes:  <origin>?token=
+        // After backend fix:    email will contain  <origin>?token=<uuid>
+        const resetLink = window.location.origin + window.location.pathname + '?token=';
+
         try {
-            const res = await fetch(`http://localhost:8080/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
-                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
+            const res = await fetch('http://localhost:8080/api/chat/forgot-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, link: resetLink })
             });
-            const requests = await res.json();
-            updateNotifBadge(requests.length);
-            renderPendingRequests(requests);
-        } catch(e) {
-            ul.innerHTML = '<div class="no-users">couldn\'t load requests 😭</div>';
+
+            // Backend always returns a safe message regardless of whether email exists
+            if (res.ok || res.status === 200) {
+                document.getElementById('forgotForm').style.display = 'none';
+                document.getElementById('forgotSuccess').classList.add('show');
+            } else {
+                const text = await res.text();
+                showToast(text || 'something went wrong 😭', 'error');
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        } catch (e) {
+            showToast('server not responding 😭', 'error');
+            btn.classList.remove('loading');
+            btn.disabled = false;
         }
     }
 
+    // ─────────────────────────────────────────────
+    // RESET PASSWORD PAGE
+    // ─────────────────────────────────────────────
+    function showResetPage(token) {
+        // Hide everything else, show reset page
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('dashboardPage').style.display = 'none';
+        document.getElementById('chatPage').classList.remove('visible');
+        const rp = document.getElementById('resetPage');
+        rp.classList.add('show');
+        rp.dataset.token = token;
+    }
+
+    function goBackToLogin() {
+        document.getElementById('resetPage').classList.remove('show');
+        document.getElementById('loginPage').classList.remove('hidden');
+        // Clean the token from the URL without reloading
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    async function handleResetPassword() {
+        const token = document.getElementById('resetPage').dataset.token;
+        const pass = document.getElementById('resetPass').value.trim();
+        const conf = document.getElementById('resetConfirm').value.trim();
+
+        if (!pass || !conf) { showToast('fill both fields 💀', 'error'); return; }
+        if (pass !== conf) { showToast("passwords don't match 💀", 'error'); return; }
+        if (pass.length < 6) { showToast('password too short 😬', 'error'); return; }
+
+        const btn = document.getElementById('resetBtn');
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        try {
+            const res = await fetch('http://localhost:8080/api/chat/reset-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, password: pass })
+            });
+            const text = await res.text();
+
+            if (res.ok) {
+                document.getElementById('resetForm').style.display = 'none';
+                document.getElementById('resetSuccess').classList.add('show');
+                // Remove ?token= from URL silently
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                showToast(text || 'reset failed 💀', 'error');
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        } catch (e) {
+            showToast('server not responding 😭', 'error');
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+    }
+
+    // ─────────────────────────────────────────────
+    // AUTH
+    // ─────────────────────────────────────────────
+    async function handleLogin() {
+        const email = document.getElementById('login-user').value.trim();
+        const pass = document.getElementById('login-pass').value.trim();
+        if (!email || !pass) { showToast('fill everything first 💀', 'error'); shakeCard(); return; }
+        const btn = document.getElementById('loginBtn');
+        btn.classList.add('loading'); btn.disabled = true;
+        try {
+            const response = await fetch('http://localhost:8080/api/chat/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: pass })
+            });
+            const text = await response.text();
+            let data = {};
+            try { data = JSON.parse(text); } catch (e) { data.message = text; }
+            if (response.ok) {
+                if (data.token) localStorage.setItem('token', data.token);
+                if (data.id) localStorage.setItem('userId', data.id);
+                const remember = document.getElementById('rememberMe').checked;
+                if (remember) localStorage.setItem('chatUser', email);
+                else { sessionStorage.setItem('chatUser', email); localStorage.removeItem('chatUser'); }
+                showToast('DRAVON 🔥', 'success');
+                setTimeout(() => {
+                    document.getElementById('toast').classList.remove('show');
+                    showDashboard(email, data.id);
+                }, 800);
+            } else {
+                btn.classList.remove('loading'); btn.disabled = false;
+                showToast(data.message || 'wrong credentials 💀', 'error');
+                shakeCard();
+            }
+        } catch (err) {
+            btn.classList.remove('loading'); btn.disabled = false;
+            showToast('server not responding 😭', 'error'); shakeCard();
+        }
+    }
+
+    async function handleSignup() {
+        const email = document.getElementById('signup-email').value.trim();
+        const pass = document.getElementById('signup-pass').value.trim();
+        const conf = document.getElementById('signup-confirm').value.trim();
+        if (!email || !pass || !conf) { showToast('fill everything first 💀', 'error'); shakeCard(); return; }
+        if (pass !== conf) { showToast("passwords don't match 💀", 'error'); shakeCard(); return; }
+        const btn = document.getElementById('signupBtn');
+        btn.classList.add('loading'); btn.disabled = true;
+        try {
+            const response = await fetch('http://localhost:8080/api/chat/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: pass })
+            });
+            const text = await response.text();
+            if (response.ok) {
+                showToast('account created! sign in now 🔥', 'success');
+                setTimeout(() => { switchTab('login'); document.getElementById('login-user').value = email; }, 1000);
+            } else {
+                showToast(text || 'signup failed 💀', 'error'); shakeCard();
+            }
+        } catch (err) {
+            showToast('server not responding 😭', 'error'); shakeCard();
+        } finally {
+            btn.classList.remove('loading'); btn.disabled = false;
+        }
+    }
+
+    function handleLogout() {
+        if (stompClient && stompClient.connected) stompClient.disconnect(() => {});
+        stompClient = null; currentSub = null; chatWith = '';
+        localStorage.removeItem('token'); localStorage.removeItem('chatUser'); localStorage.removeItem('userId');
+        sessionStorage.removeItem('chatUser');
+        document.getElementById('chatPage').classList.remove('visible');
+        document.getElementById('dashboardPage').style.display = 'none';
+        document.getElementById('resetPage').classList.remove('show');
+        document.getElementById('loginPage').classList.remove('hidden');
+        document.getElementById('loginPage').style.display = 'flex';
+        document.getElementById('login-user').value = '';
+        document.getElementById('login-pass').value = '';
+        const btn = document.getElementById('loginBtn');
+        if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
+        const chatBox = document.getElementById('messages');
+        if (chatBox) chatBox.innerHTML = '';
+        showToast('logged out ✦', 'info');
+    }
+
+    // ─────────────────────────────────────────────
+    // DASHBOARD
+    // ─────────────────────────────────────────────
     async function showDashboard(username, userId) {
         currentUser = username;
         currentUserId = userId || localStorage.getItem('userId') || null;
@@ -605,7 +955,7 @@
             const friends = await res.json();
             document.getElementById('dashFriendCount').textContent = friends.length;
             renderDashFriends(friends);
-        } catch(e) {}
+        } catch (e) {}
         try {
             const res = await fetch(`http://localhost:8080/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
@@ -613,7 +963,7 @@
             const reqs = await res.json();
             document.getElementById('dashReqCount').textContent = reqs.length;
             renderDashRequests(reqs);
-        } catch(e) {}
+        } catch (e) {}
         fetch('http://localhost:8080/api/chat/me', {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         }).then(r => r.json()).then(data => {
@@ -702,7 +1052,7 @@
                     renderDashFriends(friends);
                 }
             }
-        } catch(e) { showToast('server error 😭', 'error'); }
+        } catch (e) { showToast('server error 😭', 'error'); }
     }
 
     function goToChat(openWith = null) {
@@ -711,71 +1061,15 @@
         if (openWith) setTimeout(() => openPrivateChat(openWith), 600);
     }
 
-    async function handleLogin() {
-        const email = document.getElementById('login-user').value.trim();
-        const pass = document.getElementById('login-pass').value.trim();
-        if (!email || !pass) { showToast('fill everything first 💀','error'); shakeCard(); return; }
-        const btn = document.getElementById('loginBtn');
-        btn.classList.add('loading'); btn.disabled = true;
-        try {
-            const response = await fetch('http://localhost:8080/api/chat/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password: pass })
-            });
-            const text = await response.text();
-            let data = {};
-            try { data = JSON.parse(text); } catch(e) { data.message = text; }
-            if (response.ok) {
-                if (data.token) localStorage.setItem('token', data.token);
-                if (data.id) localStorage.setItem('userId', data.id);
-                const remember = document.getElementById('rememberMe').checked;
-                if (remember) localStorage.setItem('chatUser', email);
-                else { sessionStorage.setItem('chatUser', email); localStorage.removeItem('chatUser'); }
-                showToast('DRAVON 🔥','success');
-                setTimeout(() => {
-                    document.getElementById('toast').classList.remove('show');
-                    showDashboard(email, data.id);
-                }, 800);
-            } else {
-                btn.classList.remove('loading'); btn.disabled = false;
-                showToast(data.message || 'wrong credentials 💀','error');
-                shakeCard();
-            }
-        } catch(err) {
-            btn.classList.remove('loading'); btn.disabled = false;
-            showToast('server not responding 😭','error'); shakeCard();
-        }
+    function backToDashboard() {
+        document.getElementById('chatPage').classList.remove('visible');
+        document.getElementById('dashboardPage').style.display = 'flex';
+        showDashboard(currentUser, currentUserId);
     }
 
-    async function handleSignup() {
-        const email = document.getElementById('signup-email').value.trim();
-        const pass = document.getElementById('signup-pass').value.trim();
-        const conf = document.getElementById('signup-confirm').value.trim();
-        if (!email || !pass || !conf) { showToast('fill everything first 💀','error'); shakeCard(); return; }
-        if (pass !== conf) { showToast("passwords don't match 💀",'error'); shakeCard(); return; }
-        const btn = document.getElementById('signupBtn');
-        btn.classList.add('loading'); btn.disabled = true;
-        try {
-            const response = await fetch('http://localhost:8080/api/chat/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password: pass })
-            });
-            const text = await response.text();
-            if (response.ok) {
-                showToast('account created! sign in now 🔥','success');
-                setTimeout(() => { switchTab('login'); document.getElementById('login-user').value = email; }, 1000);
-            } else {
-                showToast(text || 'signup failed 💀','error'); shakeCard();
-            }
-        } catch(err) {
-            showToast('server not responding 😭','error'); shakeCard();
-        } finally {
-            btn.classList.remove('loading'); btn.disabled = false;
-        }
-    }
-
+    // ─────────────────────────────────────────────
+    // CHAT
+    // ─────────────────────────────────────────────
     function showChat(username, userId) {
         currentUser = username;
         currentUserId = userId || localStorage.getItem('userId') || null;
@@ -792,10 +1086,10 @@
         const socket = new SockJS('http://localhost:8080/chat');
         stompClient = Stomp.over(socket);
         stompClient.debug = null;
-        stompClient.connect({}, function() {
-            showToast('connected ✦','success');
-        }, function() {
-            showToast('connection lost, retrying...','error');
+        stompClient.connect({}, function () {
+            showToast('connected ✦', 'success');
+        }, function () {
+            showToast('connection lost, retrying...', 'error');
             setTimeout(connectWebSocket, 3000);
         });
     }
@@ -803,7 +1097,7 @@
     function subscribeToRoom(targetUser) {
         if (currentSub) { currentSub.unsubscribe(); currentSub = null; }
         const roomId = getRoomId(currentUser, targetUser);
-        currentSub = stompClient.subscribe('/topic/chat/' + roomId, function(frame) {
+        currentSub = stompClient.subscribe('/topic/chat/' + roomId, function (frame) {
             const msg = JSON.parse(frame.body);
             if (msg.sender !== currentUser) showMessage(msg);
         });
@@ -811,13 +1105,40 @@
 
     function switchSidebarTab(tab) {
         activeSidebarTab = tab;
-        ['chats','search','requests'].forEach(t => {
+        ['chats', 'search', 'requests'].forEach(t => {
             document.getElementById('stab-' + t).classList.toggle('active', t === tab);
         });
         document.getElementById('searchBar').style.display = tab === 'search' ? 'block' : 'none';
         if (tab === 'chats') loadUserList();
         if (tab === 'search') { document.getElementById('userList').innerHTML = '<div class="no-users">type an email above 👆</div>'; document.getElementById('searchInput').focus(); }
         if (tab === 'requests') loadPendingRequests();
+    }
+
+    async function refreshBadge() {
+        if (!currentUser) return;
+        try {
+            const res = await fetch(`http://localhost:8080/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
+                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
+            });
+            const requests = await res.json();
+            updateNotifBadge(requests.length);
+        } catch (e) {}
+    }
+
+    async function loadPendingRequests() {
+        if (!currentUser) return;
+        const ul = document.getElementById('userList');
+        ul.innerHTML = '<div class="no-users">loading requests... 👀</div>';
+        try {
+            const res = await fetch(`http://localhost:8080/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
+                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
+            });
+            const requests = await res.json();
+            updateNotifBadge(requests.length);
+            renderPendingRequests(requests);
+        } catch (e) {
+            ul.innerHTML = '<div class="no-users">couldn\'t load requests 😭</div>';
+        }
     }
 
     async function loadUserList() {
@@ -830,7 +1151,7 @@
             if (!Array.isArray(friends)) return;
             renderUserList(friends);
             refreshBadge();
-        } catch(e) {
+        } catch (e) {
             document.getElementById('userList').innerHTML = '<div class="no-users">couldn\'t load friends 😭</div>';
         }
     }
@@ -883,7 +1204,7 @@
             } else {
                 showToast('could not remove 💀', 'error');
             }
-        } catch(e) { showToast('server error 😭', 'error'); }
+        } catch (e) { showToast('server error 😭', 'error'); }
     }
 
     async function doSearch() {
@@ -899,7 +1220,7 @@
             const user = await res.json();
             if (!user || !user.email) { ul.innerHTML = '<div class="no-users">user not found 🤷</div>'; return; }
             renderSearchResult(user);
-        } catch(e) { ul.innerHTML = '<div class="no-users">search failed 😭</div>'; }
+        } catch (e) { ul.innerHTML = '<div class="no-users">search failed 😭</div>'; }
     }
 
     function renderSearchResult(user) {
@@ -953,7 +1274,7 @@
                 btn.textContent = '+ add'; btn.disabled = false;
                 showToast(text || 'could not send request 💀', 'error');
             }
-        } catch(e) { btn.textContent = '+ add'; btn.disabled = false; showToast('server error 😭', 'error'); }
+        } catch (e) { btn.textContent = '+ add'; btn.disabled = false; showToast('server error 😭', 'error'); }
     }
 
     function updateNotifBadge(count) {
@@ -1005,7 +1326,7 @@
                 if (!remaining) document.getElementById('userList').innerHTML = '<div class="no-users">no pending requests 🫡<br/>you\'re all caught up!</div>';
                 if (action === 'accept') setTimeout(() => switchSidebarTab('chats'), 800);
             } else { showToast('action failed 💀', 'error'); }
-        } catch(e) { showToast('server error 😭', 'error'); }
+        } catch (e) { showToast('server error 😭', 'error'); }
     }
 
     function openPrivateChat(targetUser) {
@@ -1022,7 +1343,7 @@
             const socket = new SockJS('http://localhost:8080/chat');
             stompClient = Stomp.over(socket);
             stompClient.debug = null;
-            stompClient.connect({}, function() { showToast('connected ✦','success'); subscribeToRoom(targetUser); });
+            stompClient.connect({}, function () { showToast('connected ✦', 'success'); subscribeToRoom(targetUser); });
         } else { subscribeToRoom(targetUser); }
         loadRoomMessages(getRoomId(currentUser, targetUser));
     }
@@ -1036,7 +1357,7 @@
             if (!data.length) {
                 messages.innerHTML = `<div class="empty-state" id="emptyState"><div class="empty-icon">💬</div><h3>no messages yet</h3><p>say hi first! ✦</p></div>`;
             } else { data.forEach(showMessage); messages.scrollTop = messages.scrollHeight; }
-        } catch(e) {
+        } catch (e) {
             messages.innerHTML = `<div class="empty-state"><div class="empty-icon">💬</div><h3>no messages yet</h3><p>say hi first! ✦</p></div>`;
         }
     }
@@ -1069,7 +1390,7 @@
         if (data.timestamp) {
             const ts = document.createElement('span');
             ts.className = 'ts';
-            ts.textContent = new Date(data.timestamp).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' });
+            ts.textContent = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             meta.appendChild(ts);
         }
         if (data.id) {
@@ -1087,7 +1408,7 @@
     function sendMessage() {
         const content = document.getElementById('message').value.trim();
         if (!content || !chatWith) return;
-        if (!stompClient || !stompClient.connected) { showToast('not connected 😭','error'); return; }
+        if (!stompClient || !stompClient.connected) { showToast('not connected 😭', 'error'); return; }
         const roomId = getRoomId(currentUser, chatWith);
         const message = { sender: currentUser, receiver: chatWith, content, room: roomId, timestamp: Date.now() };
         stompClient.send('/app/sendMessage', {}, JSON.stringify(message));
@@ -1097,7 +1418,7 @@
     }
 
     function deleteMessage(id, group, isMe) {
-        fetch(`http://localhost:8080/api/chat/deleteChats/${id}`, { method: "DELETE" })
+        fetch(`http://localhost:8080/api/chat/deleteChats/${id}`, { method: 'DELETE' })
             .then(() => {
                 const bubble = group.querySelector('.bubble');
                 const delBtn = group.querySelector('.del-btn');
@@ -1114,12 +1435,12 @@
         if (activeSidebarTab === 'requests') await loadPendingRequests();
         await loadPendingRequests().catch(() => {});
         setTimeout(() => { btn.classList.remove('spinning'); btn.disabled = false; }, 600);
-        showToast('refreshed ✦','success');
+        showToast('refreshed ✦', 'success');
     }
 
-    let currentAvatarUrl = '';
-    const PRESET_AVATARS = ['🐱','🐶','🦊','🐼','🐨','🦁','🐯','🐸','🦋','🐙','👾','🤖','👻','💀','🔥','⚡','🌙','✨'];
-
+    // ─────────────────────────────────────────────
+    // AVATAR / PROFILE DROPDOWN
+    // ─────────────────────────────────────────────
     function toggleProfileDropdown() {
         const dd = document.getElementById('profileDropdown');
         const isOpen = dd.style.display === 'block';
@@ -1172,7 +1493,7 @@
                 renderProfileDropdown();
                 showToast('avatar updated ✨', 'success');
             }
-        } catch(e) { showToast('could not save avatar 😭', 'error'); }
+        } catch (e) { showToast('could not save avatar 😭', 'error'); }
     }
 
     function handleAvatarUpload(event) {
@@ -1184,31 +1505,29 @@
         reader.readAsDataURL(file);
     }
 
-    function handleLogout() {
-        if (stompClient && stompClient.connected) stompClient.disconnect(() => {});
-        stompClient = null; currentSub = null; chatWith = '';
-        localStorage.removeItem('token'); localStorage.removeItem('chatUser'); localStorage.removeItem('userId');
-        sessionStorage.removeItem('chatUser');
-        document.getElementById('chatPage').classList.remove('visible');
-        document.getElementById('dashboardPage').style.display = 'none';
-        document.getElementById('loginPage').classList.remove('hidden');
-        document.getElementById('loginPage').style.display = 'flex';
-        document.getElementById('login-user').value = '';
-        document.getElementById('login-pass').value = '';
-        const btn = document.getElementById('loginBtn');
-        if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
-        const chatBox = document.getElementById('messages');
-        if (chatBox) chatBox.innerHTML = '';
-        showToast('logged out ✦', 'info');
-    }
-
+    // ─────────────────────────────────────────────
+    // EMOJI PICKER
+    // ─────────────────────────────────────────────
     function addEmoji(e) { const m = document.getElementById('message'); m.value += e; m.focus(); }
     function toggleEmojiPicker() {
         const w = document.getElementById('emojiPickerWrapper');
         w.style.display = w.style.display === 'block' ? 'none' : 'block';
     }
 
+    // ─────────────────────────────────────────────
+    // INIT — check URL for ?token= on page load
+    // ─────────────────────────────────────────────
     document.addEventListener('DOMContentLoaded', () => {
+        // ── Password reset deep-link detection ──
+        const params = new URLSearchParams(window.location.search);
+        const resetToken = params.get('token');
+        if (resetToken) {
+            // Show reset page immediately, skip login
+            showResetPage(resetToken);
+            return; // don't auto-login
+        }
+
+        // ── Emoji picker wiring ──
         const picker = document.getElementById('emojiPicker');
         if (picker) {
             picker.addEventListener('emoji-click', e => {
@@ -1216,6 +1535,7 @@
                 document.getElementById('emojiPickerWrapper').style.display = 'none';
             });
         }
+
         document.addEventListener('click', e => {
             const wrapper = document.getElementById('emojiPickerWrapper');
             const emojiBtn = document.querySelector('.emoji-btn');
@@ -1224,7 +1544,13 @@
             const wrap = document.getElementById('profileDropdownWrap');
             const dd = document.getElementById('profileDropdown');
             if (wrap && dd && !wrap.contains(e.target)) dd.style.display = 'none';
+
+            // Close forgot modal on overlay click
+            if (e.target === document.getElementById('forgotModal'))
+                closeForgotModal();
         });
+
+        // ── Auto-login if token & user stored ──
         const savedUser = localStorage.getItem('chatUser') || sessionStorage.getItem('chatUser');
         const savedToken = localStorage.getItem('token');
         if (savedUser && savedToken) showDashboard(savedUser);

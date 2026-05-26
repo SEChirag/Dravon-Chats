@@ -7,15 +7,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
-
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+
 @Slf4j
+@Service
 public class PasswordResetService {
+
     @Autowired
+
     private LoginRepository loginRepository;
     @Autowired private JavaMailSender mailSender;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Value("${spp.base-url}")
     private String baseurl;
@@ -29,7 +36,7 @@ public class PasswordResetService {
         user.setResetToken(token);
         user.setResetTokenExpiry(LocalDateTime.now().plusMinutes(30));
         loginRepository.save(user);
-
+        String resetLink = baseurl + "/reset-password.html?token=" + token;
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(email);
         msg.setSubject("DRAVON ✦ Password Reset");
@@ -56,7 +63,7 @@ public class PasswordResetService {
         if(user.getResetTokenExpiry().isBefore(LocalDateTime.now()))
             return "Token has expired";
 
-        user.setPassword(newPassword);
+        user.setPassword(passwordEncoder.encode(newPassword));
         user.setResetToken(null);
         user.setResetTokenExpiry(null);
         loginRepository.save(user);

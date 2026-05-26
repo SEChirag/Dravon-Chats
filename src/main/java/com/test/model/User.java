@@ -39,4 +39,6 @@ public class User {
     @Column(name = "reset_token_expiry")
     private LocalDateTime resetTokenExpiry;
 
+   private String link;
+
 }
