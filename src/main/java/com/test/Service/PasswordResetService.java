@@ -33,9 +33,17 @@ public class PasswordResetService {
         SimpleMailMessage msg = new SimpleMailMessage();
         msg.setTo(email);
         msg.setSubject("DRAVON ✦ Password Reset");
-        msg.setText("Hey! Click the link below to reset your password.\n\n"
-                + link + "\n\nThis link expires in 30 minutes.\n\nIf you didn't request this, ignore this email.");
-        mailSender.send(msg);
+        msg.setText(
+                "Click the link below to reset your password:\n\n"
+                        + resetLink
+                        + "\n\nThis link expires in 30 minutes."
+        );
+        try {
+            mailSender.send(msg);
+            System.out.println("MAIL SENT SUCCESSFULLY");
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return "If that email exists, a reset link has been sent.";
     }
