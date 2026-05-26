@@ -17,10 +17,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
 
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/chat")
@@ -133,7 +130,7 @@ public class ChatController {
     }
 /////////////////////////////////////////////////////////
 @PostMapping("/FriendRequest")
-public ResponseEntity<String> sendRequest(
+public List<String> sendRequest(
         @RequestBody FriendRequestDTO dto,
         @RequestHeader(value = "Authorization", required = false) String authHeader) {
 
@@ -141,17 +138,18 @@ public ResponseEntity<String> sendRequest(
     System.out.println("=== DTO: [" + dto.getReceiverId() + "]");
 
     if (authHeader == null) {
-        return ResponseEntity.status(401).body("header is NULL");
+        return Collections.singletonList("ResponseEntity.status(401)");
     }
 
     if (!authHeader.startsWith("Bearer ")) {
-        return ResponseEntity.status(401).body("header does not start with Bearer, actual value: [" + authHeader + "]");
+        return Collections.singletonList("header does not start with Bearer, actual value:");
     }
 
     String token = authHeader.substring(7);
     String senderEmail = jwtUtil.extractEmail(token);
     User sender = loginRepository.findByEmail(senderEmail).orElseThrow();
-    return ResponseEntity.ok(chatService.request(dto.getReceiverId(), sender));
+     chatService.request(dto.getReceiverId(), sender);
+     return Collections.singletonList("request sent");
 }
     /////////////////////////////////////
 
@@ -159,7 +157,7 @@ public ResponseEntity<String> sendRequest(
     public List<FriendRequest> getFriendRequest(@RequestParam String email){
          User currentUser = loginRepository.findByEmail(email).orElseThrow();
 
-       return chatService.getFriendRequest(currentUser);
+       return chatService.getFriendRequest((List<FriendRequest>) currentUser);
     }
     /////////////////////////////////////////
     @PostMapping("/friend-request/accept/{id}")
@@ -177,12 +175,7 @@ public ResponseEntity<String> sendRequest(
     public List<String> getFriends(@PathVariable String email) {
         return chatService.getFriends(email);
     }
-    @DeleteMapping("/unfriend")
-    public ResponseEntity<String> unfriend(@RequestParam String friendEmail, @RequestHeader("Authorization") String authHeader) {
-        String token = authHeader.substring(7);
-        String currentEmail = jwtUtil.extractEmail(token);
-        return ResponseEntity.ok(chatService.unfriend(currentEmail, friendEmail));
-    }
+
     @PostMapping("/update-avatar")
     public ResponseEntity<String> updateAvatar(
             @RequestBody Map<String, String> body,
@@ -221,6 +214,10 @@ public ResponseEntity<String> sendRequest(
         return ResponseEntity.ok(
                 passwordResetService.resetPassword(body.get("token"), body.get("password"))
         );
+    }
+    @DeleteMapping("/unfriend")
+    public void unfriend(String currentEmail, String friendEmail){
+        chatService.unfriend(currentEmail, friendEmail);
     }
 
 }

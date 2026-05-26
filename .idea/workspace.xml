@@ -4,15 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Updates">
+    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Smtp setup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Service/PasswordResetService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Service/PasswordResetService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/config/SecurityConfig/SecurityConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/config/SecurityConfig/SecurityConfig.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/dto/FriendRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/dto/FriendRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/Application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/Application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,41 +57,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;JUnit.TestController.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.test.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.test.testGetRecentMessages.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.test.testLoginFailure.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.test.testLoginSuccess.executor&quot;: &quot;Run&quot;,
-    &quot;JUnit.test.testSaveMessage.executor&quot;: &quot;Run&quot;,
-    &quot;Maven.chat-app [clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.chat-app [compile].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.chat-app [deploy].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.chat-app [install].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.chat-app [org.apache.maven.plugins:maven-clean-plugin:3.3.2:clean].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.chat-app [org.springframework.boot:spring-boot-maven-plugin:3.2.5:run].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.chat-app [package].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.chat-app [validate].executor&quot;: &quot;Run&quot;,
-    &quot;Maven.chat-app [wrapper:wrapper].executor&quot;: &quot;Run&quot;,
-    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;Spring Boot.Main.executor&quot;: &quot;Run&quot;,
-    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/chirag.sharma/IdeaProjects/project2/src/main/java/com/test/Main.java&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;,
-    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "JUnit.TestController.executor": "Run",
+    "JUnit.test.executor": "Run",
+    "JUnit.test.testGetRecentMessages.executor": "Run",
+    "JUnit.test.testLoginFailure.executor": "Run",
+    "JUnit.test.testLoginSuccess.executor": "Run",
+    "JUnit.test.testSaveMessage.executor": "Run",
+    "Maven.chat-app [clean].executor": "Run",
+    "Maven.chat-app [compile].executor": "Run",
+    "Maven.chat-app [deploy].executor": "Run",
+    "Maven.chat-app [install].executor": "Run",
+    "Maven.chat-app [org.apache.maven.plugins:maven-clean-plugin:3.3.2:clean].executor": "Run",
+    "Maven.chat-app [org.springframework.boot:spring-boot-maven-plugin:3.2.5:run].executor": "Run",
+    "Maven.chat-app [package].executor": "Run",
+    "Maven.chat-app [validate].executor": "Run",
+    "Maven.chat-app [wrapper:wrapper].executor": "Run",
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.MCP Project settings loaded": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Spring Boot.Main.executor": "Run",
+    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
+    "git-widget-placeholder": "main",
+    "junie.onboarding.icon.badge.shown": "true",
+    "kotlin-language-version-configured": "true",
+    "onboarding.tips.debug.path": "C:/Users/chirag.sharma/IdeaProjects/project2/src/main/java/com/test/Main.java",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "File.Encoding",
+    "to.speed.mode.migration.done": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.test.Controller" />
@@ -173,6 +169,7 @@
       <option name="FRAME_DEACTIVATION_UPDATE_POLICY" value="UnknownPolicyInFreeMode" />
       <module name="chat-app" />
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.test.Main" />
+      <option name="VM_PARAMETERS" value="-Dfile.encoding=UTF-8" />
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="com.test.*" />
@@ -416,7 +413,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779778244259</updated>
     </task>
-    <option name="localTasksCounter" value="27" />
+    <task id="LOCAL-00027" summary="Smtp setup">
+      <option name="closed" value="true" />
+      <created>1779779168177</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1779779168177</updated>
+    </task>
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -448,7 +453,8 @@
     <MESSAGE value="Unfriend and profile feature" />
     <MESSAGE value="Updates" />
     <MESSAGE value="SMPT setup" />
-    <option name="LAST_COMMIT_MESSAGE" value="SMPT setup" />
+    <MESSAGE value="Smtp setup" />
+    <option name="LAST_COMMIT_MESSAGE" value="Smtp setup" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

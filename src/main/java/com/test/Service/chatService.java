@@ -128,10 +128,12 @@ public class chatService {
         return "request accepted";
     }
 
-    public List<FriendRequest> getFriendRequest(User currentUser) {
+    public List<FriendRequest> getFriendRequest(List<FriendRequest> request) {
 
+        List<FriendRequest> friendRequests = new ArrayList<>();
 
-        return friendRequestRepository.findByReceiverAndStatus(currentUser, "PENDING");
+        return friendRequestRepository.saveAll(request);
+
     }
 
 
