@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Version updates">
+    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="docker.yaml added">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/Application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/Application.properties" afterDir="false" />
     </list>
@@ -451,7 +451,23 @@
       <option name="project" value="LOCAL" />
       <updated>1780305951707</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="Version updates">
+      <option name="closed" value="true" />
+      <created>1780306667188</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1780306667188</updated>
+    </task>
+    <task id="LOCAL-00033" summary="docker.yaml added">
+      <option name="closed" value="true" />
+      <created>1780306862293</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1780306862293</updated>
+    </task>
+    <option name="localTasksCounter" value="34" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -486,7 +502,8 @@
     <MESSAGE value="Smtp setup" />
     <MESSAGE value="New updates" />
     <MESSAGE value="Version updates" />
-    <option name="LAST_COMMIT_MESSAGE" value="Version updates" />
+    <MESSAGE value="docker.yaml added" />
+    <option name="LAST_COMMIT_MESSAGE" value="docker.yaml added" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
