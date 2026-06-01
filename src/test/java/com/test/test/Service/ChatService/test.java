@@ -57,10 +57,7 @@ public class test {
 
         assertNotNull(result);
 
-        assertEquals(
-                "test@gmail.com",
-                result.getEmail()
-        );
+        assertEquals("test@gmail.com", result.getEmail());
     }
 
     @Test

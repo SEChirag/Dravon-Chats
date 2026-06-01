@@ -6,9 +6,13 @@
   <component name="ChangeListManager">
     <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Smtp setup">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Repository/friendRequestRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Repository/friendRequestRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/config/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/config/WebSocketConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/test/test/Service/ChatService/test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/test/test/Service/ChatService/test.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,41 +61,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "JUnit.TestController.executor": "Run",
-    "JUnit.test.executor": "Run",
-    "JUnit.test.testGetRecentMessages.executor": "Run",
-    "JUnit.test.testLoginFailure.executor": "Run",
-    "JUnit.test.testLoginSuccess.executor": "Run",
-    "JUnit.test.testSaveMessage.executor": "Run",
-    "Maven.chat-app [clean].executor": "Run",
-    "Maven.chat-app [compile].executor": "Run",
-    "Maven.chat-app [deploy].executor": "Run",
-    "Maven.chat-app [install].executor": "Run",
-    "Maven.chat-app [org.apache.maven.plugins:maven-clean-plugin:3.3.2:clean].executor": "Run",
-    "Maven.chat-app [org.springframework.boot:spring-boot-maven-plugin:3.2.5:run].executor": "Run",
-    "Maven.chat-app [package].executor": "Run",
-    "Maven.chat-app [validate].executor": "Run",
-    "Maven.chat-app [wrapper:wrapper].executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.MCP Project settings loaded": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.Main.executor": "Run",
-    "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "main",
-    "junie.onboarding.icon.badge.shown": "true",
-    "kotlin-language-version-configured": "true",
-    "onboarding.tips.debug.path": "C:/Users/chirag.sharma/IdeaProjects/project2/src/main/java/com/test/Main.java",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "File.Encoding",
-    "to.speed.mode.migration.done": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;JUnit.TestController.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.test.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.test.testGetRecentMessages.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.test.testLoginFailure.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.test.testLoginSuccess.executor&quot;: &quot;Run&quot;,
+    &quot;JUnit.test.testSaveMessage.executor&quot;: &quot;Run&quot;,
+    &quot;Maven.chat-app [clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.chat-app [compile].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.chat-app [deploy].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.chat-app [install].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.chat-app [org.apache.maven.plugins:maven-clean-plugin:3.3.2:clean].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.chat-app [org.springframework.boot:spring-boot-maven-plugin:3.2.5:run].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.chat-app [package].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.chat-app [validate].executor&quot;: &quot;Run&quot;,
+    &quot;Maven.chat-app [wrapper:wrapper].executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.MCP Project settings loaded&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.Main.executor&quot;: &quot;Run&quot;,
+    &quot;com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;onboarding.tips.debug.path&quot;: &quot;C:/Users/chirag.sharma/IdeaProjects/project2/src/main/java/com/test/Main.java&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;File.Encoding&quot;,
+    &quot;to.speed.mode.migration.done&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.test.Controller" />
@@ -184,8 +188,8 @@
       <list>
         <item itemvalue="Spring Boot.Main" />
         <item itemvalue="JUnit.test" />
-        <item itemvalue="JUnit.test.testLoginFailure" />
         <item itemvalue="JUnit.test.testSaveMessage" />
+        <item itemvalue="JUnit.test.testLoginFailure" />
         <item itemvalue="JUnit.TestController" />
       </list>
     </recent_temporary>
@@ -421,7 +425,15 @@
       <option name="project" value="LOCAL" />
       <updated>1779779168177</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Smtp setup">
+      <option name="closed" value="true" />
+      <created>1779811904975</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1779811904975</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

@@ -74,9 +74,7 @@ public class chatService {
     }
 
     public String register(User user) {
-
         loginRepository.save(user);
-
         return "User Registered";
     }
 
@@ -128,11 +126,11 @@ public class chatService {
         return "request accepted";
     }
 
-    public List<FriendRequest> getFriendRequest(List<FriendRequest> request) {
+    public List<FriendRequest> getFriendRequest(User currentUser) {
 
-        List<FriendRequest> friendRequests = new ArrayList<>();
+//        List<FriendRequest> friendRequests = new ArrayList<>();
 
-        return friendRequestRepository.saveAll(request);
+        return friendRequestRepository.findByReceiverAndStatus(currentUser , "PENDING");
 
     }
 
@@ -185,14 +183,19 @@ public class chatService {
         return friends;
 
     }
-@Transactional
-    public String unfriend(String currentEmail, String friendEmail) {
-        User current = loginRepository.findByEmail(currentEmail).orElseThrow();
-        User friend = loginRepository.findByEmail(friendEmail).orElseThrow();
+    @Transactional
+    public void unfriend(String currentEmail, String friendEmail) {
+
+        System.out.println("Current Email = " + currentEmail);
+        System.out.println("Friend Email = " + friendEmail);
+
+        User current = loginRepository.findByEmail(currentEmail)
+                .orElseThrow(() -> new RuntimeException("Current user not found"));
+
+        User friend = loginRepository.findByEmail(friendEmail)
+                .orElseThrow(() -> new RuntimeException("Friend user not found"));
 
         friendRequestRepository.deleteBySenderAndReceiver(current, friend);
         friendRequestRepository.deleteBySenderAndReceiver(friend, current);
-
-    return "unFriend";
     }
 }

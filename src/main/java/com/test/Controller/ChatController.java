@@ -157,7 +157,7 @@ public List<String> sendRequest(
     public List<FriendRequest> getFriendRequest(@RequestParam String email){
          User currentUser = loginRepository.findByEmail(email).orElseThrow();
 
-       return chatService.getFriendRequest((List<FriendRequest>) currentUser);
+       return chatService.getFriendRequest(currentUser);
     }
     /////////////////////////////////////////
     @PostMapping("/friend-request/accept/{id}")
@@ -216,8 +216,8 @@ public List<String> sendRequest(
         );
     }
     @DeleteMapping("/unfriend")
-    public void unfriend(String currentEmail, String friendEmail){
-        chatService.unfriend(currentEmail, friendEmail);
+    public void unfriend( @RequestParam String email, @RequestParam String friendEmail){
+        chatService.unfriend(email, friendEmail);
     }
 
 }

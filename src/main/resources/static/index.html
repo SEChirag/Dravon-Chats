@@ -130,11 +130,25 @@
         .rs-go:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(124,58,237,.55);}
 
         /* CHAT PAGE */
-        #chatPage{position:relative;z-index:10;display:none;width:100%;max-width:1060px;padding:16px;gap:14px;animation:pageIn .4s ease forwards;}
-        #chatPage.visible{display:flex;align-items:flex-start;position:fixed;inset:0;z-index:10;padding:16px;gap:14px;overflow:hidden;}
+        #chatPage{position:relative;z-index:10;display:none;width:100%;max-width:1060px;padding:16px;gap:14px;animation:pageIn .4s ease forwards;justify-content:center;}
+   #chatPage.visible {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    padding: 16px;
+    gap: 14px;
+    overflow: hidden;
+    justify-content: center;
+    align-items: center;
+}
 
         /* SIDEBAR */
-        .user-sidebar{width:240px;flex-shrink:0;background:var(--card);border-radius:16px;border:1px solid var(--border2);display:flex;flex-direction:column;height:700px;overflow:hidden;box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 20px 40px rgba(0,0,0,.5);position:relative;}
+       .user-sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    height: calc(100vh - 32px);
+}
         .user-sidebar::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent1),var(--accent2),var(--accent1),transparent);}
         .sidebar-header{padding:12px 14px 0;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;}
         .sidebar-title-row{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;}
@@ -191,7 +205,14 @@
         .sr-id{font-size:10px;color:var(--muted);font-family:'Barlow',sans-serif;}
 
         /* CHAT AREA */
-        .chat{flex:1;height:700px;display:flex;flex-direction:column;background:var(--card);border-radius:20px;overflow:hidden;border:1px solid var(--border2);box-shadow:0 0 0 1px rgba(255,255,255,.04) inset,0 40px 80px rgba(0,0,0,.7),0 0 60px rgba(124,58,237,.15);position:relative;}
+       .chat {
+    flex: 1;
+    max-width: 900px;
+    min-width: 0;
+    height: calc(100vh - 32px);
+    display: flex;
+    flex-direction: column;
+}
         .chat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent1),var(--accent2),var(--accent1),transparent);z-index:1;}
         .header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 18px 13px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
         .h-left{display:flex;align-items:center;gap:12px;}
@@ -918,23 +939,29 @@
     }
 
     function handleLogout() {
-        if (stompClient && stompClient.connected) stompClient.disconnect(() => {});
-        stompClient = null; currentSub = null; chatWith = '';
-        localStorage.removeItem('token'); localStorage.removeItem('chatUser'); localStorage.removeItem('userId');
-        sessionStorage.removeItem('chatUser');
-        document.getElementById('chatPage').classList.remove('visible');
-        document.getElementById('dashboardPage').style.display = 'none';
-        document.getElementById('resetPage').classList.remove('show');
-        document.getElementById('loginPage').classList.remove('hidden');
-        document.getElementById('loginPage').style.display = 'flex';
-        document.getElementById('login-user').value = '';
-        document.getElementById('login-pass').value = '';
-        const btn = document.getElementById('loginBtn');
-        if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
-        const chatBox = document.getElementById('messages');
-        if (chatBox) chatBox.innerHTML = '';
-        showToast('logged out ✦', 'info');
-    }
+    if (stompClient && stompClient.connected) stompClient.disconnect(() => {});
+    stompClient = null; currentSub = null; chatWith = '';
+    localStorage.removeItem('token'); localStorage.removeItem('chatUser'); localStorage.removeItem('userId');
+    sessionStorage.removeItem('chatUser');
+    document.getElementById('chatPage').classList.remove('visible');
+    document.getElementById('dashboardPage').style.display = 'none';
+    document.getElementById('resetPage').classList.remove('show');
+    document.getElementById('loginPage').classList.remove('hidden');
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('login-user').value = '';
+    document.getElementById('login-pass').value = '';
+
+    // ← reset chat header
+    document.getElementById('chatTitle').textContent = 'DRAVON';
+    document.getElementById('chatSubtitle').textContent = 'select someone to chat';
+    document.getElementById('chatAvatar').textContent = '💬';
+
+    const btn = document.getElementById('loginBtn');
+    if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
+    const chatBox = document.getElementById('messages');
+    if (chatBox) chatBox.innerHTML = '';
+    showToast('logged out ✦', 'info');
+}
 
     // ─────────────────────────────────────────────
     // DASHBOARD
@@ -1097,9 +1124,9 @@
     function subscribeToRoom(targetUser) {
         if (currentSub) { currentSub.unsubscribe(); currentSub = null; }
         const roomId = getRoomId(currentUser, targetUser);
-        currentSub = stompClient.subscribe('/topic/chat/' + roomId, function (frame) {
+        currentSub = stompClient.subscribe('/topic/chat' + roomId, function (frame) {
             const msg = JSON.parse(frame.body);
-            if (msg.sender !== currentUser) showMessage(msg);
+            showMessage(msg);
         });
     }
 
@@ -1179,33 +1206,58 @@
         });
     }
 
-    async function removeFriend(event, friendEmail) {
-        event.stopPropagation();
-        if (!confirm(`Remove ${friendEmail} from inbox?`)) return;
-        try {
-            const res = await fetch(`http://localhost:8080/api/chat/unfriend?friendEmail=${encodeURIComponent(friendEmail)}`, {
+ async function removeFriend(event, friendEmail) {
+    event.stopPropagation();
+
+    if (!confirm(`Remove ${friendEmail} from inbox?`)) return;
+
+    const token = localStorage.getItem('token');
+    const currentUserEmail = JSON.parse(atob(token.split('.')[1])).sub; // ✅ .sub not .email
+
+    try {
+        const res = await fetch(
+            `http://localhost:8080/api/chat/unfriend?email=${encodeURIComponent(currentUserEmail)}&friendEmail=${encodeURIComponent(friendEmail)}`,
+            {
                 method: 'DELETE',
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-            });
-            if (res.ok) {
-                showToast('removed from inbox 🚫', 'info');
-                if (chatWith === friendEmail) {
-                    chatWith = '';
-                    document.getElementById('chatTitle').textContent = 'DRAVON';
-                    document.getElementById('chatSubtitle').textContent = 'select someone to chat';
-                    document.getElementById('chatAvatar').textContent = '💬';
-                    document.getElementById('message').disabled = true;
-                    document.getElementById('sendBtn').disabled = true;
-                    document.getElementById('messages').innerHTML = `<div class="select-prompt" id="selectPrompt">
-                        <div class="big-icon">👈</div><h3>pick a chat</h3>
-                        <p>select someone from the sidebar to start chatting</p></div>`;
+                headers: {
+                    'Authorization': 'Bearer ' + token
                 }
-                loadUserList();
-            } else {
-                showToast('could not remove 💀', 'error');
             }
-        } catch (e) { showToast('server error 😭', 'error'); }
+        );
+        if (res.ok) {
+            showToast('Removed from inbox 🚫', 'info');
+
+            if (chatWith === friendEmail) {
+                chatWith = '';
+
+                document.getElementById('chatTitle').textContent = 'DRAVON';
+                document.getElementById('chatSubtitle').textContent = 'select someone to chat';
+                document.getElementById('chatAvatar').textContent = '💬';
+
+                document.getElementById('message').disabled = true;
+                document.getElementById('sendBtn').disabled = true;
+
+                document.getElementById('messages').innerHTML = `
+                    <div class="select-prompt" id="selectPrompt">
+                        <div class="big-icon">👈</div>
+                        <h3>pick a chat</h3>
+                        <p>select someone from the sidebar to start chatting</p>
+                    </div>
+                `;
+            }
+
+            loadUserList();
+        } else {
+            const errorText = await res.text();
+            console.error(errorText);
+            showToast('Could not remove 💀', 'error');
+        }
+
+    } catch (e) {
+        console.error(e);
+        showToast('Server error 😭', 'error');
     }
+}
 
     async function doSearch() {
         const email = document.getElementById('searchInput').value.trim();
@@ -1333,8 +1385,8 @@
         chatWith = targetUser;
         document.querySelectorAll('.user-item').forEach(el =>
             el.classList.toggle('active', el.dataset.user === targetUser));
-        document.getElementById('chatTitle').textContent = targetUser.toUpperCase();
-        document.getElementById('chatSubtitle').textContent = 'private · ' + getRoomId(currentUser, targetUser);
+        document.getElementById('chatTitle').textContent = targetUser;
+        document.getElementById('chatSubtitle').textContent = 'online';
         document.getElementById('chatAvatar').textContent = targetUser[0].toUpperCase();
         document.getElementById('message').disabled = false;
         document.getElementById('message').placeholder = `message ${targetUser}...`;
@@ -1412,7 +1464,6 @@
         const roomId = getRoomId(currentUser, chatWith);
         const message = { sender: currentUser, receiver: chatWith, content, room: roomId, timestamp: Date.now() };
         stompClient.send('/app/sendMessage', {}, JSON.stringify(message));
-        showMessage(message);
         document.getElementById('message').value = '';
         document.getElementById('emojiPickerWrapper').style.display = 'none';
     }
