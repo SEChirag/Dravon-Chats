@@ -2,8 +2,9 @@ FROM maven:3.9-eclipse-temurin-21 AS build
 WORKDIR /app
 COPY pom.xml .
 COPY src ./src
-RUN cat src/main/resources/application.properties
+RUN echo "=== PROPERTIES FILE ===" && cat src/main/resources/application.properties
 RUN mvn clean package -DskipTests
+RUN echo "=== CHECKING JAR CONTENTS ===" && jar tf target/chat-app-0.0.1-SNAPSHOT.jar | grep properties
 
 FROM eclipse-temurin:21-jre
 WORKDIR /app
