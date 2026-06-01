@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="New updates" />
+    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Version updates">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/Application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/Application.properties" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -432,7 +435,23 @@
       <option name="project" value="LOCAL" />
       <updated>1780305334020</updated>
     </task>
-    <option name="localTasksCounter" value="30" />
+    <task id="LOCAL-00030" summary="Version updates">
+      <option name="closed" value="true" />
+      <created>1780305800282</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1780305800282</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Version updates">
+      <option name="closed" value="true" />
+      <created>1780305951707</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1780305951707</updated>
+    </task>
+    <option name="localTasksCounter" value="32" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -466,7 +485,8 @@
     <MESSAGE value="SMPT setup" />
     <MESSAGE value="Smtp setup" />
     <MESSAGE value="New updates" />
-    <option name="LAST_COMMIT_MESSAGE" value="New updates" />
+    <MESSAGE value="Version updates" />
+    <option name="LAST_COMMIT_MESSAGE" value="Version updates" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
