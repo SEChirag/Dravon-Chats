@@ -1112,7 +1112,7 @@
 
     function connectWebSocket() {
         if (stompClient && stompClient.connected) return;
-        const socket = new SockJS(`${BASE_URL}/chat`);
+        const socket = new SockJS(`https://dravon-chats.onrender.com/chat`);
         stompClient = Stomp.over(socket);
         stompClient.debug = null;
         stompClient.connect({}, function () {
@@ -1394,7 +1394,7 @@
         document.getElementById('message').placeholder = `message ${targetUser}...`;
         document.getElementById('sendBtn').disabled = false;
         if (!stompClient || !stompClient.connected) {
-            const socket = new SockJS(`${BASE_URL}/chat`);
+            const socket = new SockJS(`https://dravon-chats.onrender.com/chat`);
             stompClient = Stomp.over(socket);
             stompClient.debug = null;
             stompClient.connect({}, function () { showToast('connected ✦', 'success'); subscribeToRoom(targetUser); });

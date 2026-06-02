@@ -200,14 +200,6 @@
       <option name="presentableId" value="Default" />
       <updated>1777624986069</updated>
     </task>
-    <task id="LOCAL-00012" summary="Created unique rooms for single convo">
-      <option name="closed" value="true" />
-      <created>1779265459909</created>
-      <option name="number" value="00012" />
-      <option name="presentableId" value="LOCAL-00012" />
-      <option name="project" value="LOCAL" />
-      <updated>1779265459909</updated>
-    </task>
     <task id="LOCAL-00013" summary="Created unique rooms for single convo">
       <option name="closed" value="true" />
       <created>1779265829172</created>
@@ -592,7 +584,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780379944475</updated>
     </task>
-    <option name="localTasksCounter" value="61" />
+    <task id="LOCAL-00061" summary=" updates">
+      <option name="closed" value="true" />
+      <created>1780380521083</created>
+      <option name="number" value="00061" />
+      <option name="presentableId" value="LOCAL-00061" />
+      <option name="project" value="LOCAL" />
+      <updated>1780380521083</updated>
+    </task>
+    <option name="localTasksCounter" value="62" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
