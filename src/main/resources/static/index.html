@@ -1060,8 +1060,8 @@
 
     async function dashHandleRequest(id, action) {
         const endpoint = action === 'accept'
-            ? `http://localhost:8080/api/chat/friend-request/accept/${id}`
-            : `http://localhost:8080/api/chat/friend-request/reject/${id}`;
+            ? `${BASE_URL}/api/chat/friend-request/accept/${id}`
+            : `${BASE_URL}/api/chat/friend-request/reject/${id}`;
         try {
             const res = await fetch(endpoint, {
                 method: 'POST',
@@ -1112,7 +1112,7 @@
 
     function connectWebSocket() {
         if (stompClient && stompClient.connected) return;
-        const socket = new SockJS('http://localhost:8080/chat');
+        const socket = new SockJS(`${BASE_URL}/chat`);
         stompClient = Stomp.over(socket);
         stompClient.debug = null;
         stompClient.connect({}, function () {
@@ -1365,8 +1365,8 @@
 
     async function handleRequest(id, action) {
         const endpoint = action === 'accept'
-            ? `http://localhost:8080/api/chat/friend-request/accept/${id}`
-            : `http://localhost:8080/api/chat/friend-request/reject/${id}`;
+            ? `${BASE_URL}/api/chat/friend-request/accept/${id}`
+            : `${BASE_URL}/api/chat/friend-request/reject/${id}`;
         try {
             const res = await fetch(endpoint, {
                 method: 'POST',
@@ -1394,7 +1394,7 @@
         document.getElementById('message').placeholder = `message ${targetUser}...`;
         document.getElementById('sendBtn').disabled = false;
         if (!stompClient || !stompClient.connected) {
-            const socket = new SockJS('http://localhost:8080/chat');
+            const socket = new SockJS(`${BASE_URL}/chat`);
             stompClient = Stomp.over(socket);
             stompClient.debug = null;
             stompClient.connect({}, function () { showToast('connected ✦', 'success'); subscribeToRoom(targetUser); });
