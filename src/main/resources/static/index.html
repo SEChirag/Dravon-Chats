@@ -360,137 +360,104 @@
 .mobile-back-btn{
 display:none;
 }
-@media (max-width: 768px) {
+@media (max-width:768px){
 
-    body {
-        overflow-y: auto;
-        min-height: 100dvh;
+    body{
+        overflow-x:hidden;
+        overflow-y:auto;
     }
 
-    #loginPage,
-    #resetPage {
-        padding: 12px;
+    #chatPage.visible{
+        flex-direction:column;
+        padding:0;
+        height:100dvh;
     }
 
-    .card,
-    .reset-card,
-    .modal-card {
-        width: 100%;
-        max-width: 100%;
-        border-radius: 16px;
+    /* SIDEBAR = full screen first */
+    .user-sidebar{
+        width:100%;
+        height:100dvh;
+        border-radius:0;
     }
 
-    .card-body,
-    .reset-body {
-        padding: 22px;
+    /* CHAT = full screen when active */
+    .chat{
+        width:100%;
+        height:100dvh;
+        max-width:none;
+        border-radius:0;
     }
 
-    .brand-title {
-        font-size: 28px;
+    .header{
+        padding:10px 12px;
     }
 
-    .brand-sub {
-        font-size: 12px;
+    .h-title{
+        font-size:18px;
     }
 
-    /* Chat Layout */
-
-    #chatPage.visible {
-        flex-direction: column;
-        padding: 0;
-        gap: 0;
-        height: 100dvh;
-        width: 100%;
+    .h-avatar{
+        width:34px;
+        height:34px;
     }
 
-    .user-sidebar {
-        width: 100%;
-        height: 200px;
-        border-radius: 0;
+    .messages{
+        padding:10px;
     }
 
+    .bubble{
+        font-size:14px;
+        padding:8px 12px;
+        max-width:85%;
+    }
+
+    .input-area{
+        padding:10px;
+    }
+
+    #message{
+        font-size:16px;
+    }
+
+    .send-btn{
+        height:38px;
+        font-size:14px;
+        padding:0 14px;
+    }
+
+    .emoji-btn{
+        width:38px;
+        height:38px;
+    }
+}
+        @supports (height: 100dvh) {
     .chat {
-        width: 100%;
-        max-width: none;
-        height: calc(100dvh - 200px);
+        height: 100dvh;
     }
+}
+        .input-area{
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+}
+        .messages{
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+        .msg-row{
+    max-width:90%;
+}
 
-    .header {
-        padding: 10px;
-    }
+.msg-group.right,
+.msg-group.left{
+    width:100%;
+}
+        .mobile-back-btn{
+    transition:0.2s;
+}
 
-    .h-title {
-        font-size: 18px;
-    }
-
-    .messages {
-        padding: 10px;
-    }
-
-    .msg-row {
-        max-width: 95%;
-    }
-
-    .bubble {
-        font-size: 14px;
-        padding: 8px 12px;
-    }
-
-    .input-area {
-        padding: 8px;
-    }
-
-    .input-row {
-        gap: 6px;
-    }
-
-    #message {
-        font-size: 16px; /* Prevents iPhone zoom */
-    }
-
-    .send-btn {
-        padding: 0 14px;
-        height: 42px;
-    }
-
-    .emoji-btn {
-        width: 42px;
-        height: 42px;
-    }
-
-    .quick-emojis {
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        padding-bottom: 5px;
-    }
-
-    .quick-emojis::-webkit-scrollbar {
-        display: none;
-    }
-
-    /* Dashboard */
-
-    .dashboard-page {
-        padding: 12px;
-    }
-
-    .dash-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .dash-header {
-        flex-direction: column;
-        gap: 10px;
-        text-align: center;
-    }
-
-    .dash-logo {
-        font-size: 24px;
-    }
-
-    .dash-stat-big {
-        font-size: 40px;
-    }
+.mobile-back-btn:active{
+    transform:scale(0.9);
 }
     </style>
 </head>
