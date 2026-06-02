@@ -358,106 +358,98 @@
 ========================== */
 
 .mobile-back-btn{
-display:none;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:8px 12px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,0.12);
+    background:rgba(255,255,255,0.06);
+    color:#fff;
+    font-family:inherit;
+    font-size:14px;
+    cursor:pointer;
+    backdrop-filter: blur(10px);
+    z-index:50;
+    pointer-events:auto;
+    position:relative;
+    z-index:9999;
 }
+
+.mobile-back-btn .back-icon{
+    font-size:18px;
+    line-height:1;
+}
+
+.mobile-back-btn .back-text{
+    font-weight:500;
+}
+
 @media (max-width:768px){
 
-    body{
-        overflow-x:hidden;
-        overflow-y:auto;
-    }
-
     #chatPage.visible{
-        flex-direction:column;
-        padding:0;
-        height:100dvh;
+        position:fixed;
+        inset:0;
+        display:flex;
+        overflow:hidden;
     }
 
-    /* SIDEBAR = full screen first */
-    .user-sidebar{
-        width:100%;
-        height:100dvh;
-        border-radius:0;
-    }
-
-    /* CHAT = full screen when active */
+    /* IMPORTANT: remove overlap chaos */
+    .user-sidebar,
     .chat{
         width:100%;
-        height:100dvh;
-        max-width:none;
-        border-radius:0;
+        height:100%;
+        position:absolute;
+        top:0;
+        left:0;
+        transition:transform 0.35s ease;
+        will-change: transform;
     }
 
-    .header{
-        padding:10px 12px;
-    }
-
-    .h-title{
-        font-size:18px;
-    }
-
-    .h-avatar{
-        width:34px;
-        height:34px;
-    }
-
-    .messages{
-        padding:10px;
-    }
-
-    .bubble{
-        font-size:14px;
-        padding:8px 12px;
-        max-width:85%;
-    }
-
-    .input-area{
-        padding:10px;
-    }
-
-    #message{
-        font-size:16px;
-    }
-
-    .send-btn{
-        height:38px;
-        font-size:14px;
-        padding:0 14px;
-    }
-
-    .emoji-btn{
-        width:38px;
-        height:38px;
-    }
-}
-        @supports (height: 100dvh) {
-    .chat {
-        height: 100dvh;
-    }
-}
-        .input-area{
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
-}
-        .messages{
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-}
-        .msg-row{
-    max-width:90%;
+    /* /* IMPORTANT BASE */
+#chatPage{
+    position:relative;
+    overflow:hidden;
 }
 
-.msg-group.right,
-.msg-group.left{
+/* BOTH PANELS MUST BE STACKED */
+#chatPage .user-sidebar,
+#chatPage .chat{
+    position:absolute;
+    top:0;
+    left:0;
     width:100%;
-}
-        .mobile-back-btn{
-    transition:0.2s;
+    height:100%;
+    transition:transform 0.35s ease;
+    will-change: transform;
 }
 
-.mobile-back-btn:active{
-    transform:scale(0.9);
+/* DEFAULT STATE (SIDEBAR SHOWN) */
+#chatPage .user-sidebar{
+    transform:translateX(0%);
+    z-index:2;
+}
+
+#chatPage .chat{
+    transform:translateX(100%);
+    z-index:1;
+}
+
+/* CHAT OPEN STATE */
+#chatPage.show-chat .user-sidebar{
+    transform:translateX(-100%);
+}
+
+#chatPage.show-chat .chat{
+    transform:translateX(0%);
+    z-index:3;
+}
+
+/* OPTIONAL FIX FOR MOBILE HEIGHT */
+@media (max-width:768px){
+    #chatPage{
+        height:100dvh;
+    }
 }
     </style>
 </head>
@@ -700,8 +692,9 @@ display:none;
         <div class="header">
 
             <!-- Mobile Back Button -->
-            <button id="mobileBackBtn" class="mobile-back-btn">
-                ←
+            <button id="mobileBackBtn" class="mobile-back-btn" onclick="backToChats()">
+                <span class="back-icon">←</span>
+                <span class="back-text">Back</span>
             </button>
 
             <div class="h-left">
@@ -1379,22 +1372,26 @@ display:none;
         showToast('Server error 😭', 'error');
     }
 }
-const isMobile = () => window.innerWidth <= 768;
+function isMobile(){
+    return window.innerWidth <= 768;
+}
 
 function openChatMobile() {
     if (!isMobile()) return;
 
-    document.querySelector('.chat').style.display = "flex";
-    document.querySelector('.user-sidebar').style.display = "none";
+    document.getElementById("chatPage")
+        .classList.add("show-chat");
 }
 
 function backToChats() {
-    document.querySelector('.chat').style.display = "none";
-    document.querySelector('.user-sidebar').style.display = "block";
+    document.getElementById("chatPage")
+        .classList.remove("show-chat");
 }
 
-document.getElementById("mobileBackBtn")?.addEventListener("click", backToChats);
-
+document.addEventListener("DOMContentLoaded", () => {
+    const btn = document.getElementById("mobileBackBtn");
+    if (btn) btn.addEventListener("click", backToChats);
+});
     async function doSearch() {
         const email = document.getElementById('searchInput').value.trim();
         if (!email) { showToast('enter an email to search 💀', 'error'); return; }
