@@ -23,7 +23,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/chat")
-                .setAllowedOriginPatterns("https://dravon-chats.onrender.com")
+                .setAllowedOriginPatterns("http://localhost:8080",
+                                          "https://dravon-chats.onrender.com")
                 .withSockJS();
     }
 }

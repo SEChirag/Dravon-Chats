@@ -207,7 +207,8 @@
         /* CHAT AREA */
        .chat {
     flex: 1;
-    max-width: 900px;
+    width: 100%;
+    max-width: 800px;
     min-width: 0;
     height: calc(100vh - 32px);
     display: flex;
@@ -352,6 +353,145 @@
         .dash-chat-sub{font-size:12px;color:var(--muted);font-family:'Barlow',sans-serif;text-align:center;}
         .dash-arrow{font-size:22px;color:var(--neon);margin-top:4px;transition:transform .2s;}
         .dash-chat-card:hover .dash-arrow{transform:translateX(6px);}
+        /* ==========================
+   MOBILE RESPONSIVE
+========================== */
+
+.mobile-back-btn{
+display:none;
+}
+@media (max-width: 768px) {
+
+    body {
+        overflow-y: auto;
+        min-height: 100dvh;
+    }
+
+    #loginPage,
+    #resetPage {
+        padding: 12px;
+    }
+
+    .card,
+    .reset-card,
+    .modal-card {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 16px;
+    }
+
+    .card-body,
+    .reset-body {
+        padding: 22px;
+    }
+
+    .brand-title {
+        font-size: 28px;
+    }
+
+    .brand-sub {
+        font-size: 12px;
+    }
+
+    /* Chat Layout */
+
+    #chatPage.visible {
+        flex-direction: column;
+        padding: 0;
+        gap: 0;
+        height: 100dvh;
+        width: 100%;
+    }
+
+    .user-sidebar {
+        width: 100%;
+        height: 200px;
+        border-radius: 0;
+    }
+
+    .chat {
+        width: 100%;
+        max-width: none;
+        height: calc(100dvh - 200px);
+    }
+
+    .header {
+        padding: 10px;
+    }
+
+    .h-title {
+        font-size: 18px;
+    }
+
+    .messages {
+        padding: 10px;
+    }
+
+    .msg-row {
+        max-width: 95%;
+    }
+
+    .bubble {
+        font-size: 14px;
+        padding: 8px 12px;
+    }
+
+    .input-area {
+        padding: 8px;
+    }
+
+    .input-row {
+        gap: 6px;
+    }
+
+    #message {
+        font-size: 16px; /* Prevents iPhone zoom */
+    }
+
+    .send-btn {
+        padding: 0 14px;
+        height: 42px;
+    }
+
+    .emoji-btn {
+        width: 42px;
+        height: 42px;
+    }
+
+    .quick-emojis {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        padding-bottom: 5px;
+    }
+
+    .quick-emojis::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Dashboard */
+
+    .dashboard-page {
+        padding: 12px;
+    }
+
+    .dash-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .dash-header {
+        flex-direction: column;
+        gap: 10px;
+        text-align: center;
+    }
+
+    .dash-logo {
+        font-size: 24px;
+    }
+
+    .dash-stat-big {
+        font-size: 40px;
+    }
+}
     </style>
 </head>
 <body>
@@ -591,13 +731,25 @@
     </div>
     <div class="chat">
         <div class="header">
+
+            <!-- Mobile Back Button -->
+            <button id="mobileBackBtn" class="mobile-back-btn">
+                ←
+            </button>
+
             <div class="h-left">
                 <div class="h-avatar" id="chatAvatar">💬</div>
+
                 <div>
                     <div class="h-title" id="chatTitle">DRAVON</div>
-                    <div class="h-sub"><span class="live-dot"></span><span id="chatSubtitle">select someone to chat</span></div>
+
+                    <div class="h-sub">
+                        <span class="live-dot"></span>
+                        <span id="chatSubtitle">select someone to chat</span>
+                    </div>
                 </div>
             </div>
+
             <div class="h-actions">
                 <div class="profile-dropdown-wrap" id="profileDropdownWrap">
                     <button class="profile-btn" id="profileBtn" onclick="toggleProfileDropdown()">
@@ -1260,6 +1412,21 @@
         showToast('Server error 😭', 'error');
     }
 }
+const isMobile = () => window.innerWidth <= 768;
+
+function openChatMobile() {
+    if (!isMobile()) return;
+
+    document.querySelector('.chat').style.display = "flex";
+    document.querySelector('.user-sidebar').style.display = "none";
+}
+
+function backToChats() {
+    document.querySelector('.chat').style.display = "none";
+    document.querySelector('.user-sidebar').style.display = "block";
+}
+
+document.getElementById("mobileBackBtn")?.addEventListener("click", backToChats);
 
     async function doSearch() {
         const email = document.getElementById('searchInput').value.trim();
