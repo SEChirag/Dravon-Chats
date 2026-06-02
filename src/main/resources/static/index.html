@@ -665,6 +665,8 @@
     // ─────────────────────────────────────────────
     // STATE
     // ─────────────────────────────────────────────
+
+    const BASE_URL = 'https://dravon-chat.onrender.com';
     let stompClient = null;
     let currentUser = '';
     let currentUserId = null;
@@ -789,7 +791,7 @@
         const resetLink = window.location.origin + window.location.pathname + '?token=';
 
         try {
-            const res = await fetch('http://localhost:8080/api/chat/forgot-password', {
+            const res = await fetch(`${BASE_URL}/api/chat/forgot-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, link: resetLink })
@@ -846,7 +848,7 @@
         btn.disabled = true;
 
         try {
-            const res = await fetch('http://localhost:8080/api/chat/reset-password', {
+            const res = await fetch(`${BASE_URL}/api/chat/reset-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token, password: pass })
@@ -880,7 +882,7 @@
         const btn = document.getElementById('loginBtn');
         btn.classList.add('loading'); btn.disabled = true;
         try {
-            const response = await fetch('http://localhost:8080/api/chat/login', {
+            const response = await fetch(`${BASE_URL}/api/chat/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password: pass })
@@ -919,7 +921,7 @@
         const btn = document.getElementById('signupBtn');
         btn.classList.add('loading'); btn.disabled = true;
         try {
-            const response = await fetch('http://localhost:8080/api/chat/register', {
+            const response = await fetch(`${BASE_URL}/api/chat/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password: pass })
@@ -976,7 +978,7 @@
         document.getElementById('dashUsername').textContent = currentUser;
         updateDashAvatar();
         try {
-            const res = await fetch(`http://localhost:8080/api/chat/friends/${encodeURIComponent(currentUser)}`, {
+            const res = await fetch(`${BASE_URL}/api/chat/friends/${encodeURIComponent(currentUser)}`, {
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
             });
             const friends = await res.json();
@@ -984,14 +986,14 @@
             renderDashFriends(friends);
         } catch (e) {}
         try {
-            const res = await fetch(`http://localhost:8080/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
+            const res = await fetch(`${BASE_URL}/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
             });
             const reqs = await res.json();
             document.getElementById('dashReqCount').textContent = reqs.length;
             renderDashRequests(reqs);
         } catch (e) {}
-        fetch('http://localhost:8080/api/chat/me', {
+        fetch(`${BASE_URL}/api/chat/me`, {
             headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
         }).then(r => r.json()).then(data => {
             if (data.avatarUrl) {
@@ -1071,7 +1073,7 @@
                 document.getElementById('dashReqCount').textContent = remaining;
                 showToast(action === 'accept' ? 'request accepted 🫶' : 'rejected 🚫', action === 'accept' ? 'success' : 'info');
                 if (action === 'accept') {
-                    const r = await fetch(`http://localhost:8080/api/chat/friends/${encodeURIComponent(currentUser)}`, {
+                    const r = await fetch(`${BASE_URL}/api/chat/friends/${encodeURIComponent(currentUser)}`, {
                         headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
                     });
                     const friends = await r.json();
@@ -1144,7 +1146,7 @@
     async function refreshBadge() {
         if (!currentUser) return;
         try {
-            const res = await fetch(`http://localhost:8080/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
+            const res = await fetch(`${BASE_URL}/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
                 headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
             });
             const requests = await res.json();
@@ -1157,7 +1159,7 @@
         const ul = document.getElementById('userList');
         ul.innerHTML = '<div class="no-users">loading requests... 👀</div>';
         try {
-            const res = await fetch(`http://localhost:8080/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
+            const res = await fetch(`${BASE_URL}/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
                 headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
             });
             const requests = await res.json();
@@ -1171,7 +1173,7 @@
     async function loadUserList() {
         if (!currentUser) return;
         try {
-            const res = await fetch(`http://localhost:8080/api/chat/friends/${encodeURIComponent(currentUser)}`, {
+            const res = await fetch(`${BASE_URL}/api/chat/friends/${encodeURIComponent(currentUser)}`, {
                 headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
             });
             const friends = await res.json();
@@ -1216,7 +1218,7 @@
 
     try {
         const res = await fetch(
-            `http://localhost:8080/api/chat/unfriend?email=${encodeURIComponent(currentUserEmail)}&friendEmail=${encodeURIComponent(friendEmail)}`,
+            `${BASE_URL}/api/chat/unfriend?email=${encodeURIComponent(currentUserEmail)}&friendEmail=${encodeURIComponent(friendEmail)}`,
             {
                 method: 'DELETE',
                 headers: {
@@ -1265,7 +1267,7 @@
         const ul = document.getElementById('userList');
         ul.innerHTML = '<div class="no-users">searching... 👀</div>';
         try {
-            const res = await fetch(`http://localhost:8080/api/chat/search?Email=${encodeURIComponent(email)}`, {
+            const res = await fetch(`${BASE_URL}/api/chat/search?Email=${encodeURIComponent(email)}`, {
                 headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
             });
             if (!res.ok) { ul.innerHTML = '<div class="no-users">user not found 🤷</div>'; return; }
@@ -1288,7 +1290,7 @@
                 <div class="sr-id">id: ${user.id}</div>
             </div>`;
         if (!isSelf) {
-            fetch(`http://localhost:8080/api/chat/friends/${encodeURIComponent(currentUser)}`, {
+            fetch(`${BASE_URL}/api/chat/friends/${encodeURIComponent(currentUser)}`, {
                 headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
             }).then(r => r.json()).then(friends => {
                 const isFriend = friends.includes(user.email);
@@ -1313,7 +1315,7 @@
     async function sendFriendRequest(receiverId, btn) {
         btn.textContent = '...'; btn.disabled = true;
         try {
-            const res = await fetch('http://localhost:8080/api/chat/FriendRequest', {
+            const res = await fetch(`${BASE_URL}/api/chat/FriendRequest`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
                 body: JSON.stringify({ receiverId })
@@ -1404,7 +1406,7 @@
         const messages = document.getElementById('messages');
         messages.innerHTML = '';
         try {
-            const res = await fetch(`http://localhost:8080/api/chat/messages/${roomId}`);
+            const res = await fetch(`${BASE_URL}/api/chat/messages/${roomId}`);
             const data = await res.json();
             if (!data.length) {
                 messages.innerHTML = `<div class="empty-state" id="emptyState"><div class="empty-icon">💬</div><h3>no messages yet</h3><p>say hi first! ✦</p></div>`;
@@ -1469,7 +1471,7 @@
     }
 
     function deleteMessage(id, group, isMe) {
-        fetch(`http://localhost:8080/api/chat/deleteChats/${id}`, { method: 'DELETE' })
+        fetch(`${BASE_URL}/api/chat/deleteChats/${id}`, { method: 'DELETE' })
             .then(() => {
                 const bubble = group.querySelector('.bubble');
                 const delBtn = group.querySelector('.del-btn');
@@ -1532,7 +1534,7 @@
 
     async function saveAvatar(value) {
         try {
-            const res = await fetch('http://localhost:8080/api/chat/update-avatar', {
+            const res = await fetch(`${BASE_URL}/api/chat/update-avatar`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
                 body: JSON.stringify({ avatarUrl: value })
