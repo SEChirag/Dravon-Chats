@@ -1735,12 +1735,15 @@ async function markMessagesAsSeen(targetUser) {
          meta.appendChild(del);
      }
      group.appendChild(meta);
-   messages.appendChild(group);
-requestAnimationFrame(() => {
-    messages.scrollTop = messages.scrollHeight;
+  messages.appendChild(group);
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            messages.scrollTop = messages.scrollHeight;
+        });
+    });
 
-     attachDragReply(group, data);
- }
+    attachDragReply(group, data);
+}
 
  function deleteMessage(id, group, isMe) {
      fetch(`${BASE_URL}/api/chat/deleteChats/${id}`, { method: 'DELETE' })
