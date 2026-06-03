@@ -497,16 +497,26 @@
    /* Login card full width */
    .card,.reset-card,.modal-card{width:100%;max-width:400px;}
  }
-        .seen-status {
-    margin-left: 6px;
+.seen-status {
     font-size: 12px;
-}
-        .seen-status {
-    font-size: 11px;
-    margin-left: 4px;
+    margin-left: 5px;
     color: #aaa;
-    font-weight: 600;
-    letter-spacing: -1px;
+    font-weight: 700;
+    letter-spacing: -2px;
+    display: inline-block;
+}
+
+.seen-status.seen {
+    color: #4fc3f7;  /* blue when seen */
+}
+
+.msg-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
 }
     </style>
 </head>
@@ -1689,9 +1699,10 @@ async function markMessagesAsSeen(targetUser) {
          ts.textContent = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
          meta.appendChild(ts);
      }
-     if (isMe) {
+   if (isMe) {
     const seenSpan = document.createElement('span');
-    seenSpan.className = 'seen-status';
+    seenSpan.className = 'seen-status' + (data.seen ? ' seen' : '');
+    seenSpan.dataset.msgId = data.id;
     seenSpan.textContent = data.seen ? '✓✓' : '✓';
     meta.appendChild(seenSpan);
 }
@@ -1746,7 +1757,7 @@ async function markMessagesAsSeen(targetUser) {
 function updateAllSeenTicks() {
     document.querySelectorAll('.seen-status').forEach(el => {
         el.textContent = '✓✓';
-        el.style.color = '#4fc3f7';
+        el.classList.add('seen');
     });
 }
  function startReply(msgData) {
