@@ -1543,76 +1543,53 @@ async function openPrivateChat(targetUser) {
 
     document.getElementById('chatTitle').textContent = targetUser;
     document.getElementById('chatSubtitle').textContent = 'online';
-    document.getElementById('chatAvatar').textContent =
-        targetUser[0].toUpperCase();
-
+    document.getElementById('chatAvatar').textContent = targetUser[0].toUpperCase();
     document.getElementById('message').disabled = false;
-    document.getElementById('message').placeholder =
-        `message ${targetUser}...`;
-
+    document.getElementById('message').placeholder = `message ${targetUser}...`;
     document.getElementById('sendBtn').disabled = false;
 
     if (!stompClient || !stompClient.connected) {
         const socket = new SockJS(`${BASE_URL}/chat`);
-
         stompClient = Stomp.over(socket);
         stompClient.debug = null;
 
         stompClient.connect({}, async function () {
-
             showToast('connected ✦', 'success');
-
             subscribeToRoom(targetUser);
-
-            await loadRoomMessages(
-                getRoomId(currentUser, targetUser)
-            );
-
-            // Mark messages as seen
-            markMessagesAsSeen(targetUser);
-
+            await loadRoomMessages(getRoomId(currentUser, targetUser)); // ← was getRoom()
+            await markMessagesAsSeen(targetUser);                        // ← now defined
         });
 
     } else {
-
         subscribeToRoom(targetUser);
-
-        await loadRoomMessages(
-            getRoomId(currentUser, targetUser)
-        );
-
-        // Mark messages as seen
-        markMessagesAsSeen(targetUser);
+        await loadRoomMessages(getRoomId(currentUser, targetUser));
+        await markMessagesAsSeen(targetUser);
     }
 
     if (window.innerWidth <= 768) {
-        document.getElementById('chatPage')
-            .classList.add('show-chat');
+        document.getElementById('chatPage').classList.add('show-chat');
     }
 }
-async function markMessageSeen(id) {
+async function markMessagesAsSeen(targetUser) {
+    const room = getRoomId(currentUser, targetUser);
     try {
-        await fetch(
-            `${BASE_URL}/api/chat/message/${id}/seen`,
-            {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + localStorage.getItem('token')
-                }
+        await fetch(`${BASE_URL}/api/chat/messages/${room}/seen`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
             }
-        );
-
-        console.log('Message marked as seen');
-    } catch (error) {
-        console.error('Seen update failed', error);
+        });
+    } catch (err) {
+        console.error('markMessagesAsSeen failed:', err);
     }
 }
 
- async function loadRoomMessages(roomId) {
+ async function loadRoomMessages(room) {
      const messages = document.getElementById('messages');
      messages.innerHTML = '';
      try {
-         const res = await fetch(`${BASE_URL}/api/chat/messages/${roomId}`);
+         const res = await fetch(`${BASE_URL}/api/chat/messages/${room}`);
          const data = await res.json();
          if (!data.length) {
              messages.innerHTML = `<div class="empty-state" id="emptyState"><div class="empty-icon">💬</div><h3>no messages yet</h3><p>say hi first! ✦</p></div>`;
@@ -1718,15 +1695,6 @@ async function markMessageSeen(id) {
 
      attachDragReply(group, data);
  }
- async function markMessageSeen(messageId) {
-    try {
-        await fetch(`${BASE_URL}/api/chat/message/${id}/seen`, {
-            method: 'POST'
-        });
-    } catch (err) {
-        console.error("Failed to mark seen", err);
-    }
-}
 
  function deleteMessage(id, group, isMe) {
      fetch(`${BASE_URL}/api/chat/deleteChats/${id}`, { method: 'DELETE' })

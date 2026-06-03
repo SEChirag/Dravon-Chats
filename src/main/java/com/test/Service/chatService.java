@@ -199,13 +199,16 @@ public class chatService {
         friendRequestRepository.deleteBySenderAndReceiver(friend, current);
     }
 
-    public void markSeen(Long id) {
-        chatMessage msg = chatRepository.findById(id).orElseThrow();
-
-        msg.setSeen(true);
-        msg.setSeenAt(System.currentTimeMillis());
-
-        chatRepository.save(msg);
+    public void markRoomAsSeen(String room) {
+        List<chatMessage> messages = chatRepository.findByRoom(room);
+        long now = System.currentTimeMillis();
+        messages.forEach(msg -> {
+            if (!Boolean.TRUE.equals(msg.getSeen())) {
+                msg.setSeen(true);
+                msg.setSeenAt(now);
+            }
+        });
+        chatRepository.saveAll(messages);
     }
 
     }

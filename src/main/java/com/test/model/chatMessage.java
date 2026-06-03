@@ -22,8 +22,6 @@ public class chatMessage {
 
     private String room;
 
-    private Long roomId;
-
     private String Email;
 
     @Enumerated(EnumType.STRING)
@@ -36,8 +34,8 @@ public class chatMessage {
     @JoinColumn(name = "reply_to_id")
     private chatMessage replyTo;
 
-@Column(nullable = false)
-    private boolean seen = false;
+@Column(nullable = true)
+    private Boolean seen = false;
 
     private Long seenAt;
 }

@@ -63,9 +63,9 @@ public class ChatController {
         return chatService.getMessagesByRoom(room);
     }
     ///  //////////////////////////////////////
-    @GetMapping("/messages/{roomId}")
-    public List<chatMessage> getMessagesByRoom(@PathVariable String roomId) {
-        return chatService.getMessagesByRoom(roomId);
+    @GetMapping("/messages/{room}")
+    public List<chatMessage> getMessagesByRoom(@PathVariable("room") String room) {
+        return chatService.getMessagesByRoom(room);
     }
     /// ////////////////////////////////////
     @GetMapping("/all")
@@ -220,15 +220,9 @@ public List<String> sendRequest(
     public void unfriend( @RequestParam String email, @RequestParam String friendEmail){
         chatService.unfriend(email, friendEmail);
     }
-@PostMapping("/message/{id}/seen")
-    public ResponseEntity<String> markSeen(@PathVariable Long id){
-        chatMessage message = chatRepo.findById(id).orElseThrow(()->new RuntimeException("Message not found"));
-
-        message.setSeen(true);
-        message.setSeenAt(System.currentTimeMillis());
-
-        chatRepo.save(message);
-
+    @PostMapping("/messages/{room}/seen")
+    public ResponseEntity<String> markRoomSeen(@PathVariable String room) {
+        chatService.markRoomAsSeen(room);
         return ResponseEntity.ok("seen");
     }
 }
