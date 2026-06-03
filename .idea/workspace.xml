@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Replying feature" />
+    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Bug resolve in Entity">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/chatMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/chatMessage.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -199,14 +202,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1777624986069</updated>
-    </task>
-    <task id="LOCAL-00020" summary="to delete the chats by id">
-      <option name="closed" value="true" />
-      <created>1779279430654</created>
-      <option name="number" value="00020" />
-      <option name="presentableId" value="LOCAL-00020" />
-      <option name="project" value="LOCAL" />
-      <updated>1779279430654</updated>
     </task>
     <task id="LOCAL-00021" summary="Validation users who can add and whom i want to talk">
       <option name="closed" value="true" />
@@ -592,7 +587,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780471101040</updated>
     </task>
-    <option name="localTasksCounter" value="69" />
+    <task id="LOCAL-00069" summary="Bug resolve in Entity">
+      <option name="closed" value="true" />
+      <created>1780471817181</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1780471817181</updated>
+    </task>
+    <option name="localTasksCounter" value="70" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -607,7 +610,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Pagesuze changed for required test case" />
     <MESSAGE value="actuator dependency" />
     <MESSAGE value="Sprig security dependency" />
     <MESSAGE value="Spring security" />
@@ -632,7 +634,8 @@
     <MESSAGE value="Mobile" />
     <MESSAGE value="Mobile updates" />
     <MESSAGE value="Replying feature" />
-    <option name="LAST_COMMIT_MESSAGE" value="Replying feature" />
+    <MESSAGE value="Bug resolve in Entity" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bug resolve in Entity" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
