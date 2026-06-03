@@ -501,6 +501,13 @@
     margin-left: 6px;
     font-size: 12px;
 }
+        .seen-status {
+    font-size: 11px;
+    margin-left: 4px;
+    color: #aaa;
+    font-weight: 600;
+    letter-spacing: -1px;
+}
     </style>
 </head>
 <body>
@@ -846,6 +853,7 @@
 <script>
 
  const BASE_URL = 'https://dravon-chats.onrender.com';
+ let seenSub = null;
  let stompClient = null;
  let currentUser = '';
  let currentUserId = null;
@@ -1278,11 +1286,17 @@
 
  function subscribeToRoom(targetUser) {
      if (currentSub) { currentSub.unsubscribe(); currentSub = null; }
+      if (seenSub) { seenSub.unsubscribe(); seenSub = null; }
      const roomId = getRoomId(currentUser, targetUser);
      currentSub = stompClient.subscribe('/topic/chat' + roomId, function (frame) {
          const msg = JSON.parse(frame.body);
          showMessage(msg);
      });
+
+       seenSub = stompClient.subscribe('/topic/seen/' + roomId, function (frame) {
+        updateAllSeenTicks();
+    });
+
  }
 
  function switchSidebarTab(tab) {
@@ -1729,7 +1743,12 @@ async function markMessagesAsSeen(targetUser) {
      document.getElementById('emojiPickerWrapper').style.display = 'none';
      cancelReply();
  }
-
+function updateAllSeenTicks() {
+    document.querySelectorAll('.seen-status').forEach(el => {
+        el.textContent = '✓✓';
+        el.style.color = '#4fc3f7';
+    });
+}
  function startReply(msgData) {
      replyingTo = msgData;
      const isMe = msgData.sender === currentUser;

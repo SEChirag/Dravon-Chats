@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -209,6 +210,8 @@ public class chatService {
             }
         });
         chatRepository.saveAll(messages);
+
+        messagingTemplate.convertAndSend("/topic/seen" +room , Map.of("room" ,room ,"seen",true));
     }
 
     }

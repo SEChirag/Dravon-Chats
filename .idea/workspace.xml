@@ -4,12 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Bug resolve in Entity">
+    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Seen feature">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Repository/chatRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Repository/chatRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/chatMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/chatMessage.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -206,14 +203,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1777624986069</updated>
-    </task>
-    <task id="LOCAL-00022" summary="Friend Requesta and Search users feature APi">
-      <option name="closed" value="true" />
-      <created>1779346182946</created>
-      <option name="number" value="00022" />
-      <option name="presentableId" value="LOCAL-00022" />
-      <option name="project" value="LOCAL" />
-      <updated>1779346182946</updated>
     </task>
     <task id="LOCAL-00023" summary="profile and unfriend feature">
       <option name="closed" value="true" />
@@ -599,7 +588,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780475318000</updated>
     </task>
-    <option name="localTasksCounter" value="71" />
+    <task id="LOCAL-00071" summary="Seen feature">
+      <option name="closed" value="true" />
+      <created>1780479147345</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1780479147345</updated>
+    </task>
+    <option name="localTasksCounter" value="72" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -614,7 +611,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="actuator dependency" />
     <MESSAGE value="Sprig security dependency" />
     <MESSAGE value="Spring security" />
     <MESSAGE value="Get all users" />
@@ -639,7 +635,8 @@
     <MESSAGE value="Mobile updates" />
     <MESSAGE value="Replying feature" />
     <MESSAGE value="Bug resolve in Entity" />
-    <option name="LAST_COMMIT_MESSAGE" value="Bug resolve in Entity" />
+    <MESSAGE value="Seen feature" />
+    <option name="LAST_COMMIT_MESSAGE" value="Seen feature" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
