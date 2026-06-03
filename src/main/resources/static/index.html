@@ -1618,22 +1618,34 @@ async function markMessagesAsSeen(targetUser) {
 }
 
  async function loadRoomMessages(room) {
-     const messages = document.getElementById('messages');
-     messages.innerHTML = '';
-     try {
-         const res = await fetch(`${BASE_URL}/api/chat/messages/${room}`);
-         const data = await res.json();
-         if (!data.length) {
-             messages.innerHTML = `<div class="empty-state" id="emptyState"><div class="empty-icon">💬</div><h3>no messages yet</h3><p>say hi first! ✦</p></div>`;
-         } else {
-             data.forEach(showMessage);
-             messages.scrollTop = messages.scrollHeight;
-         }
-     } catch (e) {
-         messages.innerHTML = `<div class="empty-state"><div class="empty-icon">💬</div><h3>no messages yet</h3><p>say hi first! ✦</p></div>`;
-     }
- }
-
+    const messages = document.getElementById('messages');
+    messages.innerHTML = '';
+    try {
+        const res = await fetch(`${BASE_URL}/api/chat/messages/${room}`, {
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+        });
+        const data = await res.json();
+        if (!data.length) {
+            messages.innerHTML = `<div class="empty-state" id="emptyState">
+                <div class="empty-icon">💬</div>
+                <h3>no messages yet</h3>
+                <p>say hi first! ✦</p>
+            </div>`;
+        } else {
+            data.forEach(showMessage);
+            // Wait for DOM to paint, then scroll
+            requestAnimationFrame(() => {
+                messages.scrollTop = messages.scrollHeight;
+            });
+        }
+    } catch (e) {
+        messages.innerHTML = `<div class="empty-state">
+            <div class="empty-icon">💬</div>
+            <h3>no messages yet</h3>
+            <p>say hi first! ✦</p>
+        </div>`;
+    }
+}
  // ─────────────────────────────────────────────
  // MESSAGES
  // ─────────────────────────────────────────────
@@ -1723,8 +1735,9 @@ async function markMessagesAsSeen(targetUser) {
          meta.appendChild(del);
      }
      group.appendChild(meta);
-     messages.appendChild(group);
-     messages.scrollTop = messages.scrollHeight;
+   messages.appendChild(group);
+requestAnimationFrame(() => {
+    messages.scrollTop = messages.scrollHeight;
 
      attachDragReply(group, data);
  }
