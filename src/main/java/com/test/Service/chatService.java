@@ -200,18 +200,20 @@ public class chatService {
         friendRequestRepository.deleteBySenderAndReceiver(friend, current);
     }
 
-    public void markRoomAsSeen(String room) {
+    public void markRoomAsSeen(String room , String currentUserEmail) {
         List<chatMessage> messages = chatRepository.findByRoom(room);
         long now = System.currentTimeMillis();
         messages.forEach(msg -> {
-            if (!Boolean.TRUE.equals(msg.getSeen())) {
+            if (!Boolean.TRUE.equals(msg.getSeen())
+            && msg.getReceiver().equals(currentUserEmail)){
                 msg.setSeen(true);
                 msg.setSeenAt(now);
             }
         });
         chatRepository.saveAll(messages);
 
-        messagingTemplate.convertAndSend("/topic/seen" +room , Map.of("room" ,room ,"seen",true));
+        messagingTemplate.convertAndSend("/topic/seen" +room , Map.of("room" ,room ,"seen",true)
+        );
     }
 
     }

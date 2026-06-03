@@ -221,8 +221,9 @@ public List<String> sendRequest(
         chatService.unfriend(email, friendEmail);
     }
     @PostMapping("/messages/{room}/seen")
-    public ResponseEntity<String> markRoomSeen(@PathVariable String room) {
-        chatService.markRoomAsSeen(room);
+    public ResponseEntity<String> markRoomSeen(@PathVariable String room , @RequestHeader("Authorization") String authHeader) {
+        String email = jwtUtil.extractEmail(authHeader.substring(7));
+        chatService.markRoomAsSeen(room , email);
         return ResponseEntity.ok("seen");
     }
 }
