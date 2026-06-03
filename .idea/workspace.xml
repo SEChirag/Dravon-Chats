@@ -4,13 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Replying feature">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/chatMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/chatMessage.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/index.html" afterDir="false" />
-    </list>
+    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Replying feature" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -205,14 +199,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1777624986069</updated>
-    </task>
-    <task id="LOCAL-00019" summary="to delete null values">
-      <option name="closed" value="true" />
-      <created>1779272727852</created>
-      <option name="number" value="00019" />
-      <option name="presentableId" value="LOCAL-00019" />
-      <option name="project" value="LOCAL" />
-      <updated>1779272727852</updated>
     </task>
     <task id="LOCAL-00020" summary="to delete the chats by id">
       <option name="closed" value="true" />
@@ -598,7 +584,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780464655634</updated>
     </task>
-    <option name="localTasksCounter" value="68" />
+    <task id="LOCAL-00068" summary="Replying feature">
+      <option name="closed" value="true" />
+      <created>1780471101040</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1780471101040</updated>
+    </task>
+    <option name="localTasksCounter" value="69" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

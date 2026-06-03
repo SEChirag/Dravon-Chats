@@ -22,6 +22,8 @@ public class chatMessage {
 
     private String room;
 
+    private String Email;
+
     @Enumerated(EnumType.STRING)
     private MessageType type;
 
