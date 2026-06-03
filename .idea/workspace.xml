@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Mobile">
+    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Mobile updates">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Repository/friendRequestRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Repository/friendRequestRepository.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -202,14 +203,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1777624986069</updated>
-    </task>
-    <task id="LOCAL-00017" summary="Created unique rooms for single convo">
-      <option name="closed" value="true" />
-      <created>1779265855755</created>
-      <option name="number" value="00017" />
-      <option name="presentableId" value="LOCAL-00017" />
-      <option name="project" value="LOCAL" />
-      <updated>1779265855755</updated>
     </task>
     <task id="LOCAL-00018" summary="Message Template Injection">
       <option name="closed" value="true" />
@@ -595,7 +588,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780391466460</updated>
     </task>
-    <option name="localTasksCounter" value="66" />
+    <task id="LOCAL-00066" summary="Mobile updates">
+      <option name="closed" value="true" />
+      <created>1780396543157</created>
+      <option name="number" value="00066" />
+      <option name="presentableId" value="LOCAL-00066" />
+      <option name="project" value="LOCAL" />
+      <updated>1780396543158</updated>
+    </task>
+    <option name="localTasksCounter" value="67" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -634,7 +635,8 @@
     <MESSAGE value="docker updates" />
     <MESSAGE value=" updates" />
     <MESSAGE value="Mobile" />
-    <option name="LAST_COMMIT_MESSAGE" value="Mobile" />
+    <MESSAGE value="Mobile updates" />
+    <option name="LAST_COMMIT_MESSAGE" value="Mobile updates" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
