@@ -1293,21 +1293,29 @@
          setTimeout(connectWebSocket, 3000);
      });
  }
+function subscribeToRoom(targetUser) {
+    if (currentSub) { currentSub.unsubscribe(); currentSub = null; }
+    if (seenSub) { seenSub.unsubscribe(); seenSub = null; }
 
- function subscribeToRoom(targetUser) {
-     if (currentSub) { currentSub.unsubscribe(); currentSub = null; }
-      if (seenSub) { seenSub.unsubscribe(); seenSub = null; }
-     const roomId = getRoomId(currentUser, targetUser);
-     currentSub = stompClient.subscribe('/topic/chat' + roomId, function (frame) {
-         const msg = JSON.parse(frame.body);
-         showMessage(msg);
-     });
+    const roomId = getRoomId(currentUser, targetUser);
 
-       seenSub = stompClient.subscribe('/topic/seen/' + roomId, function (frame) {
+    if (!stompClient || !stompClient.connected) {
+        console.warn('subscribeToRoom called but stomp not connected');
+        return;
+    }
+
+    currentSub = stompClient.subscribe('/topic/chat' + roomId, function (frame) {
+        const msg = JSON.parse(frame.body);
+        showMessage(msg);
+    });
+
+    seenSub = stompClient.subscribe('/topic/seen/' + roomId, function (frame) {
+        console.log('seen event received for room:', roomId); // ← debug line
         updateAllSeenTicks();
     });
 
- }
+    console.log('subscribed to room:', roomId, '| seenSub:', seenSub); // ← debug
+}
 
  function switchSidebarTab(tab) {
      activeSidebarTab = tab;
