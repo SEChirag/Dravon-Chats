@@ -7,7 +7,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name ="chat_message")
+@Table(name = "chat_message")
 public class chatMessage {
 
     @Id
@@ -28,10 +28,12 @@ public class chatMessage {
     private Long timestamp;
 
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "reply_to_id")
+    private chatMessage replyTo;
 
-    @Getter @Setter
-    private String email;
+@Column(nullable = false)
+    private boolean seen = false;
 
-    @Getter @Setter
-    private String password;
+    private Long seenAt;
 }

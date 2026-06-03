@@ -198,4 +198,15 @@ public class chatService {
         friendRequestRepository.deleteBySenderAndReceiver(current, friend);
         friendRequestRepository.deleteBySenderAndReceiver(friend, current);
     }
-}
+
+    public void markSeen(Long id) {
+        chatMessage msg = chatRepository.findById(id).orElseThrow();
+
+        msg.setSeen(true);
+        msg.setSeenAt(System.currentTimeMillis());
+
+        chatRepository.save(msg);
+    }
+
+    }
+

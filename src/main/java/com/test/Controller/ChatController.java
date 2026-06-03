@@ -2,6 +2,7 @@ package com.test.Controller;
 
 
 import com.test.Repository.LoginRepository;
+import com.test.Repository.chatRepository;
 import com.test.Service.PasswordResetService;
 import com.test.Service.chatService;
 import com.test.Util.JwtUtil;
@@ -30,11 +31,11 @@ public class ChatController {
 
     @Autowired
     private JwtUtil jwtUtil;
-
-    public ChatController(chatService chatService , LoginRepository loginRepository) {
+     private chatRepository chatRepo;
+    public ChatController(chatService chatService , LoginRepository loginRepository , chatRepository chatRepo) {
         this.chatService = chatService;
         this.loginRepository = loginRepository;
-
+        this.chatRepo=chatRepo;
     }
     private String getRoom(String user1, String user2) {
 
@@ -219,7 +220,17 @@ public List<String> sendRequest(
     public void unfriend( @RequestParam String email, @RequestParam String friendEmail){
         chatService.unfriend(email, friendEmail);
     }
+@PostMapping("/message/{id}/seen")
+    public ResponseEntity<String> markSeen(@PathVariable Long id){
+        chatMessage message = chatRepo.findById(id).orElseThrow(()->new RuntimeException("Message not found"));
 
+        message.setSeen(true);
+        message.setSeenAt(System.currentTimeMillis());
+
+        chatRepo.save(message);
+
+        return ResponseEntity.ok("seen");
+    }
 }
 
 

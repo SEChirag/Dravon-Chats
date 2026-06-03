@@ -497,6 +497,10 @@
    /* Login card full width */
    .card,.reset-card,.modal-card{width:100%;max-width:400px;}
  }
+        .seen-status {
+    margin-left: 6px;
+    font-size: 12px;
+}
     </style>
 </head>
 <body>
@@ -1530,32 +1534,79 @@
      } catch (e) { showToast('server error 😭', 'error'); }
  }
 
- function openPrivateChat(targetUser) {
-     chatWith = targetUser;
-     document.querySelectorAll('.user-item').forEach(el =>
-         el.classList.toggle('active', el.dataset.user === targetUser));
-     document.getElementById('chatTitle').textContent = targetUser;
-     document.getElementById('chatSubtitle').textContent = 'online';
-     document.getElementById('chatAvatar').textContent = targetUser[0].toUpperCase();
-     document.getElementById('message').disabled = false;
-     document.getElementById('message').placeholder = `message ${targetUser}...`;
-     document.getElementById('sendBtn').disabled = false;
-     if (!stompClient || !stompClient.connected) {
-         const socket = new SockJS(`https://dravon-chats.onrender.com/chat`);
-         stompClient = Stomp.over(socket);
-         stompClient.debug = null;
-         stompClient.connect({}, function () {
-             showToast('connected ✦', 'success');
-             subscribeToRoom(targetUser);
-         });
-     } else {
-         subscribeToRoom(targetUser);
-     }
-     loadRoomMessages(getRoomId(currentUser, targetUser));
-     if (window.innerWidth <= 768) {
-         document.getElementById('chatPage').classList.add('show-chat');
-     }
- }
+async function openPrivateChat(targetUser) {
+    chatWith = targetUser;
+
+    document.querySelectorAll('.user-item').forEach(el =>
+        el.classList.toggle('active', el.dataset.user === targetUser)
+    );
+
+    document.getElementById('chatTitle').textContent = targetUser;
+    document.getElementById('chatSubtitle').textContent = 'online';
+    document.getElementById('chatAvatar').textContent =
+        targetUser[0].toUpperCase();
+
+    document.getElementById('message').disabled = false;
+    document.getElementById('message').placeholder =
+        `message ${targetUser}...`;
+
+    document.getElementById('sendBtn').disabled = false;
+
+    if (!stompClient || !stompClient.connected) {
+        const socket = new SockJS(`${BASE_URL}/chat`);
+
+        stompClient = Stomp.over(socket);
+        stompClient.debug = null;
+
+        stompClient.connect({}, async function () {
+
+            showToast('connected ✦', 'success');
+
+            subscribeToRoom(targetUser);
+
+            await loadRoomMessages(
+                getRoomId(currentUser, targetUser)
+            );
+
+            // Mark messages as seen
+            markMessagesAsSeen(targetUser);
+
+        });
+
+    } else {
+
+        subscribeToRoom(targetUser);
+
+        await loadRoomMessages(
+            getRoomId(currentUser, targetUser)
+        );
+
+        // Mark messages as seen
+        markMessagesAsSeen(targetUser);
+    }
+
+    if (window.innerWidth <= 768) {
+        document.getElementById('chatPage')
+            .classList.add('show-chat');
+    }
+}
+async function markMessageSeen(id) {
+    try {
+        await fetch(
+            `${BASE_URL}/api/chat/message/${id}/seen`,
+            {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            }
+        );
+
+        console.log('Message marked as seen');
+    } catch (error) {
+        console.error('Seen update failed', error);
+    }
+}
 
  async function loadRoomMessages(roomId) {
      const messages = document.getElementById('messages');
@@ -1606,7 +1657,7 @@
      bubbleWrap.style.display = 'flex';
      bubbleWrap.style.flexDirection = 'column';
      bubbleWrap.style.maxWidth = '100%';
-
+ console.log("MESSAGE:", data);
      if (data.replyToId && data.replyToContent) {
          const quote = document.createElement('div');
          quote.className = 'reply-quote';
@@ -1647,6 +1698,13 @@
          ts.textContent = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
          meta.appendChild(ts);
      }
+     if (isMe) {
+    const seenSpan = document.createElement('span');
+    seenSpan.className = 'seen-status';
+    seenSpan.textContent = data.seen ? '✓✓' : '✓';
+    meta.appendChild(seenSpan);
+}
+
      if (data.id) {
          const del = document.createElement('button');
          del.className = 'del-btn';
@@ -1660,6 +1718,15 @@
 
      attachDragReply(group, data);
  }
+ async function markMessageSeen(messageId) {
+    try {
+        await fetch(`${BASE_URL}/api/chat/message/${id}/seen`, {
+            method: 'POST'
+        });
+    } catch (err) {
+        console.error("Failed to mark seen", err);
+    }
+}
 
  function deleteMessage(id, group, isMe) {
      fetch(`${BASE_URL}/api/chat/deleteChats/${id}`, { method: 'DELETE' })
