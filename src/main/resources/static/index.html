@@ -1619,36 +1619,38 @@
            }
        }
 
-        async function loadRoomMessages(room) {
-           const messages = document.getElementById('messages');
-           messages.innerHTML = '';
-           try {
-               const res = await fetch(`${BASE_URL}/api/chat/messages/${room}`, {
-                   headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-               });
-               const data = await res.json();
-               if (!data.length) {
-                   messages.innerHTML = `<div class="empty-state" id="emptyState">
-                       <div class="empty-icon">💬</div>
-                       <h3>no messages yet</h3>
-                       <p>say hi first! ✦</p>
-                   </div>`;
-                   return;
+       async function loadRoomMessages(room) {
+    const messages = document.getElementById('messages');
+    messages.innerHTML = '';
+    try {
+        const res = await fetch(`${BASE_URL}/api/chat/messages/${room}`, {
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+        });
+        const data = await res.json();
 
-           }
-           data.ForEach(msg => showMessage(msg));
-            requestAnimationFrame(() => {
+        if (!data.length) {
+            messages.innerHTML = `<div class="empty-state" id="emptyState">
+                <div class="empty-icon">💬</div>
+                <h3>no messages yet</h3>
+                <p>say hi first! ✦</p>
+            </div>`;
+            return;
+        }
+
+        data.forEach(msg => showMessage(msg));  // ✅ lowercase f
+
+        requestAnimationFrame(() => {
             messages.scrollTop = messages.scrollHeight;
         });
 
-           catch (e) {
-               messages.innerHTML = `<div class="empty-state">
-                   <div class="empty-icon">💬</div>
-                   <h3>no messages yet</h3>
-                   <p>say hi first! ✦</p>
-               </div>`;
-           }
-       }
+    } catch (e) {
+        messages.innerHTML = `<div class="empty-state">
+            <div class="empty-icon">💬</div>
+            <h3>no messages yet</h3>
+            <p>say hi first! ✦</p>
+        </div>`;
+    }
+}
         // ─────────────────────────────────────────────
         // MESSAGES
         // ─────────────────────────────────────────────
