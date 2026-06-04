@@ -1631,13 +1631,7 @@ async function markMessagesAsSeen(targetUser) {
                 <h3>no messages yet</h3>
                 <p>say hi first! ✦</p>
             </div>`;
-        } else {
-            data.forEach(showMessage);
-            // Wait for DOM to paint, then scroll
-            requestAnimationFrame(() => {
-                messages.scrollTop = messages.scrollHeight;
-            });
-        }
+
     } catch (e) {
         messages.innerHTML = `<div class="empty-state">
             <div class="empty-icon">💬</div>
