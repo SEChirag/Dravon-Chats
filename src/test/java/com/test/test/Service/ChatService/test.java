@@ -166,4 +166,18 @@ public class test {
 
         verify(loginRepository, times(1)).save(user);
     }
+    @Test
+    void testgetUnreadCount(){
+
+        String room = "room1";
+        String email = "user@test.com";
+
+        when(chatRepository.countUnreadByRoomAndReceiver(room, email)).thenReturn(5l);
+
+        long result = chatService.getUnreadCount(room, email);
+
+        assertEquals(5, result);
+        verify(chatRepository, times(1)).countUnreadByRoomAndReceiver(room, email);
+
+    }
 }
