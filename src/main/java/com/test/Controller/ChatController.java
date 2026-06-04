@@ -231,6 +231,13 @@ public List<String> sendRequest(
         chatService.markRoomAsSeen(room , email);
         return ResponseEntity.ok("seen");
     }
+
+    @GetMapping("/messages/{room}/unread")
+    public ResponseEntity<Long> getUnreadCount(@PathVariable String room , @RequestHeader("Authorization") String authHeader) {
+        String email = jwtUtil.extractEmail(authHeader.substring(7));
+
+        return ResponseEntity.ok(chatService.getUnreadCount(room , email));
+    }
 }
 
 

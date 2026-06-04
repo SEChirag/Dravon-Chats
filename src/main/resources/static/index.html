@@ -518,6 +518,20 @@
     color: var(--muted);
     margin-top: 2px;
 }
+        .unread-badge {
+    background: var(--neon);
+    color: #000;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5px;
+    font-family: 'Barlow Condensed', sans-serif;
+}
     </style>
 </head>
 <body>
@@ -1308,6 +1322,10 @@
 
            currentSub = stompClient.subscribe('/topic/chat' + roomId, function (frame) {
                const msg = JSON.parse(frame.body);
+                if (msg.sender !== currentUser) {
+        showToast(`💬 new message from ${msg.sender}`, 'info');
+        loadUserList(); // re-renders with updated unread counts + sorts to top
+    }
                showMessage(msg);
            });
 
@@ -1375,29 +1393,48 @@
             }
         }
 
-        function renderUserList(users) {
-            const ul = document.getElementById('userList');
-            if (!users.length) {
-                ul.innerHTML = '<div class="no-users">no friends yet 👀<br/>search someone to add!</div>';
-                return;
-            }
-            ul.innerHTML = '';
-            users.forEach(u => {
-                const item = document.createElement('div');
-                item.className = 'user-item' + (u === chatWith ? ' active' : '');
-                item.dataset.user = u;
-                item.innerHTML = `
-                    <div class="user-av">${u[0].toUpperCase()}</div>
-                    <div style="min-width:0;flex:1;">
-                        <div class="user-name">${u}</div>
-                        <div class="user-status">tap to chat</div>
-                    </div>
-                    <button class="remove-friend-btn" title="Remove" onclick="removeFriend(event, '${u}')">✕</button>`;
-                item.onclick = () => openPrivateChat(u);
-                ul.appendChild(item);
-            });
-        }
+// Replace your renderUserList function
+async function renderUserList(users) {
+    const ul = document.getElementById('userList');
+    if (!users.length) {
+        ul.innerHTML = '<div class="no-users">no friends yet 👀<br/>search someone to add!</div>';
+        return;
+    }
+    ul.innerHTML = '';
 
+    // fetch unread counts for all friends in parallel
+    const unreadCounts = await Promise.all(users.map(async (u) => {
+        const room = getRoomId(currentUser, u);
+        try {
+            const res = await fetch(`${BASE_URL}/api/chat/messages/${room}/unread`, {
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+            });
+            const count = await res.json();
+            return { user: u, count };
+        } catch (e) {
+            return { user: u, count: 0 };
+        }
+    }));
+
+    // ✅ sort — users with unread messages come first
+    unreadCounts.sort((a, b) => b.count - a.count);
+
+    unreadCounts.forEach(({ user: u, count }) => {
+        const item = document.createElement('div');
+        item.className = 'user-item' + (u === chatWith ? ' active' : '');
+        item.dataset.user = u;
+        item.innerHTML = `
+            <div class="user-av">${u[0].toUpperCase()}</div>
+            <div style="min-width:0;flex:1;">
+                <div class="user-name">${u}</div>
+                <div class="user-status">${count > 0 ? `${count} new message${count > 1 ? 's' : ''} 🔥` : 'tap to chat'}</div>
+            </div>
+            ${count > 0 ? `<div class="unread-badge">${count}</div>` : ''}
+            <button class="remove-friend-btn" title="Remove" onclick="removeFriend(event, '${u}')">✕</button>`;
+        item.onclick = () => openPrivateChat(u);
+        ul.appendChild(item);
+    });
+}
         async function removeFriend(event, friendEmail) {
             event.stopPropagation();
             if (!confirm(`Remove ${friendEmail} from inbox?`)) return;

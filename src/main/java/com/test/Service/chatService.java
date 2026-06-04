@@ -220,5 +220,9 @@ public class chatService {
         );
     }
 
+    public long getUnreadCount(String room , String email){
+        return chatRepository.countUnreadByRoomAndReceiver(room, email);
+    }
+
     }
 
