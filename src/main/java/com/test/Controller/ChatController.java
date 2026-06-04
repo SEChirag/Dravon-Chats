@@ -102,9 +102,13 @@ public class ChatController {
     }
     /// ///////////////////////////////////
     @PostMapping("/register")
-    public String register(@RequestBody User user){
+    public ResponseEntity<String> register(@RequestBody User user){
+        String result = chatService.register(user);
+        if(result.equals("Email already exists")){
+            return ResponseEntity.status(409).body(result);
+        }
 
-        return chatService.register(user);
+        return ResponseEntity.ok(result);
     }
 /// ////////////////////////////////////////
     @GetMapping("/users")

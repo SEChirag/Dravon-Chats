@@ -75,6 +75,10 @@ public class chatService {
     }
 
     public String register(User user) {
+
+        if(loginRepository.findByEmail(user.getEmail()).isPresent()) {
+            return "Username Already exists";
+        }
         loginRepository.save(user);
         return "User Registered";
     }

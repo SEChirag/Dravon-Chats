@@ -19,7 +19,8 @@ public class User {
     private Long id;
 
     @Column(unique = true)
-  @Getter  @Setter
+    @Getter  @Setter
+    @Id
     private String email;
 
     @Getter  @Setter
