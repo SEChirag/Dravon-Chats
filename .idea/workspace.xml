@@ -4,7 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="unread notifications" />
+    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="unread notifications">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Repository/LoginRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Repository/LoginRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Repository/friendRequestRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Repository/friendRequestRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/FriendRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/FriendRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/chatMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/chatMessage.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />

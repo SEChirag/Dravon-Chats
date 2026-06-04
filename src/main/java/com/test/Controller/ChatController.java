@@ -53,8 +53,13 @@ public class ChatController {
         message.setRoom(room);
         message.setTimestamp(System.currentTimeMillis());
 
-        chatService.saveMessage(message);
+        if(message.getReplyTo() != null && message.getReplyTo().getId() != null ){
+            chatMessage parent = chatService.findById(message.getReplyTo().getId());
 
+            message.setReplyTo(parent);
+        }
+
+        chatService.saveMessage(message);
        chatService.sendMessageToRoom(room, message);
     }
     /// /////////////////////////////////////
@@ -131,8 +136,8 @@ public class ChatController {
     }
     /// ///////////////////////////////////////
     @GetMapping("/search")
-    public Optional<User> search(@RequestParam String Email){
-        return chatService.search(Email);
+    public FriendRequest search(@RequestParam String email){
+        return chatService.search(email);
     }
 /////////////////////////////////////////////////////////
 @PostMapping("/FriendRequest")

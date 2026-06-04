@@ -19,6 +19,9 @@ public class FriendRequest {
     @Getter @Setter
     private User sender;
 
+    @Getter @Setter
+    private String email;
+
 @ManyToOne
 @JoinColumn(name = "receiver_id")
 

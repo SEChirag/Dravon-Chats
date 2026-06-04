@@ -107,8 +107,8 @@ public class chatService {
         chatRepository.delete(id);
     }
 
-    public Optional<User> search(String email) {
-        return loginRepository.findByEmail(email);
+    public FriendRequest search(String email) {
+        return friendRequestRepository.findByEmail(email);
     }
 
     public String reject(long id) {
@@ -221,8 +221,15 @@ public class chatService {
     }
 
     public long getUnreadCount(String room , String email){
+        System.out.println("Room: " + room);
+        System.out.println("Email: " + email);
+        System.out.println("Unread count: " + chatRepository.countUnreadByRoomAndReceiver(room, email));
         return chatRepository.countUnreadByRoomAndReceiver(room, email);
-    }
 
     }
+
+    public chatMessage findById(Long id) {
+        return chatRepository.findById(id).orElseThrow(null);
+    }
+}
 

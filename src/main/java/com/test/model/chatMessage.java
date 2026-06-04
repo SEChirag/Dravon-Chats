@@ -30,7 +30,7 @@ public class chatMessage {
     private Long timestamp;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "reply_to_id")
     private chatMessage replyTo;
 
@@ -38,4 +38,13 @@ public class chatMessage {
     private Boolean seen = false;
 
     private Long seenAt;
+
+    @Transient
+    private Long replyToId;
+
+    @Transient
+    private String replyToContent;
+
+    @Transient
+    private String replyToSender;
 }
