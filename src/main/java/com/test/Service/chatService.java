@@ -205,7 +205,7 @@ public class chatService {
     }
 
     public void markRoomAsSeen(String room , String currentUserEmail) {
-        List<chatMessage> messages = chatRepository.findByRoom(room);
+        List<chatMessage> messages = chatRepository.findByRoomOrderByTimestampAsc(room);
         long now = System.currentTimeMillis();
         messages.forEach(msg -> {
             if (!Boolean.TRUE.equals(msg.getSeen())

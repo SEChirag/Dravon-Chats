@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Unique email">
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/FriendRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/FriendRequest.java" afterDir="false" />
-    </list>
+    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Unique email" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -201,14 +199,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1777624986069</updated>
-    </task>
-    <task id="LOCAL-00033" summary="docker.yaml added">
-      <option name="closed" value="true" />
-      <created>1780306862293</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1780306862293</updated>
     </task>
     <task id="LOCAL-00034" summary="docker.yaml added">
       <option name="closed" value="true" />
@@ -594,7 +584,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780550530461</updated>
     </task>
-    <option name="localTasksCounter" value="82" />
+    <task id="LOCAL-00082" summary="Unique email">
+      <option name="closed" value="true" />
+      <created>1780551034635</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1780551034635</updated>
+    </task>
+    <option name="localTasksCounter" value="83" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
