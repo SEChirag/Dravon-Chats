@@ -88,7 +88,7 @@ public class chatService {
     }
 
     public void sendMessageToRoom(String room, chatMessage message) {
-        messagingTemplate.convertAndSend("/topic/chat" + room, message);
+        messagingTemplate.convertAndSend("/topic/chat/" + room, message);
 
     }
 

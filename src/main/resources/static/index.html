@@ -1320,7 +1320,7 @@
                return;
            }
 
-           currentSub = stompClient.subscribe('/topic/chat' + roomId, function (frame) {
+           currentSub = stompClient.subscribe('/topic/chat/' + roomId, function (frame) {
                const msg = JSON.parse(frame.body);
                 if (msg.sender !== currentUser) {
         showToast(`💬 new message from ${msg.sender}`, 'info');
