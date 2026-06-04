@@ -20,7 +20,6 @@ public class User {
 
     @Column(unique = true)
     @Getter  @Setter
-    @Id
     private String email;
 
     @Getter  @Setter
