@@ -1605,42 +1605,42 @@ async function renderUserList(users) {
             } catch (e) { showToast('server error 😭', 'error'); }
         }
 
-       async function openPrivateChat(targetUser) {
-           chatWith = targetUser;
+    async function openPrivateChat(targetUser) {
+    chatWith = targetUser;
 
-           document.querySelectorAll('.user-item').forEach(el =>
-               el.classList.toggle('active', el.dataset.user === targetUser)
-           );
+    document.querySelectorAll('.user-item').forEach(el =>
+        el.classList.toggle('active', el.dataset.user === targetUser)
+    );
 
-           document.getElementById('chatTitle').textContent = targetUser;
-           document.getElementById('chatSubtitle').textContent = 'online';
-           document.getElementById('chatAvatar').textContent = targetUser[0].toUpperCase();
-           document.getElementById('message').disabled = false;
-           document.getElementById('message').placeholder = `message ${targetUser}...`;
-           document.getElementById('sendBtn').disabled = false;
+    document.getElementById('chatTitle').textContent = targetUser;
+    document.getElementById('chatSubtitle').textContent = 'online';
+    document.getElementById('chatAvatar').textContent = targetUser[0].toUpperCase();
+    document.getElementById('message').disabled = false;
+    document.getElementById('message').placeholder = `message ${targetUser}...`;
+    document.getElementById('sendBtn').disabled = false;
 
-           if (!stompClient || !stompClient.connected) {
-               const socket = new SockJS(`${BASE_URL}/chat`);
-               stompClient = Stomp.over(socket);
-               stompClient.debug = null;
+    if (!stompClient || !stompClient.connected) {
+        const socket = new SockJS(`${BASE_URL}/chat`);
+        stompClient = Stomp.over(socket);
+        stompClient.debug = null;
 
-               stompClient.connect({}, async function () {
-                   showToast('connected ✦', 'success');
-                   subscribeToRoom(targetUser);
-                   await loadRoomMessages(getRoomId(currentUser, targetUser)); // ← was getRoom()
-                   await markMessagesAsSeen(targetUser);                        // ← now defined
-               });
+        stompClient.connect({}, async function () {
+            showToast('connected ✦', 'success');
+            subscribeToRoom(targetUser);
+            await loadRoomMessages(getRoomId(currentUser, targetUser));
+            setupSeenObserver(targetUser); // ✅ replaces markMessagesAsSeen
+        });
 
-           } else {
-               subscribeToRoom(targetUser);
-               await loadRoomMessages(getRoomId(currentUser, targetUser));
-               await markMessagesAsSeen(targetUser);
-           }
+    } else {
+        subscribeToRoom(targetUser);
+        await loadRoomMessages(getRoomId(currentUser, targetUser));
+        setupSeenObserver(targetUser); // ✅ replaces markMessagesAsSeen
+    }
 
-           if (window.innerWidth <= 768) {
-               document.getElementById('chatPage').classList.add('show-chat');
-           }
-       }
+    if (window.innerWidth <= 768) {
+        document.getElementById('chatPage').classList.add('show-chat');
+    }
+}
        async function markMessagesAsSeen(targetUser) {
            const room = getRoomId(currentUser, targetUser);
            try {
