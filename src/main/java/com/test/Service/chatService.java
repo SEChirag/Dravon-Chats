@@ -58,7 +58,7 @@ public class chatService {
     }
 
     public List<chatMessage> getMessagesByRoom(String room) {
-        return chatRepository.findByRoom(room);
+        return chatRepository.findByRoomOrderByTimestampAsc(room);
     }
 
     public void deleteMessage(Long id) {

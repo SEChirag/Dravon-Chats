@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Repository
@@ -18,6 +19,8 @@ public interface friendRequestRepository extends JpaRepository<FriendRequest , L
     List<FriendRequest> findBySenderAndStatus(User sender, String status);
 
     List<FriendRequest> findByReceiverAndStatus(User receiver, String status);
+    Optional<User> findByEmail(String email);
+
 
     @Transactional
     void deleteBySenderAndReceiver(User sender, User receiver);

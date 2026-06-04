@@ -29,6 +29,7 @@ public class ChatController {
     @Autowired
     private LoginRepository loginRepository;
 
+
     @Autowired
     private JwtUtil jwtUtil;
      private chatRepository chatRepo;

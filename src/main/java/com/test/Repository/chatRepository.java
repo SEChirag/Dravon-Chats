@@ -16,4 +16,5 @@ public interface chatRepository extends JpaRepository<chatMessage, Long> {
 
     Page<chatMessage> findAllByOrderByTimestampDesc(Pageable pageable);
     List<chatMessage> findByRoom(String room);
+    List<chatMessage> findByRoomOrderByTimestampAsc(String room);
 }
