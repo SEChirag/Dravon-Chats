@@ -11,12 +11,12 @@ public class FriendRequest {
 
 @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-@Getter @Setter
+    @Getter @Setter
     private Long id;
 
-@ManyToOne
-@JoinColumn(name = "sender_id")
-@Getter @Setter
+    @ManyToOne
+    @JoinColumn(name = "sender_id")
+    @Getter @Setter
     private User sender;
 
 @ManyToOne
