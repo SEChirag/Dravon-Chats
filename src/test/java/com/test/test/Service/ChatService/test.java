@@ -112,7 +112,7 @@ public class test {
         chatMessage m1 = new chatMessage();
         m1.setRoom("general");
 
-        when(chatRepository.findByRoom("general"))
+        when(chatRepository.findByRoomOrderByTimestampAsc("general"))
                 .thenReturn(List.of(m1));
 
         List<chatMessage> messages =
