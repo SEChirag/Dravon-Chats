@@ -2,7 +2,6 @@ package com.test.Controller;
 
 
 import com.test.Repository.LoginRepository;
-import com.test.Repository.chatRepository;
 import com.test.Service.PasswordResetService;
 import com.test.Service.chatService;
 import com.test.Util.JwtUtil;
@@ -32,11 +31,11 @@ public class ChatController {
 
     @Autowired
     private JwtUtil jwtUtil;
-     private chatRepository chatRepo;
-    public ChatController(chatService chatService , LoginRepository loginRepository , chatRepository chatRepo) {
+
+    public ChatController(chatService chatService , LoginRepository loginRepository) {
         this.chatService = chatService;
         this.loginRepository = loginRepository;
-        this.chatRepo=chatRepo;
+
     }
     private String getRoom(String user1, String user2) {
 
@@ -136,7 +135,7 @@ public class ChatController {
     }
     /// ///////////////////////////////////////
     @GetMapping("/search")
-    public FriendRequest search(@RequestParam String email){
+    public Optional<User> search(@RequestParam String email){
         return chatService.search(email);
     }
 /////////////////////////////////////////////////////////

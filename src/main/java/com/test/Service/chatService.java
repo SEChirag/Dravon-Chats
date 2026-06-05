@@ -107,8 +107,9 @@ public class chatService {
         chatRepository.delete(id);
     }
 
-    public FriendRequest search(String email) {
-        return friendRequestRepository.findByEmail(email);
+    public Optional<User> search(String email) {
+        return loginRepository.findByEmail(email);
+
     }
 
     public String reject(long id) {

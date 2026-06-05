@@ -25,5 +25,7 @@ public interface friendRequestRepository extends JpaRepository<FriendRequest , L
     void deleteBySenderAndReceiver(User sender, User receiver);
 
 
-    FriendRequest findByEmail(String email);
+
+
+
 }
