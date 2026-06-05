@@ -135,8 +135,8 @@ public class ChatController {
     }
     /// ///////////////////////////////////////
     @GetMapping("/search")
-    public Optional<User> search(@RequestParam String email){
-        return chatService.search(email);
+    public Optional<User> search(@RequestParam String Email){
+        return chatService.search(Email);
     }
 /////////////////////////////////////////////////////////
 @PostMapping("/FriendRequest")
