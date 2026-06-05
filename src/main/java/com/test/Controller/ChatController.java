@@ -135,8 +135,13 @@ public class ChatController {
     }
     /// ///////////////////////////////////////
     @GetMapping("/search")
-    public Optional<User> search(@RequestParam String Email){
-        return chatService.search(Email);
+    public ResponseEntity<?> search(@RequestParam String Email){
+        Optional<User> user = chatService.search(Email);
+        if(user.isEmpty()){
+            return ResponseEntity.status(404).body("User not found");
+
+        }
+        return ResponseEntity.ok(user.get());
     }
 /////////////////////////////////////////////////////////
 @PostMapping("/FriendRequest")

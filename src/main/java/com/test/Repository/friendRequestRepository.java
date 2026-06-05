@@ -24,8 +24,4 @@ public interface friendRequestRepository extends JpaRepository<FriendRequest , L
     @Transactional
     void deleteBySenderAndReceiver(User sender, User receiver);
 
-
-
-
-
 }
