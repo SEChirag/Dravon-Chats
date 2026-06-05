@@ -20,6 +20,6 @@ public interface chatRepository extends JpaRepository<chatMessage, Long> {
     List<chatMessage> findByRoomOrderByTimestampAsc(String room);
 
     @Query("SELECT COUNT(m) FROM chatMessage m WHERE m.room = :room AND m.seen = false AND m.receiver = :email")
-    long countUnreadByRoomAndReceiver(@Param("room") String room , @Param("email")  String email);
+    long countUnreadByRoomAndReceiver(@Param("room") String room, @Param("email") String email);
 
 }

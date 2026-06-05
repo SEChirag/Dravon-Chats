@@ -32,9 +32,12 @@ public class chatMessage {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "reply_to_id")
+
     private chatMessage replyTo;
 
-@Column(nullable = true)
+    @Column(nullable = true)
+    @Getter
+    @Setter
     private Boolean seen = false;
 
     private Long seenAt;
@@ -48,3 +51,4 @@ public class chatMessage {
     @Transient
     private String replyToSender;
 }
+

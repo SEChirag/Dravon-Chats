@@ -2,6 +2,7 @@ package com.test.Controller;
 
 
 import com.test.Repository.LoginRepository;
+import com.test.Repository.chatRepository;
 import com.test.Service.PasswordResetService;
 import com.test.Service.chatService;
 import com.test.Util.JwtUtil;
@@ -28,14 +29,14 @@ public class ChatController {
     @Autowired
     private LoginRepository loginRepository;
 
-
+    private chatRepository chatRepository;
     @Autowired
     private JwtUtil jwtUtil;
 
-    public ChatController(chatService chatService , LoginRepository loginRepository) {
+    public ChatController(chatService chatService , LoginRepository loginRepository , chatRepository chatRepository) {
         this.chatService = chatService;
         this.loginRepository = loginRepository;
-
+        this.chatRepository=chatRepository;
     }
     private String getRoom(String user1, String user2) {
 
@@ -241,12 +242,31 @@ public List<String> sendRequest(
         return ResponseEntity.ok("seen");
     }
 
-    @GetMapping("/messages/{room}/unread")
-    public ResponseEntity<Long> getUnreadCount(@PathVariable String room , @RequestHeader("Authorization") String authHeader) {
-        String email = jwtUtil.extractEmail(authHeader.substring(7));
+//    @GetMapping("/messages/{room}/debug")
+//    public ResponseEntity<Long> getUnreadCount(@PathVariable String room , @RequestHeader("Authorization") String authHeader) {
+//        String email = jwtUtil.extractEmail(authHeader.substring(7));
+//
+//        return ResponseEntity.ok(chatService.getUnreadCount(room , email));
+//    }
+@GetMapping("/messages/{room}/debug")
+public ResponseEntity<?> debug(@PathVariable String room,
+                               @RequestHeader("Authorization") String authHeader) {
+    String email = jwtUtil.extractEmail(authHeader.substring(7));
 
-        return ResponseEntity.ok(chatService.getUnreadCount(room , email));
-    }
+    List<chatMessage> messages = chatRepository.findByRoomOrderByTimestampAsc(room);
+
+    return ResponseEntity.ok(Map.of(
+            "extractedEmail", email,
+            "totalMessages", messages.size(),
+            "messages", messages.stream().map(m -> Map.of(
+                    "id", m.getId(),
+                    "sender", String.valueOf(m.getSender()),
+                    "receiver", String.valueOf(m.getReceiver()),
+                    "Email", String.valueOf(m.getEmail()),
+                    "seen", String.valueOf(m.getSeen())
+            )).toList()
+    ));
+}
 }
 
 
