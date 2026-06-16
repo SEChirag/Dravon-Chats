@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="Api test">
+    <list default="true" id="9970e628-25f0-45ab-b36a-1da9705f37bd" name="Changes" comment="unread">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Repository/chatRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Repository/chatRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/LoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/LoginRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/java/com/test/test/Service/ChatService/test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/test/test/Service/ChatService/test.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/static/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/static/index.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -202,14 +199,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1777624986069</updated>
-    </task>
-    <task id="LOCAL-00044" summary="New updates">
-      <option name="closed" value="true" />
-      <created>1780314752770</created>
-      <option name="number" value="00044" />
-      <option name="presentableId" value="LOCAL-00044" />
-      <option name="project" value="LOCAL" />
-      <updated>1780314752770</updated>
     </task>
     <task id="LOCAL-00045" summary="New updates">
       <option name="closed" value="true" />
@@ -595,7 +584,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780641756874</updated>
     </task>
-    <option name="localTasksCounter" value="93" />
+    <task id="LOCAL-00093" summary="unread">
+      <option name="closed" value="true" />
+      <created>1781586404072</created>
+      <option name="number" value="00093" />
+      <option name="presentableId" value="LOCAL-00093" />
+      <option name="project" value="LOCAL" />
+      <updated>1781586404072</updated>
+    </task>
+    <option name="localTasksCounter" value="94" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -610,7 +607,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Created unique rooms for single convo" />
     <MESSAGE value="Message Template Injection" />
     <MESSAGE value="to delete null values" />
     <MESSAGE value="to delete the chats by id" />
@@ -635,7 +631,8 @@
     <MESSAGE value="chats orders" />
     <MESSAGE value="unread notifications" />
     <MESSAGE value="Api test" />
-    <option name="LAST_COMMIT_MESSAGE" value="Api test" />
+    <MESSAGE value="unread" />
+    <option name="LAST_COMMIT_MESSAGE" value="unread" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

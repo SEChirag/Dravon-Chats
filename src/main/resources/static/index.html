@@ -875,1148 +875,1111 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
 <script>
-
     const BASE_URL = 'https://dravon-chats.onrender.com';
 
+    let seenSub = null;
+    let stompClient = null;
+    let currentUser = '';
+    let currentUserId = null;
+    let chatWith = '';
+    let currentSub = null;
+    let toastTimer;
+    let activeSidebarTab = 'chats';
+    let currentAvatarUrl = '';
+    let replyingTo = null;
+    const PRESET_AVATARS = ['🐱','🐶','🦊','🐼','🐨','🦁','🐯','🐸','🦋','🐙','👾','🤖','👻','💀','🔥','⚡','🌙','✨'];
 
-        let seenSub = null;
-        let stompClient = null;
-        let currentUser = '';
-        let currentUserId = null;
-        let chatWith = '';
-        let currentSub = null;
-        let toastTimer;
-        let activeSidebarTab = 'chats';
-        let currentAvatarUrl = '';
-        let replyingTo = null;
-        const PRESET_AVATARS = ['🐱','🐶','🦊','🐼','🐨','🦁','🐯','🐸','🦋','🐙','👾','🤖','👻','💀','🔥','⚡','🌙','✨'];
+    function getRoomId(a, b) { return [a, b].sort().join('_'); }
 
-        // ─────────────────────────────────────────────
-        // UTILS
-        // ─────────────────────────────────────────────
-        function getRoomId(a, b) { return [a, b].sort().join('_'); }
+    function showToast(msg, type = 'info') {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'toast show' + (type === 'error' ? ' error' : type === 'success' ? ' success' : ' info');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+    }
 
-        function showToast(msg, type = 'info') {
-            const t = document.getElementById('toast');
-            t.textContent = msg;
-            t.className = 'toast show' + (type === 'error' ? ' error' : type === 'success' ? ' success' : ' info');
-            clearTimeout(toastTimer);
-            toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+    function shakeCard() {
+        const c = document.getElementById('loginCard');
+        c.style.animation = 'shake .4s ease';
+        setTimeout(() => c.style.animation = '', 420);
+    }
+
+    function switchTab(tab) {
+        const isLogin = tab === 'login';
+        document.getElementById('tab-login').className = 'tab' + (isLogin ? ' active' : '');
+        document.getElementById('tab-signup').className = 'tab' + (!isLogin ? ' active' : '');
+        document.getElementById('panel-login').className = 'form-panel' + (isLogin ? ' show' : '');
+        document.getElementById('panel-signup').className = 'form-panel' + (!isLogin ? ' show' : '');
+        document.getElementById('bottom-note').innerHTML = isLogin
+            ? `new here? <a onclick="switchTab('signup')">create an account</a>`
+            : `already legendary? <a onclick="switchTab('login')">sign in</a>`;
+    }
+
+    function togglePass(id, btn) {
+        const inp = document.getElementById(id);
+        inp.type = inp.type === 'password' ? 'text' : 'password';
+        btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
+    }
+
+    function checkStrength(val) {
+        const segs = ['seg1','seg2','seg3','seg4'].map(id => document.getElementById(id));
+        const label = document.getElementById('strength-label');
+        segs.forEach(s => s.className = 'strength-seg');
+        let score = 0;
+        if (val.length >= 6) score++;
+        if (val.length >= 10) score++;
+        if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        const cls = score <= 1 ? 'weak' : score <= 2 ? 'fair' : 'strong';
+        const txt = !score ? '' : score <= 1 ? 'weak 😬' : score <= 2 ? 'fair 👀' : score === 3 ? 'strong 💪' : 'unbreakable 🔥';
+        for (let i = 0; i < score; i++) segs[i].classList.add(cls);
+        label.textContent = txt;
+        label.style.color = score <= 1 ? '#f43f5e' : score <= 2 ? '#f59e0b' : '#10b981';
+    }
+
+    function checkResetStrength(val) {
+        const segs = ['rseg1','rseg2','rseg3','rseg4'].map(id => document.getElementById(id));
+        const label = document.getElementById('rlabel');
+        segs.forEach(s => s.className = 'strength-seg');
+        let score = 0;
+        if (val.length >= 6) score++;
+        if (val.length >= 10) score++;
+        if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+        if (/[^A-Za-z0-9]/.test(val)) score++;
+        const cls = score <= 1 ? 'weak' : score <= 2 ? 'fair' : 'strong';
+        const txt = !score ? '' : score <= 1 ? 'weak 😬' : score <= 2 ? 'fair 👀' : score === 3 ? 'strong 💪' : 'unbreakable 🔥';
+        for (let i = 0; i < score; i++) segs[i].classList.add(cls);
+        label.textContent = txt;
+        label.style.color = score <= 1 ? '#f43f5e' : score <= 2 ? '#f59e0b' : '#10b981';
+    }
+
+    // FORGOT PASSWORD MODAL
+    function openForgotModal() {
+        const modal = document.getElementById('forgotModal');
+        document.getElementById('forgotEmail').value = document.getElementById('login-user').value || '';
+        document.getElementById('forgotForm').style.display = 'flex';
+        document.getElementById('forgotSuccess').classList.remove('show');
+        modal.classList.add('show');
+        setTimeout(() => document.getElementById('forgotEmail').focus(), 200);
+    }
+
+    function closeForgotModal() {
+        document.getElementById('forgotModal').classList.remove('show');
+        const btn = document.getElementById('forgotBtn');
+        btn.classList.remove('loading');
+        btn.disabled = false;
+    }
+
+    async function handleForgotPassword() {
+        const email = document.getElementById('forgotEmail').value.trim();
+        if (!email) {
+            showToast('enter your email first 💀', 'error');
+            document.getElementById('forgotEmail').focus();
+            return;
         }
-
-        function shakeCard() {
-            const c = document.getElementById('loginCard');
-            c.style.animation = 'shake .4s ease';
-            setTimeout(() => c.style.animation = '', 420);
-        }
-
-        function switchTab(tab) {
-            const isLogin = tab === 'login';
-            document.getElementById('tab-login').className = 'tab' + (isLogin ? ' active' : '');
-            document.getElementById('tab-signup').className = 'tab' + (!isLogin ? ' active' : '');
-            document.getElementById('panel-login').className = 'form-panel' + (isLogin ? ' show' : '');
-            document.getElementById('panel-signup').className = 'form-panel' + (!isLogin ? ' show' : '');
-            document.getElementById('bottom-note').innerHTML = isLogin
-                ? `new here? <a onclick="switchTab('signup')">create an account</a>`
-                : `already legendary? <a onclick="switchTab('login')">sign in</a>`;
-        }
-
-        function togglePass(id, btn) {
-            const inp = document.getElementById(id);
-            inp.type = inp.type === 'password' ? 'text' : 'password';
-            btn.textContent = inp.type === 'password' ? '👁️' : '🙈';
-        }
-
-        function checkStrength(val) {
-            const segs = ['seg1','seg2','seg3','seg4'].map(id => document.getElementById(id));
-            const label = document.getElementById('strength-label');
-            segs.forEach(s => s.className = 'strength-seg');
-            let score = 0;
-            if (val.length >= 6) score++;
-            if (val.length >= 10) score++;
-            if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
-            if (/[^A-Za-z0-9]/.test(val)) score++;
-            const cls = score <= 1 ? 'weak' : score <= 2 ? 'fair' : 'strong';
-            const txt = !score ? '' : score <= 1 ? 'weak 😬' : score <= 2 ? 'fair 👀' : score === 3 ? 'strong 💪' : 'unbreakable 🔥';
-            for (let i = 0; i < score; i++) segs[i].classList.add(cls);
-            label.textContent = txt;
-            label.style.color = score <= 1 ? '#f43f5e' : score <= 2 ? '#f59e0b' : '#10b981';
-        }
-
-        function checkResetStrength(val) {
-            const segs = ['rseg1','rseg2','rseg3','rseg4'].map(id => document.getElementById(id));
-            const label = document.getElementById('rlabel');
-            segs.forEach(s => s.className = 'strength-seg');
-            let score = 0;
-            if (val.length >= 6) score++;
-            if (val.length >= 10) score++;
-            if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
-            if (/[^A-Za-z0-9]/.test(val)) score++;
-            const cls = score <= 1 ? 'weak' : score <= 2 ? 'fair' : 'strong';
-            const txt = !score ? '' : score <= 1 ? 'weak 😬' : score <= 2 ? 'fair 👀' : score === 3 ? 'strong 💪' : 'unbreakable 🔥';
-            for (let i = 0; i < score; i++) segs[i].classList.add(cls);
-            label.textContent = txt;
-            label.style.color = score <= 1 ? '#f43f5e' : score <= 2 ? '#f59e0b' : '#10b981';
-        }
-
-        // ─────────────────────────────────────────────
-        // FORGOT PASSWORD MODAL
-        // ─────────────────────────────────────────────
-        function openForgotModal() {
-            const modal = document.getElementById('forgotModal');
-            document.getElementById('forgotEmail').value = document.getElementById('login-user').value || '';
-            document.getElementById('forgotForm').style.display = 'flex';
-            document.getElementById('forgotSuccess').classList.remove('show');
-            modal.classList.add('show');
-            setTimeout(() => document.getElementById('forgotEmail').focus(), 200);
-        }
-
-        function closeForgotModal() {
-            document.getElementById('forgotModal').classList.remove('show');
-            const btn = document.getElementById('forgotBtn');
+        const btn = document.getElementById('forgotBtn');
+        btn.classList.add('loading');
+        btn.disabled = true;
+        const resetLink = window.location.origin + window.location.pathname + '?token=';
+        try {
+            const res = await fetch(`${BASE_URL}/api/chat/forgot-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, link: resetLink })
+            });
+            if (res.ok || res.status === 200) {
+                document.getElementById('forgotForm').style.display = 'none';
+                document.getElementById('forgotSuccess').classList.add('show');
+            } else {
+                const text = await res.text();
+                showToast(text || 'something went wrong 😭', 'error');
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        } catch (e) {
+            showToast('server not responding 😭', 'error');
             btn.classList.remove('loading');
             btn.disabled = false;
         }
-
-        async function handleForgotPassword() {
-            const email = document.getElementById('forgotEmail').value.trim();
-            if (!email) {
-                showToast('enter your email first 💀', 'error');
-                document.getElementById('forgotEmail').focus();
-                return;
-            }
-            const btn = document.getElementById('forgotBtn');
-            btn.classList.add('loading');
-            btn.disabled = true;
-            const resetLink = window.location.origin + window.location.pathname + '?token=';
-            try {
-                const res = await fetch(`${BASE_URL}/api/chat/forgot-password`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, link: resetLink })
-                });
-                if (res.ok || res.status === 200) {
-                    document.getElementById('forgotForm').style.display = 'none';
-                    document.getElementById('forgotSuccess').classList.add('show');
-                } else {
-                    const text = await res.text();
-                    showToast(text || 'something went wrong 😭', 'error');
-                    btn.classList.remove('loading');
-                    btn.disabled = false;
-                }
-            } catch (e) {
-                showToast('server not responding 😭', 'error');
-                btn.classList.remove('loading');
-                btn.disabled = false;
-            }
-        }
-
-        // ─────────────────────────────────────────────
-        // RESET PASSWORD PAGE
-        // ─────────────────────────────────────────────
-        function showResetPage(token) {
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('dashboardPage').style.display = 'none';
-            document.getElementById('chatPage').classList.remove('visible');
-            const rp = document.getElementById('resetPage');
-            rp.classList.add('show');
-            rp.dataset.token = token;
-        }
-
-        function goBackToLogin() {
-            document.getElementById('resetPage').classList.remove('show');
-            document.getElementById('loginPage').classList.remove('hidden');
-            window.history.replaceState({}, document.title, window.location.pathname);
-        }
-
-        async function handleResetPassword() {
-            const token = document.getElementById('resetPage').dataset.token;
-            const pass = document.getElementById('resetPass').value.trim();
-            const conf = document.getElementById('resetConfirm').value.trim();
-            if (!pass || !conf) { showToast('fill both fields 💀', 'error'); return; }
-            if (pass !== conf) { showToast("passwords don't match 💀", 'error'); return; }
-            if (pass.length < 6) { showToast('password too short 😬', 'error'); return; }
-            const btn = document.getElementById('resetBtn');
-            btn.classList.add('loading');
-            btn.disabled = true;
-            try {
-                const res = await fetch(`${BASE_URL}/api/chat/reset-password`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ token, password: pass })
-                });
-                const text = await res.text();
-                if (res.ok) {
-                    document.getElementById('resetForm').style.display = 'none';
-                    document.getElementById('resetSuccess').classList.add('show');
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                } else {
-                    showToast(text || 'reset failed 💀', 'error');
-                    btn.classList.remove('loading');
-                    btn.disabled = false;
-                }
-            } catch (e) {
-                showToast('server not responding 😭', 'error');
-                btn.classList.remove('loading');
-                btn.disabled = false;
-            }
-        }
-
-        // ─────────────────────────────────────────────
-        // AUTH
-        // ─────────────────────────────────────────────
-        async function handleLogin() {
-            const email = document.getElementById('login-user').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-            if (!email || !pass) { showToast('fill everything first 💀', 'error'); shakeCard(); return; }
-            const btn = document.getElementById('loginBtn');
-            btn.classList.add('loading'); btn.disabled = true;
-            try {
-                const response = await fetch(`${BASE_URL}/api/chat/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password: pass })
-                });
-                const text = await response.text();
-                let data = {};
-                try { data = JSON.parse(text); } catch (e) { data.message = text; }
-                if (response.ok) {
-                    if (data.token) localStorage.setItem('token', data.token);
-                    if (data.id) localStorage.setItem('userId', data.id);
-                    const remember = document.getElementById('rememberMe').checked;
-                    if (remember) localStorage.setItem('chatUser', email);
-                    else { sessionStorage.setItem('chatUser', email); localStorage.removeItem('chatUser'); }
-                    showToast('DRAVON 🔥', 'success');
-                    setTimeout(() => {
-                        document.getElementById('toast').classList.remove('show');
-                        showDashboard(email, data.id);
-                    }, 800);
-                } else {
-                    btn.classList.remove('loading'); btn.disabled = false;
-                    showToast(data.message || 'wrong credentials 💀', 'error');
-                    shakeCard();
-                }
-            } catch (err) {
-                btn.classList.remove('loading'); btn.disabled = false;
-                showToast('server not responding 😭', 'error'); shakeCard();
-            }
-        }
-
-        async function handleSignup() {
-            const email = document.getElementById('signup-email').value.trim();
-            const pass = document.getElementById('signup-pass').value.trim();
-            const conf = document.getElementById('signup-confirm').value.trim();
-            if (!email || !pass || !conf) { showToast('fill everything first 💀', 'error'); shakeCard(); return; }
-            if (pass !== conf) { showToast("passwords don't match 💀", 'error'); shakeCard(); return; }
-            const btn = document.getElementById('signupBtn');
-            btn.classList.add('loading'); btn.disabled = true;
-            try {
-                const response = await fetch(`${BASE_URL}/api/chat/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password: pass })
-                });
-                const text = await response.text();
-                if (response.ok) {
-                    showToast('account created! sign in now 🔥', 'success');
-                    setTimeout(() => { switchTab('login'); document.getElementById('login-user').value = email; }, 1000);
-                } else {
-                    showToast(text || 'signup failed 💀', 'error'); shakeCard();
-                }
-            } catch (err) {
-                showToast('server not responding 😭', 'error'); shakeCard();
-            } finally {
-                btn.classList.remove('loading'); btn.disabled = false;
-            }
-        }
-
-        function handleLogout() {
-            if (stompClient && stompClient.connected) stompClient.disconnect(() => {});
-            stompClient = null; currentSub = null; chatWith = '';
-            localStorage.removeItem('token'); localStorage.removeItem('chatUser'); localStorage.removeItem('userId');
-            sessionStorage.removeItem('chatUser');
-            document.getElementById('chatPage').classList.remove('visible');
-            document.getElementById('dashboardPage').style.display = 'none';
-            document.getElementById('resetPage').classList.remove('show');
-            document.getElementById('loginPage').classList.remove('hidden');
-            document.getElementById('loginPage').style.display = 'flex';
-            document.getElementById('login-user').value = '';
-            document.getElementById('login-pass').value = '';
-            document.getElementById('chatTitle').textContent = 'DRAVON';
-            document.getElementById('chatSubtitle').textContent = 'select someone to chat';
-            document.getElementById('chatAvatar').textContent = '💬';
-            const btn = document.getElementById('loginBtn');
-            if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
-            const chatBox = document.getElementById('messages');
-            if (chatBox) chatBox.innerHTML = '';
-            showToast('logged out ✦', 'info');
-        }
-
-        // ─────────────────────────────────────────────
-        // DASHBOARD
-        // ─────────────────────────────────────────────
-        async function showDashboard(username, userId) {
-            currentUser = username;
-            currentUserId = userId || localStorage.getItem('userId') || null;
-            const saved = localStorage.getItem('avatarUrl');
-            if (saved) currentAvatarUrl = saved;
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('dashboardPage').style.display = 'flex';
-            document.getElementById('dashUsername').textContent = currentUser;
-            updateDashAvatar();
-            try {
-                const res = await fetch(`${BASE_URL}/api/chat/friends/${encodeURIComponent(currentUser)}`, {
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-                });
-                const friends = await res.json();
-                document.getElementById('dashFriendCount').textContent = friends.length;
-                renderDashFriends(friends);
-            } catch (e) {}
-            try {
-                const res = await fetch(`${BASE_URL}/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-                });
-                const reqs = await res.json();
-                document.getElementById('dashReqCount').textContent = reqs.length;
-                renderDashRequests(reqs);
-            } catch (e) {}
-            fetch(`${BASE_URL}/api/chat/me`, {
-                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-            }).then(r => r.json()).then(data => {
-                if (data.avatarUrl) {
-                    currentAvatarUrl = data.avatarUrl;
-                    localStorage.setItem('avatarUrl', data.avatarUrl);
-                    updateDashAvatar();
-                }
-            }).catch(() => {});
-        }
-
-        function updateDashAvatar() {
-            const av = document.getElementById('dashAv');
-            if (!av) return;
-            if (!currentAvatarUrl) {
-                av.innerHTML = currentUser ? currentUser[0].toUpperCase() : '?';
-            } else if (currentAvatarUrl.length <= 2) {
-                av.innerHTML = currentAvatarUrl;
-            } else {
-                av.innerHTML = `<img src="${currentAvatarUrl}" alt="avatar"/>`;
-            }
-        }
-
-        function renderDashFriends(friends) {
-            const list = document.getElementById('dashFriendsList');
-            list.innerHTML = '';
-            if (!friends.length) {
-                list.innerHTML = '<div style="font-size:11px;color:var(--muted);font-family:Barlow,sans-serif;">no friends yet — go search! 👀</div>';
-                return;
-            }
-            friends.slice(0, 4).forEach(email => {
-                const item = document.createElement('div');
-                item.className = 'dash-friend-item';
-                item.innerHTML = `
-                    <div class="dash-friend-av">${email[0].toUpperCase()}</div>
-                    <div class="dash-friend-email">${email}</div>
-                    <span style="font-size:10px;color:var(--neon);font-family:'Barlow Condensed',sans-serif;">chat →</span>`;
-                item.onclick = () => goToChat(email);
-                list.appendChild(item);
-            });
-        }
-
-        function renderDashRequests(reqs) {
-            const list = document.getElementById('dashReqList');
-            list.innerHTML = '';
-            if (!reqs.length) {
-                list.innerHTML = '<div style="font-size:11px;color:var(--muted);font-family:Barlow,sans-serif;">all caught up 🫡</div>';
-                return;
-            }
-            reqs.slice(0, 3).forEach(req => {
-                const senderEmail = req.sender?.email || 'unknown';
-                const item = document.createElement('div');
-                item.className = 'dash-req-item';
-                item.id = 'dash-req-' + req.id;
-                item.innerHTML = `
-                    <div class="dash-req-av">${senderEmail[0].toUpperCase()}</div>
-                    <div class="dash-req-email">${senderEmail}</div>
-                    <div class="dash-req-btns">
-                        <button class="dash-req-accept" onclick="dashHandleRequest(${req.id}, 'accept')">✓</button>
-                        <button class="dash-req-reject" onclick="dashHandleRequest(${req.id}, 'reject')">✕</button>
-                    </div>`;
-                list.appendChild(item);
-            });
-        }
-
-        async function dashHandleRequest(id, action) {
-            const endpoint = action === 'accept'
-                ? `${BASE_URL}/api/chat/friend-request/accept/${id}`
-                : `${BASE_URL}/api/chat/friend-request/reject/${id}`;
-            try {
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-                });
-                if (res.ok) {
-                    document.getElementById('dash-req-' + id)?.remove();
-                    const remaining = document.querySelectorAll('.dash-req-item').length;
-                    document.getElementById('dashReqCount').textContent = remaining;
-                    showToast(action === 'accept' ? 'request accepted 🫶' : 'rejected 🚫', action === 'accept' ? 'success' : 'info');
-                    if (action === 'accept') {
-                        const r = await fetch(`${BASE_URL}/api/chat/friends/${encodeURIComponent(currentUser)}`, {
-                            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
-                        });
-                        const friends = await r.json();
-                        document.getElementById('dashFriendCount').textContent = friends.length;
-                        renderDashFriends(friends);
-                    }
-                }
-            } catch (e) { showToast('server error 😭', 'error'); }
-        }
-
-        function goToChat(openWith = null) {
-            document.getElementById('dashboardPage').style.display = 'none';
-            showChat(currentUser, currentUserId);
-            if (openWith) setTimeout(() => openPrivateChat(openWith), 600);
-        }
-
-        function backToDashboard() {
-            document.getElementById('chatPage').classList.remove('visible');
-            document.getElementById('dashboardPage').style.display = 'flex';
-            showDashboard(currentUser, currentUserId);
-        }
-
-        // ─────────────────────────────────────────────
-        // CHAT
-        // ─────────────────────────────────────────────
-        function showChat(username, userId) {
-            currentUser = username;
-            currentUserId = userId || localStorage.getItem('userId') || null;
-            document.getElementById('loginPage').classList.add('hidden');
-            document.getElementById('dashboardPage').style.display = 'none';
-            document.getElementById('chatPage').classList.add('visible');
-            connectWebSocket();
-            loadUserList();
-            refreshBadge();
-        }
-
-        function connectWebSocket() {
-            if (stompClient && stompClient.connected) return;
-            const socket = new SockJS(`https://dravon-chats.onrender.com/chat`);
-            stompClient = Stomp.over(socket);
-            stompClient.debug = null;
-            stompClient.connect({}, function () {
-                showToast('connected ✦', 'success');
-            }, function () {
-                showToast('connection lost, retrying...', 'error');
-                setTimeout(connectWebSocket, 3000);
-            });
-        }
-       function subscribeToRoom(targetUser) {
-           if (currentSub) { currentSub.unsubscribe(); currentSub = null; }
-           if (seenSub) { seenSub.unsubscribe(); seenSub = null; }
-
-           const roomId = getRoomId(currentUser, targetUser);
-
-           if (!stompClient || !stompClient.connected) {
-               console.warn('subscribeToRoom called but stomp not connected');
-               return;
-           }
-
-           currentSub = stompClient.subscribe('/topic/chat/' + roomId, function (frame) {
-               const msg = JSON.parse(frame.body);
-                if (msg.sender !== currentUser) {
-        showToast(`💬 new message from ${msg.sender}`, 'info');
-        loadUserList(); // re-renders with updated unread counts + sorts to top
     }
-               showMessage(msg);
-           });
 
-           seenSub = stompClient.subscribe('/topic/seen/' + roomId, function (frame) {
-               console.log('seen event received for room:', roomId); // ← debug line
-               updateAllSeenTicks();
-           });
-
-           console.log('subscribed to room:', roomId, '| seenSub:', seenSub); // ← debug
-       }
-
-        function switchSidebarTab(tab) {
-            activeSidebarTab = tab;
-            ['chats', 'search', 'requests'].forEach(t => {
-                document.getElementById('stab-' + t).classList.toggle('active', t === tab);
-            });
-            document.getElementById('searchBar').style.display = tab === 'search' ? 'block' : 'none';
-            if (tab === 'chats') loadUserList();
-            if (tab === 'search') {
-                document.getElementById('userList').innerHTML = '<div class="no-users">type an email above 👆</div>';
-                document.getElementById('searchInput').focus();
-            }
-            if (tab === 'requests') loadPendingRequests();
-        }
-
-        async function refreshBadge() {
-            if (!currentUser) return;
-            try {
-                const res = await fetch(`${BASE_URL}/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
-                    headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
-                });
-                const requests = await res.json();
-                updateNotifBadge(requests.length);
-            } catch (e) {}
-        }
-
-        async function loadPendingRequests() {
-            if (!currentUser) return;
-            const ul = document.getElementById('userList');
-            ul.innerHTML = '<div class="no-users">loading requests... 👀</div>';
-            try {
-                const res = await fetch(`${BASE_URL}/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
-                    headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
-                });
-                const requests = await res.json();
-                updateNotifBadge(requests.length);
-                renderPendingRequests(requests);
-            } catch (e) {
-                ul.innerHTML = '<div class="no-users">couldn\'t load requests 😭</div>';
-            }
-        }
-
-        async function loadUserList() {
-            if (!currentUser) return;
-            try {
-                const res = await fetch(`${BASE_URL}/api/chat/friends/${encodeURIComponent(currentUser)}`, {
-                    headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
-                });
-                const friends = await res.json();
-                if (!Array.isArray(friends)) return;
-                renderUserList(friends);
-                refreshBadge();
-            } catch (e) {
-                document.getElementById('userList').innerHTML = '<div class="no-users">couldn\'t load friends 😭</div>';
-            }
-        }
-
-// Replace your renderUserList function
-async function renderUserList(users) {
-    const ul = document.getElementById('userList');
-    if (!users.length) {
-        ul.innerHTML = '<div class="no-users">no friends yet 👀<br/>search someone to add!</div>';
-        return;
+    // RESET PASSWORD PAGE
+    function showResetPage(token) {
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('dashboardPage').style.display = 'none';
+        document.getElementById('chatPage').classList.remove('visible');
+        const rp = document.getElementById('resetPage');
+        rp.classList.add('show');
+        rp.dataset.token = token;
     }
-    ul.innerHTML = '';
 
-    // fetch unread counts for all friends in parallel
-    const unreadCounts = await Promise.all(users.map(async (u) => {
-        const room = getRoomId(currentUser, u);
+    function goBackToLogin() {
+        document.getElementById('resetPage').classList.remove('show');
+        document.getElementById('loginPage').classList.remove('hidden');
+        window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
+    async function handleResetPassword() {
+        const token = document.getElementById('resetPage').dataset.token;
+        const pass = document.getElementById('resetPass').value.trim();
+        const conf = document.getElementById('resetConfirm').value.trim();
+        if (!pass || !conf) { showToast('fill both fields 💀', 'error'); return; }
+        if (pass !== conf) { showToast("passwords don't match 💀", 'error'); return; }
+        if (pass.length < 6) { showToast('password too short 😬', 'error'); return; }
+        const btn = document.getElementById('resetBtn');
+        btn.classList.add('loading');
+        btn.disabled = true;
         try {
-            const res = await fetch(`${BASE_URL}/api/chat/messages/${room}/unread`, {
+            const res = await fetch(`${BASE_URL}/api/chat/reset-password`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, password: pass })
+            });
+            const text = await res.text();
+            if (res.ok) {
+                document.getElementById('resetForm').style.display = 'none';
+                document.getElementById('resetSuccess').classList.add('show');
+                window.history.replaceState({}, document.title, window.location.pathname);
+            } else {
+                showToast(text || 'reset failed 💀', 'error');
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        } catch (e) {
+            showToast('server not responding 😭', 'error');
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+    }
+
+    // AUTH
+    async function handleLogin() {
+        const email = document.getElementById('login-user').value.trim();
+        const pass = document.getElementById('login-pass').value.trim();
+        if (!email || !pass) { showToast('fill everything first 💀', 'error'); shakeCard(); return; }
+        const btn = document.getElementById('loginBtn');
+        btn.classList.add('loading'); btn.disabled = true;
+        try {
+            const response = await fetch(`${BASE_URL}/api/chat/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: pass })
+            });
+            const text = await response.text();
+            let data = {};
+            try { data = JSON.parse(text); } catch (e) { data.message = text; }
+            if (response.ok) {
+                if (data.token) localStorage.setItem('token', data.token);
+                if (data.id) localStorage.setItem('userId', data.id);
+                const remember = document.getElementById('rememberMe').checked;
+                if (remember) localStorage.setItem('chatUser', email);
+                else { sessionStorage.setItem('chatUser', email); localStorage.removeItem('chatUser'); }
+                showToast('DRAVON 🔥', 'success');
+                setTimeout(() => {
+                    document.getElementById('toast').classList.remove('show');
+                    showDashboard(email, data.id);
+                }, 800);
+            } else {
+                btn.classList.remove('loading'); btn.disabled = false;
+                showToast(data.message || 'wrong credentials 💀', 'error');
+                shakeCard();
+            }
+        } catch (err) {
+            btn.classList.remove('loading'); btn.disabled = false;
+            showToast('server not responding 😭', 'error'); shakeCard();
+        }
+    }
+
+    async function handleSignup() {
+        const email = document.getElementById('signup-email').value.trim();
+        const pass = document.getElementById('signup-pass').value.trim();
+        const conf = document.getElementById('signup-confirm').value.trim();
+        if (!email || !pass || !conf) { showToast('fill everything first 💀', 'error'); shakeCard(); return; }
+        if (pass !== conf) { showToast("passwords don't match 💀", 'error'); shakeCard(); return; }
+        const btn = document.getElementById('signupBtn');
+        btn.classList.add('loading'); btn.disabled = true;
+        try {
+            const response = await fetch(`${BASE_URL}/api/chat/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password: pass })
+            });
+            const text = await response.text();
+            if (response.ok) {
+                showToast('account created! sign in now 🔥', 'success');
+                setTimeout(() => { switchTab('login'); document.getElementById('login-user').value = email; }, 1000);
+            } else {
+                showToast(text || 'signup failed 💀', 'error'); shakeCard();
+            }
+        } catch (err) {
+            showToast('server not responding 😭', 'error'); shakeCard();
+        } finally {
+            btn.classList.remove('loading'); btn.disabled = false;
+        }
+    }
+
+    function handleLogout() {
+        if (stompClient && stompClient.connected) stompClient.disconnect(() => {});
+        stompClient = null; currentSub = null; chatWith = '';
+        localStorage.removeItem('token'); localStorage.removeItem('chatUser'); localStorage.removeItem('userId');
+        sessionStorage.removeItem('chatUser');
+        document.getElementById('chatPage').classList.remove('visible');
+        document.getElementById('dashboardPage').style.display = 'none';
+        document.getElementById('resetPage').classList.remove('show');
+        document.getElementById('loginPage').classList.remove('hidden');
+        document.getElementById('loginPage').style.display = 'flex';
+        document.getElementById('login-user').value = '';
+        document.getElementById('login-pass').value = '';
+        document.getElementById('chatTitle').textContent = 'DRAVON';
+        document.getElementById('chatSubtitle').textContent = 'select someone to chat';
+        document.getElementById('chatAvatar').textContent = '💬';
+        const btn = document.getElementById('loginBtn');
+        if (btn) { btn.disabled = false; btn.classList.remove('loading'); }
+        const chatBox = document.getElementById('messages');
+        if (chatBox) chatBox.innerHTML = '';
+        showToast('logged out ✦', 'info');
+    }
+
+    // DASHBOARD
+    async function showDashboard(username, userId) {
+        currentUser = username;
+        currentUserId = userId || localStorage.getItem('userId') || null;
+        const saved = localStorage.getItem('avatarUrl');
+        if (saved) currentAvatarUrl = saved;
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('dashboardPage').style.display = 'flex';
+        document.getElementById('dashUsername').textContent = currentUser;
+        updateDashAvatar();
+        try {
+            const res = await fetch(`${BASE_URL}/api/chat/friends/${encodeURIComponent(currentUser)}`, {
                 headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
             });
-            const count = await res.json();
-            return { user: u, count };
-        } catch (e) {
-            return { user: u, count: 0 };
-        }
-    }));
-
-    // ✅ sort — users with unread messages come first
-    unreadCounts.sort((a, b) => b.count - a.count);
-
-    unreadCounts.forEach(({ user: u, count }) => {
-        const item = document.createElement('div');
-        item.className = 'user-item' + (u === chatWith ? ' active' : '');
-        item.dataset.user = u;
-        item.innerHTML = `
-            <div class="user-av">${u[0].toUpperCase()}</div>
-            <div style="min-width:0;flex:1;">
-                <div class="user-name">${u}</div>
-                <div class="user-status">${count > 0 ? `${count} new message${count > 1 ? 's' : ''} 🔥` : 'tap to chat'}</div>
-            </div>
-            ${count > 0 ? `<div class="unread-badge">${count}</div>` : ''}
-            <button class="remove-friend-btn" title="Remove" onclick="removeFriend(event, '${u}')">✕</button>`;
-        item.onclick = () => openPrivateChat(u);
-        ul.appendChild(item);
-    });
-}
-        async function removeFriend(event, friendEmail) {
-            event.stopPropagation();
-            if (!confirm(`Remove ${friendEmail} from inbox?`)) return;
-            const token = localStorage.getItem('token');
-            const currentUserEmail = JSON.parse(atob(token.split('.')[1])).sub;
-            try {
-                const res = await fetch(
-                    `${BASE_URL}/api/chat/unfriend?email=${encodeURIComponent(currentUserEmail)}&friendEmail=${encodeURIComponent(friendEmail)}`,
-                    { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } }
-                );
-                if (res.ok) {
-                    showToast('Removed from inbox 🚫', 'info');
-                    if (chatWith === friendEmail) {
-                        chatWith = '';
-                        document.getElementById('chatTitle').textContent = 'DRAVON';
-                        document.getElementById('chatSubtitle').textContent = 'select someone to chat';
-                        document.getElementById('chatAvatar').textContent = '💬';
-                        document.getElementById('message').disabled = true;
-                        document.getElementById('sendBtn').disabled = true;
-                        document.getElementById('messages').innerHTML = `
-                            <div class="select-prompt" id="selectPrompt">
-                                <div class="big-icon">👈</div>
-                                <h3>pick a chat</h3>
-                                <p>select someone from the sidebar to start chatting</p>
-                            </div>`;
-                    }
-                    loadUserList();
-                } else {
-                    showToast('Could not remove 💀', 'error');
-                }
-            } catch (e) {
-                showToast('Server error 😭', 'error');
-            }
-        }
-
-        function isMobile() {
-            return window.innerWidth <= 768;
-        }
-
-        function openChatMobile() {
-            if (!isMobile()) return;
-            document.getElementById('chatPage').classList.add('show-chat');
-        }
-
-        function backToChats() {
-            document.getElementById('chatPage').classList.remove('show-chat');
-        }
-
-        async function doSearch() {
-            const email = document.getElementById('searchInput').value.trim();
-            if (!email) { showToast('enter an email to search 💀', 'error'); return; }
-            const ul = document.getElementById('userList');
-            ul.innerHTML = '<div class="no-users">searching... 👀</div>';
-            try {
-                const res = await fetch(`${BASE_URL}/api/chat/search?Email=${encodeURIComponent(email)}`, {
-                    headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
-                });
-                if (!res.ok) { ul.innerHTML = '<div class="no-users">user not found 🤷</div>'; return; }
-                const user = await res.json();
-                if (!user || !user.email) { ul.innerHTML = '<div class="no-users">user not found 🤷</div>'; return; }
-                renderSearchResult(user);
-            } catch (e) { ul.innerHTML = '<div class="no-users">search failed 😭</div>'; }
-        }
-
-        function renderSearchResult(user) {
-            const ul = document.getElementById('userList');
-            ul.innerHTML = '';
-            const isSelf = user.email === currentUser;
-            const card = document.createElement('div');
-            card.className = 'search-result-card';
-            card.innerHTML = `
-                <div class="sr-av">${user.email[0].toUpperCase()}</div>
-                <div class="sr-info">
-                    <div class="sr-email">${user.email}</div>
-                    <div class="sr-id">id: ${user.id}</div>
-                </div>`;
-            if (!isSelf) {
-                fetch(`${BASE_URL}/api/chat/friends/${encodeURIComponent(currentUser)}`, {
-                    headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
-                }).then(r => r.json()).then(friends => {
-                    const isFriend = friends.includes(user.email);
-                    if (isFriend) {
-                        const chatBtn = document.createElement('button');
-                        chatBtn.className = 'open-chat-btn';
-                        chatBtn.textContent = 'chat';
-                        chatBtn.onclick = () => { openPrivateChat(user.email); switchSidebarTab('chats'); };
-                        card.appendChild(chatBtn);
-                    } else {
-                        const addBtn = document.createElement('button');
-                        addBtn.className = 'add-friend-btn';
-                        addBtn.textContent = '+ add';
-                        addBtn.onclick = () => sendFriendRequest(user.id, addBtn);
-                        card.appendChild(addBtn);
-                    }
-                });
-            }
-            ul.appendChild(card);
-        }
-
-        async function sendFriendRequest(receiverId, btn) {
-            btn.textContent = '...'; btn.disabled = true;
-            try {
-                const res = await fetch(`${BASE_URL}/api/chat/FriendRequest`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                    body: JSON.stringify({ receiverId })
-                });
-                const text = await res.text();
-                if (res.ok) {
-                    btn.textContent = 'sent ✓'; btn.className = 'add-friend-btn sent';
-                    showToast('friend request sent 🫶', 'success');
-                } else {
-                    btn.textContent = '+ add'; btn.disabled = false;
-                    showToast(text || 'could not send request 💀', 'error');
-                }
-            } catch (e) { btn.textContent = '+ add'; btn.disabled = false; showToast('server error 😭', 'error'); }
-        }
-
-        function updateNotifBadge(count) {
-            const badge = document.getElementById('notifBadge');
-            badge.textContent = count;
-            badge.classList.toggle('show', count > 0);
-        }
-
-        function renderPendingRequests(requests) {
-            const ul = document.getElementById('userList');
-            ul.innerHTML = '';
-            if (!requests.length) {
-                ul.innerHTML = '<div class="no-users">no pending requests 🫡<br/>you\'re all caught up!</div>';
-                return;
-            }
-            requests.forEach(req => {
-                const item = document.createElement('div');
-                item.className = 'req-item';
-                item.id = 'req-' + req.id;
-                const senderName = req.sender?.email || req.sender?.username || 'unknown';
-                item.innerHTML = `
-                    <div class="user-av">${senderName[0].toUpperCase()}</div>
-                    <div class="req-info">
-                        <div class="req-name">${senderName}</div>
-                        <div class="req-label">wants to connect ✦</div>
-                    </div>
-                    <div class="req-actions">
-                        <button class="req-accept" onclick="handleRequest(${req.id}, 'accept')">✓</button>
-                        <button class="req-reject" onclick="handleRequest(${req.id}, 'reject')">✕</button>
-                    </div>`;
-                ul.appendChild(item);
+            const friends = await res.json();
+            document.getElementById('dashFriendCount').textContent = friends.length;
+            renderDashFriends(friends);
+        } catch (e) {}
+        try {
+            const res = await fetch(`${BASE_URL}/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
             });
+            const reqs = await res.json();
+            document.getElementById('dashReqCount').textContent = reqs.length;
+            renderDashRequests(reqs);
+        } catch (e) {}
+        fetch(`${BASE_URL}/api/chat/me`, {
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+        }).then(r => r.json()).then(data => {
+            if (data.avatarUrl) {
+                currentAvatarUrl = data.avatarUrl;
+                localStorage.setItem('avatarUrl', data.avatarUrl);
+                updateDashAvatar();
+            }
+        }).catch(() => {});
+    }
+
+    function updateDashAvatar() {
+        const av = document.getElementById('dashAv');
+        if (!av) return;
+        if (!currentAvatarUrl) {
+            av.innerHTML = currentUser ? currentUser[0].toUpperCase() : '?';
+        } else if (currentAvatarUrl.length <= 2) {
+            av.innerHTML = currentAvatarUrl;
+        } else {
+            av.innerHTML = `<img src="${currentAvatarUrl}" alt="avatar"/>`;
         }
+    }
 
-        async function handleRequest(id, action) {
-            const endpoint = action === 'accept'
-                ? `${BASE_URL}/api/chat/friend-request/accept/${id}`
-                : `${BASE_URL}/api/chat/friend-request/reject/${id}`;
-            try {
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
-                });
-                if (res.ok) {
-                    document.getElementById('req-' + id)?.remove();
-                    showToast(action === 'accept' ? 'request accepted 🫶' : 'request rejected 🚫', action === 'accept' ? 'success' : 'info');
-                    const remaining = document.querySelectorAll('.req-item').length;
-                    updateNotifBadge(remaining);
-                    if (!remaining) document.getElementById('userList').innerHTML = '<div class="no-users">no pending requests 🫡<br/>you\'re all caught up!</div>';
-                    if (action === 'accept') setTimeout(() => switchSidebarTab('chats'), 800);
-                } else { showToast('action failed 💀', 'error'); }
-            } catch (e) { showToast('server error 😭', 'error'); }
+    function renderDashFriends(friends) {
+        const list = document.getElementById('dashFriendsList');
+        list.innerHTML = '';
+        if (!friends.length) {
+            list.innerHTML = '<div style="font-size:11px;color:var(--muted);font-family:Barlow,sans-serif;">no friends yet — go search! 👀</div>';
+            return;
         }
+        friends.slice(0, 4).forEach(email => {
+            const item = document.createElement('div');
+            item.className = 'dash-friend-item';
+            item.innerHTML = `
+                <div class="dash-friend-av">${email[0].toUpperCase()}</div>
+                <div class="dash-friend-email">${email}</div>
+                <span style="font-size:10px;color:var(--neon);font-family:'Barlow Condensed',sans-serif;">chat →</span>`;
+            item.onclick = () => goToChat(email);
+            list.appendChild(item);
+        });
+    }
 
-    async function openPrivateChat(targetUser) {
-    chatWith = targetUser;
+    function renderDashRequests(reqs) {
+        const list = document.getElementById('dashReqList');
+        list.innerHTML = '';
+        if (!reqs.length) {
+            list.innerHTML = '<div style="font-size:11px;color:var(--muted);font-family:Barlow,sans-serif;">all caught up 🫡</div>';
+            return;
+        }
+        reqs.slice(0, 3).forEach(req => {
+            const senderEmail = req.sender?.email || 'unknown';
+            const item = document.createElement('div');
+            item.className = 'dash-req-item';
+            item.id = 'dash-req-' + req.id;
+            item.innerHTML = `
+                <div class="dash-req-av">${senderEmail[0].toUpperCase()}</div>
+                <div class="dash-req-email">${senderEmail}</div>
+                <div class="dash-req-btns">
+                    <button class="dash-req-accept" onclick="dashHandleRequest(${req.id}, 'accept')">✓</button>
+                    <button class="dash-req-reject" onclick="dashHandleRequest(${req.id}, 'reject')">✕</button>
+                </div>`;
+            list.appendChild(item);
+        });
+    }
 
-    document.querySelectorAll('.user-item').forEach(el =>
-        el.classList.toggle('active', el.dataset.user === targetUser)
-    );
+    async function dashHandleRequest(id, action) {
+        const endpoint = action === 'accept'
+            ? `${BASE_URL}/api/chat/friend-request/accept/${id}`
+            : `${BASE_URL}/api/chat/friend-request/reject/${id}`;
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+            });
+            if (res.ok) {
+                document.getElementById('dash-req-' + id)?.remove();
+                const remaining = document.querySelectorAll('.dash-req-item').length;
+                document.getElementById('dashReqCount').textContent = remaining;
+                showToast(action === 'accept' ? 'request accepted 🫶' : 'rejected 🚫', action === 'accept' ? 'success' : 'info');
+                if (action === 'accept') {
+                    const r = await fetch(`${BASE_URL}/api/chat/friends/${encodeURIComponent(currentUser)}`, {
+                        headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+                    });
+                    const friends = await r.json();
+                    document.getElementById('dashFriendCount').textContent = friends.length;
+                    renderDashFriends(friends);
+                }
+            }
+        } catch (e) { showToast('server error 😭', 'error'); }
+    }
 
-    document.getElementById('chatTitle').textContent = targetUser;
-    document.getElementById('chatSubtitle').textContent = 'online';
-    document.getElementById('chatAvatar').textContent = targetUser[0].toUpperCase();
-    document.getElementById('message').disabled = false;
-    document.getElementById('message').placeholder = `message ${targetUser}...`;
-    document.getElementById('sendBtn').disabled = false;
+    function goToChat(openWith = null) {
+        document.getElementById('dashboardPage').style.display = 'none';
+        showChat(currentUser, currentUserId);
+        if (openWith) setTimeout(() => openPrivateChat(openWith), 600);
+    }
 
-    if (!stompClient || !stompClient.connected) {
-        const socket = new SockJS(`${BASE_URL}/chat`);
+    function backToDashboard() {
+        document.getElementById('chatPage').classList.remove('visible');
+        document.getElementById('dashboardPage').style.display = 'flex';
+        showDashboard(currentUser, currentUserId);
+    }
+
+    // CHAT
+    function showChat(username, userId) {
+        currentUser = username;
+        currentUserId = userId || localStorage.getItem('userId') || null;
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('dashboardPage').style.display = 'none';
+        document.getElementById('chatPage').classList.add('visible');
+        connectWebSocket();
+        loadUserList();
+        refreshBadge();
+    }
+
+    function connectWebSocket() {
+        if (stompClient && stompClient.connected) return;
+        const socket = new SockJS(`https://dravon-chats.onrender.com/chat`);
         stompClient = Stomp.over(socket);
         stompClient.debug = null;
-
-        stompClient.connect({}, async function () {
+        stompClient.connect({}, function () {
             showToast('connected ✦', 'success');
-            subscribeToRoom(targetUser);
-            await loadRoomMessages(getRoomId(currentUser, targetUser));
-            setupSeenObserver(targetUser); // ✅ replaces markMessagesAsSeen
+        }, function () {
+            showToast('connection lost, retrying...', 'error');
+            setTimeout(connectWebSocket, 3000);
         });
-
-    } else {
-        subscribeToRoom(targetUser);
-        await loadRoomMessages(getRoomId(currentUser, targetUser));
-        setupSeenObserver(targetUser); // ✅ replaces markMessagesAsSeen
     }
 
-    if (window.innerWidth <= 768) {
+    function subscribeToRoom(targetUser) {
+        if (currentSub) { currentSub.unsubscribe(); currentSub = null; }
+        if (seenSub) { seenSub.unsubscribe(); seenSub = null; }
+
+        const roomId = getRoomId(currentUser, targetUser);
+
+        if (!stompClient || !stompClient.connected) {
+            console.warn('subscribeToRoom called but stomp not connected');
+            return;
+        }
+
+        currentSub = stompClient.subscribe('/topic/chat/' + roomId, function (frame) {
+            const msg = JSON.parse(frame.body);
+            if (msg.sender !== currentUser) {
+                showToast(`💬 new message from ${msg.sender}`, 'info');
+                loadUserList();
+            }
+            showMessage(msg);
+        });
+
+        seenSub = stompClient.subscribe('/topic/seen/' + roomId, function (frame) {
+            updateAllSeenTicks();
+        });
+    }
+
+    function switchSidebarTab(tab) {
+        activeSidebarTab = tab;
+        ['chats', 'search', 'requests'].forEach(t => {
+            document.getElementById('stab-' + t).classList.toggle('active', t === tab);
+        });
+        document.getElementById('searchBar').style.display = tab === 'search' ? 'block' : 'none';
+        if (tab === 'chats') loadUserList();
+        if (tab === 'search') {
+            document.getElementById('userList').innerHTML = '<div class="no-users">type an email above 👆</div>';
+            document.getElementById('searchInput').focus();
+        }
+        if (tab === 'requests') loadPendingRequests();
+    }
+
+    async function refreshBadge() {
+        if (!currentUser) return;
+        try {
+            const res = await fetch(`${BASE_URL}/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
+                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
+            });
+            const requests = await res.json();
+            updateNotifBadge(requests.length);
+        } catch (e) {}
+    }
+
+    async function loadPendingRequests() {
+        if (!currentUser) return;
+        const ul = document.getElementById('userList');
+        ul.innerHTML = '<div class="no-users">loading requests... 👀</div>';
+        try {
+            const res = await fetch(`${BASE_URL}/api/chat/Friend-Request/Pending?email=${encodeURIComponent(currentUser)}`, {
+                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
+            });
+            const requests = await res.json();
+            updateNotifBadge(requests.length);
+            renderPendingRequests(requests);
+        } catch (e) {
+            ul.innerHTML = '<div class="no-users">couldn\'t load requests 😭</div>';
+        }
+    }
+
+    async function loadUserList() {
+        if (!currentUser) return;
+        try {
+            const res = await fetch(`${BASE_URL}/api/chat/friends/${encodeURIComponent(currentUser)}`, {
+                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
+            });
+            const friends = await res.json();
+            if (!Array.isArray(friends)) return;
+            renderUserList(friends);
+            refreshBadge();
+        } catch (e) {
+            document.getElementById('userList').innerHTML = '<div class="no-users">couldn\'t load friends 😭</div>';
+        }
+    }
+
+    async function renderUserList(users) {
+        const ul = document.getElementById('userList');
+        if (!users.length) {
+            ul.innerHTML = '<div class="no-users">no friends yet 👀<br/>search someone to add!</div>';
+            return;
+        }
+        ul.innerHTML = '';
+
+        const unreadCounts = await Promise.all(users.map(async (u) => {
+            const room = getRoomId(currentUser, u);
+            try {
+                const res = await fetch(`${BASE_URL}/api/chat/messages/${room}/unread`, {
+                    headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+                });
+                const count = await res.json();
+                // count is now a plain number from the fixed backend
+                return { user: u, count: typeof count === 'number' ? count : 0 };
+            } catch (e) {
+                return { user: u, count: 0 };
+            }
+        }));
+
+        unreadCounts.sort((a, b) => b.count - a.count);
+
+        unreadCounts.forEach(({ user: u, count }) => {
+            const item = document.createElement('div');
+            item.className = 'user-item' + (u === chatWith ? ' active' : '');
+            item.dataset.user = u;
+            item.innerHTML = `
+                <div class="user-av">${u[0].toUpperCase()}</div>
+                <div style="min-width:0;flex:1;">
+                    <div class="user-name">${u}</div>
+                    <div class="user-status">${count > 0 ? `${count} new message${count > 1 ? 's' : ''} 🔥` : 'tap to chat'}</div>
+                </div>
+                ${count > 0 ? `<div class="unread-badge">${count}</div>` : ''}
+                <button class="remove-friend-btn" title="Remove" onclick="removeFriend(event, '${u}')">✕</button>`;
+            item.onclick = () => openPrivateChat(u);
+            ul.appendChild(item);
+        });
+    }
+
+    async function removeFriend(event, friendEmail) {
+        event.stopPropagation();
+        if (!confirm(`Remove ${friendEmail} from inbox?`)) return;
+        const token = localStorage.getItem('token');
+        const currentUserEmail = JSON.parse(atob(token.split('.')[1])).sub;
+        try {
+            const res = await fetch(
+                `${BASE_URL}/api/chat/unfriend?email=${encodeURIComponent(currentUserEmail)}&friendEmail=${encodeURIComponent(friendEmail)}`,
+                { method: 'DELETE', headers: { 'Authorization': 'Bearer ' + token } }
+            );
+            if (res.ok) {
+                showToast('Removed from inbox 🚫', 'info');
+                if (chatWith === friendEmail) {
+                    chatWith = '';
+                    document.getElementById('chatTitle').textContent = 'DRAVON';
+                    document.getElementById('chatSubtitle').textContent = 'select someone to chat';
+                    document.getElementById('chatAvatar').textContent = '💬';
+                    document.getElementById('message').disabled = true;
+                    document.getElementById('sendBtn').disabled = true;
+                    document.getElementById('messages').innerHTML = `
+                        <div class="select-prompt" id="selectPrompt">
+                            <div class="big-icon">👈</div>
+                            <h3>pick a chat</h3>
+                            <p>select someone from the sidebar to start chatting</p>
+                        </div>`;
+                }
+                loadUserList();
+            } else {
+                showToast('Could not remove 💀', 'error');
+            }
+        } catch (e) {
+            showToast('Server error 😭', 'error');
+        }
+    }
+
+    function isMobile() {
+        return window.innerWidth <= 768;
+    }
+
+    function openChatMobile() {
+        if (!isMobile()) return;
         document.getElementById('chatPage').classList.add('show-chat');
     }
-}
-       async function markMessagesAsSeen(targetUser) {
-           const room = getRoomId(currentUser, targetUser);
-           try {
-               await fetch(`${BASE_URL}/api/chat/messages/${room}/seen`, {
-                   method: 'POST',
-                   headers: {
-                       'Content-Type': 'application/json',
-                       'Authorization': 'Bearer ' + localStorage.getItem('token')
-                   }
-               });
-           } catch (err) {
-               console.error('markMessagesAsSeen failed:', err);
-           }
-       }
 
-       async function loadRoomMessages(room) {
-    const messages = document.getElementById('messages');
-    messages.innerHTML = '';
-    try {
-        const res = await fetch(`${BASE_URL}/api/chat/messages/${room}`, {
-            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+    function backToChats() {
+        document.getElementById('chatPage').classList.remove('show-chat');
+    }
+
+    async function doSearch() {
+        const email = document.getElementById('searchInput').value.trim();
+        if (!email) { showToast('enter an email to search 💀', 'error'); return; }
+        const ul = document.getElementById('userList');
+        ul.innerHTML = '<div class="no-users">searching... 👀</div>';
+        try {
+            const res = await fetch(`${BASE_URL}/api/chat/search?Email=${encodeURIComponent(email)}`, {
+                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
+            });
+            if (!res.ok) { ul.innerHTML = '<div class="no-users">user not found 🤷</div>'; return; }
+            const user = await res.json();
+            if (!user || !user.email) { ul.innerHTML = '<div class="no-users">user not found 🤷</div>'; return; }
+            renderSearchResult(user);
+        } catch (e) { ul.innerHTML = '<div class="no-users">search failed 😭</div>'; }
+    }
+
+    function renderSearchResult(user) {
+        const ul = document.getElementById('userList');
+        ul.innerHTML = '';
+        const isSelf = user.email === currentUser;
+        const card = document.createElement('div');
+        card.className = 'search-result-card';
+        card.innerHTML = `
+            <div class="sr-av">${user.email[0].toUpperCase()}</div>
+            <div class="sr-info">
+                <div class="sr-email">${user.email}</div>
+                <div class="sr-id">id: ${user.id}</div>
+            </div>`;
+        if (!isSelf) {
+            fetch(`${BASE_URL}/api/chat/friends/${encodeURIComponent(currentUser)}`, {
+                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
+            }).then(r => r.json()).then(friends => {
+                const isFriend = friends.includes(user.email);
+                if (isFriend) {
+                    const chatBtn = document.createElement('button');
+                    chatBtn.className = 'open-chat-btn';
+                    chatBtn.textContent = 'chat';
+                    chatBtn.onclick = () => { openPrivateChat(user.email); switchSidebarTab('chats'); };
+                    card.appendChild(chatBtn);
+                } else {
+                    const addBtn = document.createElement('button');
+                    addBtn.className = 'add-friend-btn';
+                    addBtn.textContent = '+ add';
+                    addBtn.onclick = () => sendFriendRequest(user.id, addBtn);
+                    card.appendChild(addBtn);
+                }
+            });
+        }
+        ul.appendChild(card);
+    }
+
+    async function sendFriendRequest(receiverId, btn) {
+        btn.textContent = '...'; btn.disabled = true;
+        try {
+            const res = await fetch(`${BASE_URL}/api/chat/FriendRequest`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                body: JSON.stringify({ receiverId })
+            });
+            const text = await res.text();
+            if (res.ok) {
+                btn.textContent = 'sent ✓'; btn.className = 'add-friend-btn sent';
+                showToast('friend request sent 🫶', 'success');
+            } else {
+                btn.textContent = '+ add'; btn.disabled = false;
+                showToast(text || 'could not send request 💀', 'error');
+            }
+        } catch (e) { btn.textContent = '+ add'; btn.disabled = false; showToast('server error 😭', 'error'); }
+    }
+
+    function updateNotifBadge(count) {
+        const badge = document.getElementById('notifBadge');
+        badge.textContent = count;
+        badge.classList.toggle('show', count > 0);
+    }
+
+    function renderPendingRequests(requests) {
+        const ul = document.getElementById('userList');
+        ul.innerHTML = '';
+        if (!requests.length) {
+            ul.innerHTML = '<div class="no-users">no pending requests 🫡<br/>you\'re all caught up!</div>';
+            return;
+        }
+        requests.forEach(req => {
+            const item = document.createElement('div');
+            item.className = 'req-item';
+            item.id = 'req-' + req.id;
+            const senderName = req.sender?.email || req.sender?.username || 'unknown';
+            item.innerHTML = `
+                <div class="user-av">${senderName[0].toUpperCase()}</div>
+                <div class="req-info">
+                    <div class="req-name">${senderName}</div>
+                    <div class="req-label">wants to connect ✦</div>
+                </div>
+                <div class="req-actions">
+                    <button class="req-accept" onclick="handleRequest(${req.id}, 'accept')">✓</button>
+                    <button class="req-reject" onclick="handleRequest(${req.id}, 'reject')">✕</button>
+                </div>`;
+            ul.appendChild(item);
         });
-        const data = await res.json();
+    }
 
-        if (!data.length) {
-            messages.innerHTML = `<div class="empty-state" id="emptyState">
+    async function handleRequest(id, action) {
+        const endpoint = action === 'accept'
+            ? `${BASE_URL}/api/chat/friend-request/accept/${id}`
+            : `${BASE_URL}/api/chat/friend-request/reject/${id}`;
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + (localStorage.getItem('token') || '') }
+            });
+            if (res.ok) {
+                document.getElementById('req-' + id)?.remove();
+                showToast(action === 'accept' ? 'request accepted 🫶' : 'request rejected 🚫', action === 'accept' ? 'success' : 'info');
+                const remaining = document.querySelectorAll('.req-item').length;
+                updateNotifBadge(remaining);
+                if (!remaining) document.getElementById('userList').innerHTML = '<div class="no-users">no pending requests 🫡<br/>you\'re all caught up!</div>';
+                if (action === 'accept') setTimeout(() => switchSidebarTab('chats'), 800);
+            } else { showToast('action failed 💀', 'error'); }
+        } catch (e) { showToast('server error 😭', 'error'); }
+    }
+
+    async function openPrivateChat(targetUser) {
+        chatWith = targetUser;
+
+        document.querySelectorAll('.user-item').forEach(el =>
+            el.classList.toggle('active', el.dataset.user === targetUser)
+        );
+
+        document.getElementById('chatTitle').textContent = targetUser;
+        document.getElementById('chatSubtitle').textContent = 'online';
+        document.getElementById('chatAvatar').textContent = targetUser[0].toUpperCase();
+        document.getElementById('message').disabled = false;
+        document.getElementById('message').placeholder = `message ${targetUser}...`;
+        document.getElementById('sendBtn').disabled = false;
+
+        if (!stompClient || !stompClient.connected) {
+            const socket = new SockJS(`${BASE_URL}/chat`);
+            stompClient = Stomp.over(socket);
+            stompClient.debug = null;
+
+            stompClient.connect({}, async function () {
+                showToast('connected ✦', 'success');
+                subscribeToRoom(targetUser);
+                await loadRoomMessages(getRoomId(currentUser, targetUser));
+                await markMessagesAsSeen(targetUser);
+                await loadUserList();
+            });
+        } else {
+            subscribeToRoom(targetUser);
+            await loadRoomMessages(getRoomId(currentUser, targetUser));
+            await markMessagesAsSeen(targetUser);
+            await loadUserList();
+        }
+
+        if (window.innerWidth <= 768) {
+            document.getElementById('chatPage').classList.add('show-chat');
+        }
+    }
+
+    async function markMessagesAsSeen(targetUser) {
+        const room = getRoomId(currentUser, targetUser);
+        try {
+            await fetch(`${BASE_URL}/api/chat/messages/${room}/seen`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+            });
+        } catch (err) {
+            console.error('markMessagesAsSeen failed:', err);
+        }
+    }
+
+    async function loadRoomMessages(room) {
+        const messages = document.getElementById('messages');
+        messages.innerHTML = '';
+        try {
+            const res = await fetch(`${BASE_URL}/api/chat/messages/${room}`, {
+                headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+            });
+            const data = await res.json();
+
+            if (!data.length) {
+                messages.innerHTML = `<div class="empty-state" id="emptyState">
+                    <div class="empty-icon">💬</div>
+                    <h3>no messages yet</h3>
+                    <p>say hi first! ✦</p>
+                </div>`;
+                return;
+            }
+
+            data.forEach(msg => showMessage(msg));
+
+            requestAnimationFrame(() => {
+                messages.scrollTop = messages.scrollHeight;
+            });
+
+        } catch (e) {
+            messages.innerHTML = `<div class="empty-state">
                 <div class="empty-icon">💬</div>
                 <h3>no messages yet</h3>
                 <p>say hi first! ✦</p>
             </div>`;
+        }
+    }
+
+    function showMessage(data) {
+        const messages = document.getElementById('messages');
+        if (!messages) return;
+        const empty = document.getElementById('emptyState') || document.getElementById('selectPrompt');
+        if (empty) empty.remove();
+
+        const isMe = data.sender === currentUser;
+        const group = document.createElement('div');
+        group.className = `msg-group ${isMe ? 'right' : 'left'}`;
+        group.dataset.msgId = data.id || '';
+        group.dataset.msgContent = data.content || '';
+        group.dataset.msgSender = data.sender || '';
+
+        const sn = document.createElement('div');
+        sn.className = 's-name';
+        sn.textContent = isMe ? 'you' : data.sender;
+        group.appendChild(sn);
+
+        const row = document.createElement('div');
+        row.className = 'msg-row';
+
+        const av = document.createElement('div');
+        av.className = 'av';
+        av.textContent = data.sender ? data.sender[0].toUpperCase() : '?';
+
+        const bubbleWrap = document.createElement('div');
+        bubbleWrap.style.display = 'flex';
+        bubbleWrap.style.flexDirection = 'column';
+        bubbleWrap.style.maxWidth = '100%';
+
+        if (data.replyToId && data.replyToContent) {
+            const quote = document.createElement('div');
+            quote.className = 'reply-quote';
+            const qName = document.createElement('div');
+            qName.className = 'reply-quote-name';
+            qName.textContent = data.replyToSender === currentUser ? 'You' : (data.replyToSender || '');
+            const qText = document.createElement('div');
+            qText.className = 'reply-quote-text';
+            qText.textContent = data.replyToContent;
+            quote.appendChild(qName);
+            quote.appendChild(qText);
+            quote.onclick = () => {
+                const orig = document.querySelector(`[data-msg-id="${data.replyToId}"]`);
+                if (orig) {
+                    orig.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    orig.style.transition = 'opacity 0.3s';
+                    orig.style.opacity = '0.4';
+                    setTimeout(() => orig.style.opacity = '1', 600);
+                }
+            };
+            bubbleWrap.appendChild(quote);
+        }
+
+        const bubble = document.createElement('div');
+        bubble.className = `bubble ${isMe ? 'right' : 'left'}`;
+        bubble.textContent = data.content;
+        bubbleWrap.appendChild(bubble);
+
+        if (isMe) { row.appendChild(bubbleWrap); row.appendChild(av); }
+        else { row.appendChild(av); row.appendChild(bubbleWrap); }
+        group.appendChild(row);
+
+        const meta = document.createElement('div');
+        meta.className = 'msg-meta';
+        if (data.timestamp) {
+            const ts = document.createElement('span');
+            ts.className = 'ts';
+            ts.textContent = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            meta.appendChild(ts);
+        }
+        if (isMe) {
+            const seenSpan = document.createElement('span');
+            seenSpan.className = 'seen-status' + (data.seen ? ' seen' : '');
+            seenSpan.dataset.msgId = data.id;
+            seenSpan.textContent = data.seen ? '✓✓' : '✓';
+            meta.appendChild(seenSpan);
+        }
+
+        if (data.id) {
+            const del = document.createElement('button');
+            del.className = 'del-btn';
+            del.textContent = 'delete';
+            del.onclick = () => deleteMessage(data.id, group, isMe);
+            meta.appendChild(del);
+        }
+        group.appendChild(meta);
+        messages.appendChild(group);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                messages.scrollTop = messages.scrollHeight;
+            });
+        });
+
+        attachDragReply(group, data);
+    }
+
+    function deleteMessage(id, group, isMe) {
+        fetch(`${BASE_URL}/api/chat/deleteChats/${id}`, { method: 'DELETE' })
+            .then(() => {
+                const bubble = group.querySelector('.bubble');
+                const delBtn = group.querySelector('.del-btn');
+                if (bubble) {
+                    bubble.className = `bubble deleted ${isMe ? 'right' : 'left'}`;
+                    bubble.textContent = isMe ? 'you deleted this message' : 'this message was deleted';
+                }
+                if (delBtn) delBtn.remove();
+            }).catch(e => console.log(e));
+    }
+
+    function sendMessage() {
+        const content = document.getElementById('message').value.trim();
+        if (!content || !chatWith) return;
+        if (!stompClient || !stompClient.connected) { showToast('not connected 😭', 'error'); return; }
+        const roomId = getRoomId(currentUser, chatWith);
+        const message = {
+            sender: currentUser,
+            receiver: chatWith,
+            content,
+            room: roomId,
+            timestamp: Date.now(),
+            replyToId:      replyingTo ? (replyingTo.id || null) : null,
+            replyToContent: replyingTo ? replyingTo.content     : null,
+            replyToSender:  replyingTo ? replyingTo.sender      : null,
+        };
+        stompClient.send('/app/sendMessage', {}, JSON.stringify(message));
+        document.getElementById('message').value = '';
+        document.getElementById('emojiPickerWrapper').style.display = 'none';
+        cancelReply();
+    }
+
+    function updateAllSeenTicks() {
+        document.querySelectorAll('.seen-status').forEach(el => {
+            el.textContent = '✓✓';
+            el.classList.add('seen');
+        });
+    }
+
+    function startReply(msgData) {
+        replyingTo = msgData;
+        const isMe = msgData.sender === currentUser;
+        document.getElementById('replyBarName').textContent = isMe ? 'You' : msgData.sender;
+        document.getElementById('replyBarText').textContent = msgData.content;
+        document.getElementById('replyBar').classList.add('show');
+        document.getElementById('message').focus();
+    }
+
+    function cancelReply() {
+        replyingTo = null;
+        document.getElementById('replyBar').classList.remove('show');
+    }
+
+    function attachDragReply(group, msgData) {
+        const THRESHOLD = 60;
+        const MAX_DRAG = 75;
+        let startX = 0, startY = 0, dragging = false, triggered = false, moved = false;
+
+        function onStart(x, y) {
+            startX = x; startY = y;
+            dragging = true; triggered = false; moved = false;
+            group.style.transition = 'none';
+        }
+
+        function onMove(x, y) {
+            if (!dragging) return;
+            const dx = x - startX;
+            const dy = y - startY;
+            if (!moved && Math.abs(dy) > Math.abs(dx)) { dragging = false; return; }
+            moved = true;
+            const swipeLeft = dx < 0;
+            const dist = Math.min(Math.abs(dx), MAX_DRAG);
+            group.style.transform = `translateX(${swipeLeft ? -dist : dist}px)`;
+            if (Math.abs(dx) >= THRESHOLD && !triggered) {
+                triggered = true;
+                startReply({ id: group.dataset.msgId, content: group.dataset.msgContent, sender: group.dataset.msgSender });
+            }
+        }
+
+        function onEnd() {
+            if (!dragging) return;
+            dragging = false;
+            group.style.transition = 'transform 0.25s ease';
+            group.style.transform = 'translateX(0)';
+        }
+
+        group.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+        group.addEventListener('touchmove',  e => onMove(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
+        group.addEventListener('touchend',   onEnd);
+
+        group.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
+        document.addEventListener('mousemove', e => { if (dragging) onMove(e.clientX, e.clientY); });
+        document.addEventListener('mouseup', e => { if (dragging) onEnd(); });
+    }
+
+    async function handleRefresh() {
+        const btn = document.getElementById('refreshBtn');
+        btn.classList.add('spinning'); btn.disabled = true;
+        if (chatWith) await loadRoomMessages(getRoomId(currentUser, chatWith));
+        if (activeSidebarTab === 'chats') await loadUserList();
+        if (activeSidebarTab === 'requests') await loadPendingRequests();
+        await loadPendingRequests().catch(() => {});
+        setTimeout(() => { btn.classList.remove('spinning'); btn.disabled = false; }, 600);
+        showToast('refreshed ✦', 'success');
+    }
+
+    function toggleProfileDropdown() {
+        const dd = document.getElementById('profileDropdown');
+        const isOpen = dd.style.display === 'block';
+        dd.style.display = isOpen ? 'none' : 'block';
+        if (!isOpen) renderProfileDropdown();
+    }
+
+    function renderProfileDropdown() {
+        document.getElementById('pdEmail').textContent = currentUser;
+        updateAvatarDisplay();
+        const presets = document.getElementById('pdPresets');
+        presets.innerHTML = '';
+        PRESET_AVATARS.forEach(emoji => {
+            const btn = document.createElement('div');
+            btn.className = 'pd-preset' + (currentAvatarUrl === emoji ? ' selected' : '');
+            btn.textContent = emoji;
+            btn.onclick = () => saveAvatar(emoji);
+            presets.appendChild(btn);
+        });
+    }
+
+    function updateAvatarDisplay() {
+        const pdAvatar = document.getElementById('pdAvatar');
+        const btnAvatar = document.getElementById('profileBtnAvatar');
+        if (!currentAvatarUrl) {
+            pdAvatar.innerHTML = currentUser ? currentUser[0].toUpperCase() : '👤';
+            btnAvatar.innerHTML = currentUser ? currentUser[0].toUpperCase() : '👤';
+            return;
+        }
+        if (currentAvatarUrl.length <= 2) {
+            pdAvatar.innerHTML = currentAvatarUrl; btnAvatar.innerHTML = currentAvatarUrl;
+        } else {
+            const s = 'width:100%;height:100%;object-fit:cover;border-radius:9px;';
+            pdAvatar.innerHTML = `<img src="${currentAvatarUrl}" style="${s}"/>`;
+            btnAvatar.innerHTML = `<img src="${currentAvatarUrl}" style="${s}"/>`;
+        }
+    }
+
+    async function saveAvatar(value) {
+        try {
+            const res = await fetch(`${BASE_URL}/api/chat/update-avatar`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
+                body: JSON.stringify({ avatarUrl: value })
+            });
+            if (res.ok) {
+                currentAvatarUrl = value;
+                localStorage.setItem('avatarUrl', value);
+                updateAvatarDisplay();
+                renderProfileDropdown();
+                showToast('avatar updated ✨', 'success');
+            }
+        } catch (e) { showToast('could not save avatar 😭', 'error'); }
+    }
+
+    function handleAvatarUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) { showToast('image too large (max 2MB) 💀', 'error'); return; }
+        const reader = new FileReader();
+        reader.onload = (e) => saveAvatar(e.target.result);
+        reader.readAsDataURL(file);
+    }
+
+    function addEmoji(e) { const m = document.getElementById('message'); m.value += e; m.focus(); }
+    function toggleEmojiPicker() {
+        const w = document.getElementById('emojiPickerWrapper');
+        w.style.display = w.style.display === 'block' ? 'none' : 'block';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        const resetToken = params.get('token');
+        if (resetToken) {
+            showResetPage(resetToken);
             return;
         }
 
-        data.forEach(msg => showMessage(msg));  // ✅ lowercase f
+        const btn = document.getElementById('mobileBackBtn');
+        if (btn) btn.addEventListener('click', backToChats);
 
-        requestAnimationFrame(() => {
-            messages.scrollTop = messages.scrollHeight;
-        });
-
-    } catch (e) {
-        messages.innerHTML = `<div class="empty-state">
-            <div class="empty-icon">💬</div>
-            <h3>no messages yet</h3>
-            <p>say hi first! ✦</p>
-        </div>`;
-    }
-}
-        // ─────────────────────────────────────────────
-        // MESSAGES
-        // ─────────────────────────────────────────────
-        function showMessage(data) {
-            const messages = document.getElementById('messages');
-            if (!messages) return;
-            const empty = document.getElementById('emptyState') || document.getElementById('selectPrompt');
-            if (empty) empty.remove();
-
-            const isMe = data.sender === currentUser;
-            const group = document.createElement('div');
-            group.className = `msg-group ${isMe ? 'right' : 'left'}`;
-            group.dataset.msgId = data.id || '';
-            group.dataset.msgContent = data.content || '';
-            group.dataset.msgSender = data.sender || '';
-
-            const sn = document.createElement('div');
-            sn.className = 's-name';
-            sn.textContent = isMe ? 'you' : data.sender;
-            group.appendChild(sn);
-
-            const row = document.createElement('div');
-            row.className = 'msg-row';
-
-            const av = document.createElement('div');
-            av.className = 'av';
-            av.textContent = data.sender ? data.sender[0].toUpperCase() : '?';
-
-            const bubbleWrap = document.createElement('div');
-            bubbleWrap.style.display = 'flex';
-            bubbleWrap.style.flexDirection = 'column';
-            bubbleWrap.style.maxWidth = '100%';
-        console.log("MESSAGE:", data);
-            if (data.replyToId && data.replyToContent) {
-                const quote = document.createElement('div');
-                quote.className = 'reply-quote';
-                const qName = document.createElement('div');
-                qName.className = 'reply-quote-name';
-                qName.textContent = data.replyToSender === currentUser ? 'You' : (data.replyToSender || '');
-                const qText = document.createElement('div');
-                qText.className = 'reply-quote-text';
-                qText.textContent = data.replyToContent;
-                quote.appendChild(qName);
-                quote.appendChild(qText);
-                quote.onclick = () => {
-                    const orig = document.querySelector(`[data-msg-id="${data.replyToId}"]`);
-                    if (orig) {
-                        orig.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        orig.style.transition = 'opacity 0.3s';
-                        orig.style.opacity = '0.4';
-                        setTimeout(() => orig.style.opacity = '1', 600);
-                    }
-                };
-                bubbleWrap.appendChild(quote);
-            }
-
-            const bubble = document.createElement('div');
-            bubble.className = `bubble ${isMe ? 'right' : 'left'}`;
-            bubble.textContent = data.content;
-            bubbleWrap.appendChild(bubble);
-
-            if (isMe) { row.appendChild(bubbleWrap); row.appendChild(av); }
-            else { row.appendChild(av); row.appendChild(bubbleWrap); }
-            group.appendChild(row);
-
-            const meta = document.createElement('div');
-            meta.className = 'msg-meta';
-            if (data.timestamp) {
-                const ts = document.createElement('span');
-                ts.className = 'ts';
-                ts.textContent = new Date(data.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                meta.appendChild(ts);
-            }
-          if (isMe) {
-           const seenSpan = document.createElement('span');
-           seenSpan.className = 'seen-status' + (data.seen ? ' seen' : '');
-           seenSpan.dataset.msgId = data.id;
-           seenSpan.textContent = data.seen ? '✓✓' : '✓';
-           meta.appendChild(seenSpan);
-       }
-
-            if (data.id) {
-                const del = document.createElement('button');
-                del.className = 'del-btn';
-                del.textContent = 'delete';
-                del.onclick = () => deleteMessage(data.id, group, isMe);
-                meta.appendChild(del);
-            }
-            group.appendChild(meta);
-         messages.appendChild(group);
-           requestAnimationFrame(() => {
-               requestAnimationFrame(() => {
-                   messages.scrollTop = messages.scrollHeight;
-               });
-           });
-
-           attachDragReply(group, data);
-       }
-
-        function deleteMessage(id, group, isMe) {
-            fetch(`${BASE_URL}/api/chat/deleteChats/${id}`, { method: 'DELETE' })
-                .then(() => {
-                    const bubble = group.querySelector('.bubble');
-                    const delBtn = group.querySelector('.del-btn');
-                    if (bubble) {
-                        bubble.className = `bubble deleted ${isMe ? 'right' : 'left'}`;
-                        bubble.textContent = isMe ? 'you deleted this message' : 'this message was deleted';
-                    }
-                    if (delBtn) delBtn.remove();
-                }).catch(e => console.log(e));
+        const picker = document.getElementById('emojiPicker');
+        if (picker) {
+            picker.addEventListener('emoji-click', e => {
+                document.getElementById('message').value += e.detail.unicode;
+                document.getElementById('emojiPickerWrapper').style.display = 'none';
+            });
         }
 
-        function sendMessage() {
-            const content = document.getElementById('message').value.trim();
-            if (!content || !chatWith) return;
-            if (!stompClient || !stompClient.connected) { showToast('not connected 😭', 'error'); return; }
-            const roomId = getRoomId(currentUser, chatWith);
-            const message = {
-                sender: currentUser,
-                receiver: chatWith,
-                content,
-                room: roomId,
-                timestamp: Date.now(),
-                replyToId:      replyingTo ? (replyingTo.id || null) : null,
-                replyToContent: replyingTo ? replyingTo.content     : null,
-                replyToSender:  replyingTo ? replyingTo.sender      : null,
-            };
-            stompClient.send('/app/sendMessage', {}, JSON.stringify(message));
-            document.getElementById('message').value = '';
-            document.getElementById('emojiPickerWrapper').style.display = 'none';
-            cancelReply();
-        }
-       function updateAllSeenTicks() {
-           document.querySelectorAll('.seen-status').forEach(el => {
-               el.textContent = '✓✓';
-               el.classList.add('seen');
-           });
-       }
-        function startReply(msgData) {
-            replyingTo = msgData;
-            const isMe = msgData.sender === currentUser;
-            document.getElementById('replyBarName').textContent = isMe ? 'You' : msgData.sender;
-            document.getElementById('replyBarText').textContent = msgData.content;
-            document.getElementById('replyBar').classList.add('show');
-            document.getElementById('message').focus();
-        }
-
-        function cancelReply() {
-            replyingTo = null;
-            document.getElementById('replyBar').classList.remove('show');
-        }
-
-        // ─────────────────────────────────────────────
-        // DRAG-TO-REPLY  (fixed — properly self-contained)
-        // ─────────────────────────────────────────────
-        function attachDragReply(group, msgData) {
-            const THRESHOLD = 60;
-            const MAX_DRAG = 75;
-            let startX = 0, startY = 0, dragging = false, triggered = false, moved = false;
-
-            function onStart(x, y) {
-                startX = x; startY = y;
-                dragging = true; triggered = false; moved = false;
-                group.style.transition = 'none';
-            }
-
-            function onMove(x, y) {
-                if (!dragging) return;
-                const dx = x - startX;
-                const dy = y - startY;
-                if (!moved && Math.abs(dy) > Math.abs(dx)) { dragging = false; return; }
-                moved = true;
-                const swipeLeft = dx < 0;
-                const dist = Math.min(Math.abs(dx), MAX_DRAG);
-                group.style.transform = `translateX(${swipeLeft ? -dist : dist}px)`;
-                if (Math.abs(dx) >= THRESHOLD && !triggered) {
-                    triggered = true;
-                    startReply({ id: group.dataset.msgId, content: group.dataset.msgContent, sender: group.dataset.msgSender });
-                }
-            }
-
-            function onEnd() {
-                if (!dragging) return;
-                dragging = false;
-                group.style.transition = 'transform 0.25s ease';
-                group.style.transform = 'translateX(0)';
-            }
-
-            // Touch
-            group.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
-            group.addEventListener('touchmove',  e => onMove(e.touches[0].clientX, e.touches[0].clientY), { passive: true });
-            group.addEventListener('touchend',   onEnd);
-
-            // Mouse (desktop)
-            group.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
-            document.addEventListener('mousemove', e => { if (dragging) onMove(e.clientX, e.clientY); });
-            document.addEventListener('mouseup', e => { if (dragging) onEnd(); });
-        }
-
-        // ─────────────────────────────────────────────
-        // REFRESH
-        // ─────────────────────────────────────────────
-        async function handleRefresh() {
-            const btn = document.getElementById('refreshBtn');
-            btn.classList.add('spinning'); btn.disabled = true;
-            if (chatWith) await loadRoomMessages(getRoomId(currentUser, chatWith));
-            if (activeSidebarTab === 'chats') await loadUserList();
-            if (activeSidebarTab === 'requests') await loadPendingRequests();
-            await loadPendingRequests().catch(() => {});
-            setTimeout(() => { btn.classList.remove('spinning'); btn.disabled = false; }, 600);
-            showToast('refreshed ✦', 'success');
-        }
-
-        // ─────────────────────────────────────────────
-        // AVATAR / PROFILE DROPDOWN
-        // ─────────────────────────────────────────────
-        function toggleProfileDropdown() {
+        document.addEventListener('click', e => {
+            const wrapper = document.getElementById('emojiPickerWrapper');
+            const emojiBtn = document.querySelector('.emoji-btn');
+            if (wrapper && !wrapper.contains(e.target) && e.target !== emojiBtn)
+                wrapper.style.display = 'none';
+            const wrap = document.getElementById('profileDropdownWrap');
             const dd = document.getElementById('profileDropdown');
-            const isOpen = dd.style.display === 'block';
-            dd.style.display = isOpen ? 'none' : 'block';
-            if (!isOpen) renderProfileDropdown();
-        }
-
-        function renderProfileDropdown() {
-            document.getElementById('pdEmail').textContent = currentUser;
-            updateAvatarDisplay();
-            const presets = document.getElementById('pdPresets');
-            presets.innerHTML = '';
-            PRESET_AVATARS.forEach(emoji => {
-                const btn = document.createElement('div');
-                btn.className = 'pd-preset' + (currentAvatarUrl === emoji ? ' selected' : '');
-                btn.textContent = emoji;
-                btn.onclick = () => saveAvatar(emoji);
-                presets.appendChild(btn);
-            });
-        }
-
-        function updateAvatarDisplay() {
-            const pdAvatar = document.getElementById('pdAvatar');
-            const btnAvatar = document.getElementById('profileBtnAvatar');
-            if (!currentAvatarUrl) {
-                pdAvatar.innerHTML = currentUser ? currentUser[0].toUpperCase() : '👤';
-                btnAvatar.innerHTML = currentUser ? currentUser[0].toUpperCase() : '👤';
-                return;
-            }
-            if (currentAvatarUrl.length <= 2) {
-                pdAvatar.innerHTML = currentAvatarUrl; btnAvatar.innerHTML = currentAvatarUrl;
-            } else {
-                const s = 'width:100%;height:100%;object-fit:cover;border-radius:9px;';
-                pdAvatar.innerHTML = `<img src="${currentAvatarUrl}" style="${s}"/>`;
-                btnAvatar.innerHTML = `<img src="${currentAvatarUrl}" style="${s}"/>`;
-            }
-        }
-
-        async function saveAvatar(value) {
-            try {
-                const res = await fetch(`${BASE_URL}/api/chat/update-avatar`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + localStorage.getItem('token') },
-                    body: JSON.stringify({ avatarUrl: value })
-                });
-                if (res.ok) {
-                    currentAvatarUrl = value;
-                    localStorage.setItem('avatarUrl', value);
-                    updateAvatarDisplay();
-                    renderProfileDropdown();
-                    showToast('avatar updated ✨', 'success');
-                }
-            } catch (e) { showToast('could not save avatar 😭', 'error'); }
-        }
-
-        function handleAvatarUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            if (file.size > 2 * 1024 * 1024) { showToast('image too large (max 2MB) 💀', 'error'); return; }
-            const reader = new FileReader();
-            reader.onload = (e) => saveAvatar(e.target.result);
-            reader.readAsDataURL(file);
-        }
-
-        // ─────────────────────────────────────────────
-        // EMOJI PICKER
-        // ─────────────────────────────────────────────
-        function addEmoji(e) { const m = document.getElementById('message'); m.value += e; m.focus(); }
-        function toggleEmojiPicker() {
-            const w = document.getElementById('emojiPickerWrapper');
-            w.style.display = w.style.display === 'block' ? 'none' : 'block';
-        }
-
-        // ─────────────────────────────────────────────
-        // INIT
-        // ─────────────────────────────────────────────
-        document.addEventListener('DOMContentLoaded', () => {
-            // Password reset deep-link detection
-            const params = new URLSearchParams(window.location.search);
-            const resetToken = params.get('token');
-            if (resetToken) {
-                showResetPage(resetToken);
-                return;
-            }
-
-            // Mobile back button
-            const btn = document.getElementById('mobileBackBtn');
-            if (btn) btn.addEventListener('click', backToChats);
-
-            // Emoji picker
-            const picker = document.getElementById('emojiPicker');
-            if (picker) {
-                picker.addEventListener('emoji-click', e => {
-                    document.getElementById('message').value += e.detail.unicode;
-                    document.getElementById('emojiPickerWrapper').style.display = 'none';
-                });
-            }
-
-            // Click-outside to close dropdowns/modals
-            document.addEventListener('click', e => {
-                const wrapper = document.getElementById('emojiPickerWrapper');
-                const emojiBtn = document.querySelector('.emoji-btn');
-                if (wrapper && !wrapper.contains(e.target) && e.target !== emojiBtn)
-                    wrapper.style.display = 'none';
-                const wrap = document.getElementById('profileDropdownWrap');
-                const dd = document.getElementById('profileDropdown');
-                if (wrap && dd && !wrap.contains(e.target)) dd.style.display = 'none';
-                if (e.target === document.getElementById('forgotModal')) closeForgotModal();
-            });
-
-            // Auto-login if token & user stored
-            const savedUser = localStorage.getItem('chatUser') || sessionStorage.getItem('chatUser');
-            const savedToken = localStorage.getItem('token');
-            if (savedUser && savedToken) showDashboard(savedUser);
+            if (wrap && dd && !wrap.contains(e.target)) dd.style.display = 'none';
+            if (e.target === document.getElementById('forgotModal')) closeForgotModal();
         });
+
+        const savedUser = localStorage.getItem('chatUser') || sessionStorage.getItem('chatUser');
+        const savedToken = localStorage.getItem('token');
+        if (savedUser && savedToken) showDashboard(savedUser);
+    });
+
 </script>
