@@ -150,6 +150,7 @@ public class test {
                 chatService.getRecentMessages();
 
         assertEquals(2, messages.size());
+
     }
 
     @Test

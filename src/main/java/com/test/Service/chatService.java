@@ -8,11 +8,13 @@ import com.test.Repository.LoginRepository;
 import com.test.Repository.chatRepository;
 import com.test.model.LoginRequest;
 import com.test.model.chatMessage;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.observation.ObservationProperties;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,17 +27,15 @@ import java.util.stream.Collectors;
 @Service
 public class chatService {
 
-    private final chatRepository chatRepository;
-    private final LoginRepository loginRepository;
-    private final SimpMessagingTemplate messagingTemplate;
-    private friendRequestRepository friendRequestRepository;
+    @Autowired
+    private chatRepository chatRepository;
+    @Autowired
+    private  LoginRepository loginRepository;
+    @Autowired
+    private  SimpMessagingTemplate messagingTemplate;
+    @Autowired
+    private  friendRequestRepository friendRequestRepository;
 
-    public chatService(chatRepository chatRepository, LoginRepository loginRepository, SimpMessagingTemplate messagingTemplate, friendRequestRepository friendRequestRepository) {
-        this.chatRepository = chatRepository;
-        this.loginRepository = loginRepository;
-        this.messagingTemplate = messagingTemplate;
-        this.friendRequestRepository = friendRequestRepository;
-    }
 
 
     public User login(LoginRequest request) {
@@ -223,11 +223,11 @@ public class chatService {
         );
     }
 
-    public long getUnreadCount(String room , String email){
+    public long getUnreadCount(String room , String Email){
         System.out.println("Room: " + room);
-        System.out.println("Email: " + email);
-        System.out.println("Unread count: " + chatRepository.countUnreadByRoomAndReceiver(room, email));
-        return chatRepository.countUnreadByRoomAndReceiver(room, email);
+        System.out.println("Email: " + Email);
+        System.out.println("Unread count: " + chatRepository.countUnreadByRoomAndReceiver(room, Email));
+        return chatRepository.countUnreadByRoomAndReceiver(room, Email);
 
     }
 

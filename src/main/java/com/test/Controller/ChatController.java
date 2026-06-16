@@ -29,7 +29,7 @@ public class ChatController {
     @Autowired
     private LoginRepository loginRepository;
 
-    private chatRepository chatRepository;
+    private final chatRepository chatRepository;
     @Autowired
     private JwtUtil jwtUtil;
 
@@ -75,8 +75,9 @@ public class ChatController {
     }
     /// ////////////////////////////////////
     @GetMapping("/all")
-    public List<chatMessage> getAll() {
-        return chatService.getAllMessages();
+    public ResponseEntity<List<chatMessage>> getAll(@RequestHeader ("Authorization") String authHeader) {
+        String email = jwtUtil.extractEmail(authHeader.substring(7));
+        return ResponseEntity.ok(chatService.getAllMessages().stream().filter(m-> email.equals(m.getSender()) || email.equals(m.getReceiver())).toList());
     }
    /////////////////////////////////
     @GetMapping("/allChats")
@@ -96,6 +97,7 @@ public class ChatController {
 
         // generate token
         String token = jwtUtil.generateToken(user.getEmail());
+        System.out.println("generting for"+user.getEmail());
 
         // return token + user info
         Map<String, Object> response = new HashMap<>();
@@ -248,24 +250,11 @@ public List<String> sendRequest(
 //
 //        return ResponseEntity.ok(chatService.getUnreadCount(room , email));
 //    }
-@GetMapping("/messages/{room}/debug")
-public ResponseEntity<?> debug(@PathVariable String room,
-                               @RequestHeader("Authorization") String authHeader) {
-    String email = jwtUtil.extractEmail(authHeader.substring(7));
+@GetMapping("/messages/{room}/unread")
+public ResponseEntity<Long> getUnreadCount(@PathVariable String room , @RequestHeader("Authorization") String authHeader) {
 
-    List<chatMessage> messages = chatRepository.findByRoomOrderByTimestampAsc(room);
-
-    return ResponseEntity.ok(Map.of(
-            "extractedEmail", email,
-            "totalMessages", messages.size(),
-            "messages", messages.stream().map(m -> Map.of(
-                    "id", m.getId(),
-                    "sender", String.valueOf(m.getSender()),
-                    "receiver", String.valueOf(m.getReceiver()),
-                    "Email", String.valueOf(m.getEmail()),
-                    "seen", String.valueOf(m.getSeen())
-            )).toList()
-    ));
+        String email = jwtUtil.extractEmail(authHeader.substring(7));
+        return ResponseEntity.ok(chatService.getUnreadCount(room , email));
 }
 }
 

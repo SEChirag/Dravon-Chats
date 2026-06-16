@@ -8,7 +8,9 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Controller/ChatController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Repository/chatRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Repository/chatRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/chatMessage.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/chatMessage.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/Service/chatService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/test/model/LoginRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/test/model/LoginRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/test/test/Service/ChatService/test.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/test/test/Service/ChatService/test.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -59,6 +61,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Groovy.File per object.executor&quot;: &quot;Run&quot;,
     &quot;JUnit.TestController.executor&quot;: &quot;Run&quot;,
     &quot;JUnit.test.executor&quot;: &quot;Run&quot;,
     &quot;JUnit.test.testGetRecentMessages.executor&quot;: &quot;Run&quot;,
@@ -103,17 +106,12 @@
     </option>
   </component>
   <component name="RunManager" selected="Spring Boot.Main">
-    <configuration name="TestController" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="chat-app" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="com.test.test.Service.ChatService.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <option name="PACKAGE_NAME" value="com.test.test.Service.ChatService" />
-      <option name="MAIN_CLASS_NAME" value="com.test.test.Service.ChatService.TestController" />
-      <option name="TEST_OBJECT" value="class" />
+    <configuration name="File per object" type="GroovyScriptRunConfiguration" factoryName="Groovy" temporary="true">
+      <setting name="path" value="file://$APPLICATION_CONFIG_DIR$/extensions/com.intellij.database/schema.layouts/File per object.groovy" />
+      <setting name="vmparams" value="" />
+      <setting name="params" value="" />
+      <setting name="workDir" value="file://$APPLICATION_CONFIG_DIR$/extensions/com.intellij.database/schema.layouts" />
+      <setting name="debug" value="false" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -183,10 +181,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Spring Boot.Main" />
+        <item itemvalue="Groovy.File per object" />
         <item itemvalue="JUnit.test" />
         <item itemvalue="JUnit.test.testSaveMessage" />
         <item itemvalue="JUnit.test.testLoginFailure" />
-        <item itemvalue="JUnit.TestController" />
       </list>
     </recent_temporary>
   </component>
@@ -204,14 +202,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1777624986069</updated>
-    </task>
-    <task id="LOCAL-00043" summary="New updates">
-      <option name="closed" value="true" />
-      <created>1780314478768</created>
-      <option name="number" value="00043" />
-      <option name="presentableId" value="LOCAL-00043" />
-      <option name="project" value="LOCAL" />
-      <updated>1780314478768</updated>
     </task>
     <task id="LOCAL-00044" summary="New updates">
       <option name="closed" value="true" />
@@ -597,7 +587,15 @@
       <option name="project" value="LOCAL" />
       <updated>1780638959656</updated>
     </task>
-    <option name="localTasksCounter" value="92" />
+    <task id="LOCAL-00092" summary="Api test">
+      <option name="closed" value="true" />
+      <created>1780641756874</created>
+      <option name="number" value="00092" />
+      <option name="presentableId" value="LOCAL-00092" />
+      <option name="project" value="LOCAL" />
+      <updated>1780641756874</updated>
+    </task>
+    <option name="localTasksCounter" value="93" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
